@@ -6,7 +6,7 @@
     },
     "variable": [
         {
-            "key": "baseUrl",
+            "key": "HIMELBASEURL",
             "value": "http://localhost:8000/api",
             "type": "string"
         },
@@ -33,13 +33,16 @@
                     "name": "Login",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/auth/login",
+                        "url": "{{HIMELBASEURL}}/v1/auth/login",
                         "header": [
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
                             },
-                            { "key": "Accept", "value": "application/json" }
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
                         ],
                         "body": {
                             "mode": "raw",
@@ -51,14 +54,30 @@
                     "name": "Me",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/auth/me"
+                        "url": "{{HIMELBASEURL}}/v1/auth/me",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Logout",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/auth/logout"
+                        "url": "{{HIMELBASEURL}}/v1/auth/logout",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 }
             ]
@@ -71,20 +90,43 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/v1/accounts?page=1&per_page=15",
+                            "raw": "{{HIMELBASEURL}}/v1/accounts?page=1&per_page=15",
+                            "host": [
+                                "{{HIMELBASEURL}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "accounts"
+                            ],
                             "query": [
-                                { "key": "page", "value": "1" },
-                                { "key": "per_page", "value": "15" }
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
                             ]
-                        }
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Create Account",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/accounts",
+                        "url": "{{HIMELBASEURL}}/v1/accounts",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -100,15 +142,25 @@
                     "name": "Get Account",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/accounts/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/accounts/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Update Account",
                     "request": {
                         "method": "PUT",
-                        "url": "{{baseUrl}}/v1/accounts/{uid}",
+                        "url": "{{HIMELBASEURL}}/v1/accounts/{uid}",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -124,7 +176,13 @@
                     "name": "Delete Account",
                     "request": {
                         "method": "DELETE",
-                        "url": "{{baseUrl}}/v1/accounts/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/accounts/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 }
             ]
@@ -137,20 +195,43 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/v1/categories?page=1&per_page=15",
+                            "raw": "{{HIMELBASEURL}}/v1/categories?page=1&per_page=15",
+                            "host": [
+                                "{{HIMELBASEURL}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "categories"
+                            ],
                             "query": [
-                                { "key": "page", "value": "1" },
-                                { "key": "per_page", "value": "15" }
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
                             ]
-                        }
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Create Category",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/categories",
+                        "url": "{{HIMELBASEURL}}/v1/categories",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -158,7 +239,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Alimentação\",\n  \"direction\": \"OUTFLOW\",\n  \"color\": \"#FF0000\"\n}"
+                            "raw": "{\n  \"name\": \"Alimenta\u00e7\u00e3o\",\n  \"direction\": \"OUTFLOW\",\n  \"color\": \"#FF0000\"\n}"
                         }
                     }
                 },
@@ -166,15 +247,25 @@
                     "name": "Get Category",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/categories/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/categories/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Update Category",
                     "request": {
                         "method": "PUT",
-                        "url": "{{baseUrl}}/v1/categories/{uid}",
+                        "url": "{{HIMELBASEURL}}/v1/categories/{uid}",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -182,7 +273,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"name\": \"Alimentação\",\n  \"direction\": \"OUTFLOW\",\n  \"color\": \"#FF0000\"\n}"
+                            "raw": "{\n  \"name\": \"Alimenta\u00e7\u00e3o\",\n  \"direction\": \"OUTFLOW\",\n  \"color\": \"#FF0000\"\n}"
                         }
                     }
                 },
@@ -190,7 +281,13 @@
                     "name": "Delete Category",
                     "request": {
                         "method": "DELETE",
-                        "url": "{{baseUrl}}/v1/categories/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/categories/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 }
             ]
@@ -203,20 +300,43 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/v1/transactions?page=1&per_page=15",
+                            "raw": "{{HIMELBASEURL}}/v1/transactions?page=1&per_page=15",
+                            "host": [
+                                "{{HIMELBASEURL}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "transactions"
+                            ],
                             "query": [
-                                { "key": "page", "value": "1" },
-                                { "key": "per_page", "value": "15" }
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
                             ]
-                        }
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Create Transaction",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/transactions",
+                        "url": "{{HIMELBASEURL}}/v1/transactions",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -232,15 +352,25 @@
                     "name": "Get Transaction",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/transactions/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/transactions/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Update Transaction",
                     "request": {
                         "method": "PUT",
-                        "url": "{{baseUrl}}/v1/transactions/{uid}",
+                        "url": "{{HIMELBASEURL}}/v1/transactions/{uid}",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -256,7 +386,13 @@
                     "name": "Delete Transaction",
                     "request": {
                         "method": "DELETE",
-                        "url": "{{baseUrl}}/v1/transactions/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/transactions/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 }
             ]
@@ -269,20 +405,43 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/v1/transfers?page=1&per_page=15",
+                            "raw": "{{HIMELBASEURL}}/v1/transfers?page=1&per_page=15",
+                            "host": [
+                                "{{HIMELBASEURL}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "transfers"
+                            ],
                             "query": [
-                                { "key": "page", "value": "1" },
-                                { "key": "per_page", "value": "15" }
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
                             ]
-                        }
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Create Transfer",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/transfers",
+                        "url": "{{HIMELBASEURL}}/v1/transfers",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -290,7 +449,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"amount\": 500.00,\n  \"from_account_uid\": \"\",\n  \"to_account_uid\": \"\",\n  \"occurred_at\": \"2026-04-01\",\n  \"description\": \"Transferência teste\"\n}"
+                            "raw": "{\n  \"amount\": 500.00,\n  \"from_account_uid\": \"\",\n  \"to_account_uid\": \"\",\n  \"occurred_at\": \"2026-04-01\",\n  \"description\": \"Transfer\u00eancia teste\"\n}"
                         }
                     }
                 },
@@ -298,15 +457,25 @@
                     "name": "Get Transfer",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/transfers/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/transfers/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Update Transfer",
                     "request": {
                         "method": "PUT",
-                        "url": "{{baseUrl}}/v1/transfers/{uid}",
+                        "url": "{{HIMELBASEURL}}/v1/transfers/{uid}",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -314,7 +483,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n  \"amount\": 600.00,\n  \"from_account_uid\": \"\",\n  \"to_account_uid\": \"\",\n  \"occurred_at\": \"2026-04-01\",\n  \"description\": \"Transferência atualizada\"\n}"
+                            "raw": "{\n  \"amount\": 600.00,\n  \"from_account_uid\": \"\",\n  \"to_account_uid\": \"\",\n  \"occurred_at\": \"2026-04-01\",\n  \"description\": \"Transfer\u00eancia atualizada\"\n}"
                         }
                     }
                 },
@@ -322,7 +491,13 @@
                     "name": "Delete Transfer",
                     "request": {
                         "method": "DELETE",
-                        "url": "{{baseUrl}}/v1/transfers/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/transfers/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 }
             ]
@@ -335,20 +510,43 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/v1/fixed-expenses?page=1&per_page=15",
+                            "raw": "{{HIMELBASEURL}}/v1/fixed-expenses?page=1&per_page=15",
+                            "host": [
+                                "{{HIMELBASEURL}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "fixed-expenses"
+                            ],
                             "query": [
-                                { "key": "page", "value": "1" },
-                                { "key": "per_page", "value": "15" }
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
                             ]
-                        }
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Create Fixed Expense",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/fixed-expenses",
+                        "url": "{{HIMELBASEURL}}/v1/fixed-expenses",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -364,15 +562,25 @@
                     "name": "Get Fixed Expense",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/fixed-expenses/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/fixed-expenses/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Update Fixed Expense",
                     "request": {
                         "method": "PUT",
-                        "url": "{{baseUrl}}/v1/fixed-expenses/{uid}",
+                        "url": "{{HIMELBASEURL}}/v1/fixed-expenses/{uid}",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -388,7 +596,13 @@
                     "name": "Delete Fixed Expense",
                     "request": {
                         "method": "DELETE",
-                        "url": "{{baseUrl}}/v1/fixed-expenses/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/fixed-expenses/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 }
             ]
@@ -401,20 +615,43 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/v1/credit-cards?page=1&per_page=15",
+                            "raw": "{{HIMELBASEURL}}/v1/credit-cards?page=1&per_page=15",
+                            "host": [
+                                "{{HIMELBASEURL}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "credit-cards"
+                            ],
                             "query": [
-                                { "key": "page", "value": "1" },
-                                { "key": "per_page", "value": "15" }
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
                             ]
-                        }
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Create Credit Card",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/credit-cards",
+                        "url": "{{HIMELBASEURL}}/v1/credit-cards",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -430,15 +667,25 @@
                     "name": "Get Credit Card",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/credit-cards/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/credit-cards/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Update Credit Card",
                     "request": {
                         "method": "PUT",
-                        "url": "{{baseUrl}}/v1/credit-cards/{uid}",
+                        "url": "{{HIMELBASEURL}}/v1/credit-cards/{uid}",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -454,7 +701,13 @@
                     "name": "Delete Credit Card",
                     "request": {
                         "method": "DELETE",
-                        "url": "{{baseUrl}}/v1/credit-cards/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/credit-cards/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 }
             ]
@@ -467,20 +720,43 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/v1/credit-card-charges?page=1&per_page=15",
+                            "raw": "{{HIMELBASEURL}}/v1/credit-card-charges?page=1&per_page=15",
+                            "host": [
+                                "{{HIMELBASEURL}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "credit-card-charges"
+                            ],
                             "query": [
-                                { "key": "page", "value": "1" },
-                                { "key": "per_page", "value": "15" }
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
                             ]
-                        }
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Create Charge",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/credit-card-charges",
+                        "url": "{{HIMELBASEURL}}/v1/credit-card-charges",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -496,15 +772,25 @@
                     "name": "Get Charge",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/credit-card-charges/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/credit-card-charges/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Update Charge",
                     "request": {
                         "method": "PUT",
-                        "url": "{{baseUrl}}/v1/credit-card-charges/{uid}",
+                        "url": "{{HIMELBASEURL}}/v1/credit-card-charges/{uid}",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -520,7 +806,13 @@
                     "name": "Delete Charge",
                     "request": {
                         "method": "DELETE",
-                        "url": "{{baseUrl}}/v1/credit-card-charges/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/credit-card-charges/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 }
             ]
@@ -533,20 +825,43 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/v1/credit-card-installments?page=1&per_page=15",
+                            "raw": "{{HIMELBASEURL}}/v1/credit-card-installments?page=1&per_page=15",
+                            "host": [
+                                "{{HIMELBASEURL}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "credit-card-installments"
+                            ],
                             "query": [
-                                { "key": "page", "value": "1" },
-                                { "key": "per_page", "value": "15" }
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
                             ]
-                        }
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Create Installment",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/credit-card-installments",
+                        "url": "{{HIMELBASEURL}}/v1/credit-card-installments",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -562,15 +877,25 @@
                     "name": "Get Installment",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/credit-card-installments/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/credit-card-installments/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Update Installment",
                     "request": {
                         "method": "PUT",
-                        "url": "{{baseUrl}}/v1/credit-card-installments/{uid}",
+                        "url": "{{HIMELBASEURL}}/v1/credit-card-installments/{uid}",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -586,15 +911,25 @@
                     "name": "Delete Installment",
                     "request": {
                         "method": "DELETE",
-                        "url": "{{baseUrl}}/v1/credit-card-installments/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/credit-card-installments/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Mark as Paid",
                     "request": {
                         "method": "PATCH",
-                        "url": "{{baseUrl}}/v1/credit-card-installments/{uid}/mark-as-paid",
+                        "url": "{{HIMELBASEURL}}/v1/credit-card-installments/{uid}/mark-as-paid",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -616,20 +951,43 @@
                     "request": {
                         "method": "GET",
                         "url": {
-                            "raw": "{{baseUrl}}/v1/periods?page=1&per_page=15",
+                            "raw": "{{HIMELBASEURL}}/v1/periods?page=1&per_page=15",
+                            "host": [
+                                "{{HIMELBASEURL}}"
+                            ],
+                            "path": [
+                                "v1",
+                                "periods"
+                            ],
                             "query": [
-                                { "key": "page", "value": "1" },
-                                { "key": "per_page", "value": "15" }
+                                {
+                                    "key": "page",
+                                    "value": "1"
+                                },
+                                {
+                                    "key": "per_page",
+                                    "value": "15"
+                                }
                             ]
-                        }
+                        },
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Create Period",
                     "request": {
                         "method": "POST",
-                        "url": "{{baseUrl}}/v1/periods",
+                        "url": "{{HIMELBASEURL}}/v1/periods",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -645,15 +1003,25 @@
                     "name": "Get Period",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/periods/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/periods/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Update Period",
                     "request": {
                         "method": "PUT",
-                        "url": "{{baseUrl}}/v1/periods/{uid}",
+                        "url": "{{HIMELBASEURL}}/v1/periods/{uid}",
                         "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            },
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
@@ -669,14 +1037,26 @@
                     "name": "Delete Period",
                     "request": {
                         "method": "DELETE",
-                        "url": "{{baseUrl}}/v1/periods/{uid}"
+                        "url": "{{HIMELBASEURL}}/v1/periods/{uid}",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 },
                 {
                     "name": "Current Period",
                     "request": {
                         "method": "GET",
-                        "url": "{{baseUrl}}/v1/periods/current"
+                        "url": "{{HIMELBASEURL}}/v1/periods/current",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ]
                     }
                 }
             ]

@@ -23,9 +23,9 @@ return new class extends Migration
             $table->uuid('reference_id')->nullable();
             $table->timestamps();
 
-            $table->foreignUuid('user_uid')->references('uid')->on('users')->onDelete('cascade');
-            $table->foreignUuid('financial_account_uid')->references('uid')->on('financial_accounts')->onDelete('cascade');
-            $table->foreignUuid('financial_category_uid')->references('uid')->on('financial_categories')->onDelete('restrict');
+            $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
+            $table->foreign('financial_account_uid')->references('uid')->on('financial_accounts')->onDelete('cascade');
+            $table->foreign('financial_category_uid')->references('uid')->on('financial_categories')->onDelete('restrict');
             $table->index('user_uid');
             $table->index('financial_account_uid');
             $table->index('reference_id');

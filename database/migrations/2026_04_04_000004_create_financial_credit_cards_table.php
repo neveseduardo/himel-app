@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('financial_credit_cards', function (Blueprint $table) {
             $table->uuid('uid')->primary();
-            $table->uuid('user_uid');
             $table->string('name');
             $table->enum('card_type', ['PHYSICAL', 'VIRTUAL'])->default('PHYSICAL');
             $table->tinyInteger('due_day');

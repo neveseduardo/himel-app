@@ -18,8 +18,8 @@ return new class extends Migration
             $table->dateTime('paid_at')->nullable();
             $table->timestamps();
 
-            $table->foreignUuid('credit_card_charge_uid')->references('uid')->on('financial_credit_card_charges')->onDelete('cascade');
-            $table->foreignUuid('financial_transaction_uid')->references('uid')->on('financial_transactions')->onDelete('set null');
+            $table->foreign('credit_card_charge_uid', 'fk_cc_charge_uid')->references('uid')->on('financial_credit_card_charges')->onDelete('cascade');
+            $table->foreign('financial_transaction_uid', 'fk_tx_uid')->references('uid')->on('financial_transactions')->onDelete('set null');
             $table->index('credit_card_charge_uid');
             $table->index('financial_transaction_uid');
         });

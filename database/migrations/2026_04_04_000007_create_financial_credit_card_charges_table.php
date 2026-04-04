@@ -16,7 +16,7 @@ return new class extends Migration
             $table->tinyInteger('total_installments');
             $table->timestamps();
 
-            $table->foreignUuid('credit_card_uid')->references('uid')->on('financial_credit_cards')->onDelete('cascade');
+            $table->foreign('credit_card_uid')->references('uid')->on('financial_credit_cards')->onDelete('cascade');
             $table->index('credit_card_uid');
         });
     }

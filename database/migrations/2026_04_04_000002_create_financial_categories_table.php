@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('financial_categories', function (Blueprint $table) {
             $table->uuid('uid')->primary();
-            $table->uuid('user_uid');
             $table->string('name');
             $table->enum('direction', ['INFLOW', 'OUTFLOW']);
             $table->timestamps();

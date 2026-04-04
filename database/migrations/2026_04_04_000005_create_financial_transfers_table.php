@@ -16,9 +16,9 @@ return new class extends Migration
             $table->decimal('amount', 15, 2);
             $table->timestamps();
 
-            $table->foreignUuid('user_uid')->references('uid')->on('users')->onDelete('cascade');
-            $table->foreignUuid('from_account_uid')->references('uid')->on('financial_accounts')->onDelete('cascade');
-            $table->foreignUuid('to_account_uid')->references('uid')->on('financial_accounts')->onDelete('cascade');
+            $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
+            $table->foreign('from_account_uid')->references('uid')->on('financial_accounts')->onDelete('cascade');
+            $table->foreign('to_account_uid')->references('uid')->on('financial_accounts')->onDelete('cascade');
             $table->index('user_uid');
         });
     }

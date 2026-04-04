@@ -18,8 +18,8 @@ return new class extends Migration
             $table->boolean('active')->default(true);
             $table->timestamps();
 
-            $table->foreignUuid('user_uid')->references('uid')->on('users')->onDelete('cascade');
-            $table->foreignUuid('financial_category_uid')->references('uid')->on('financial_categories')->onDelete('restrict');
+            $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
+            $table->foreign('financial_category_uid')->references('uid')->on('financial_categories')->onDelete('restrict');
             $table->index('user_uid');
         });
     }

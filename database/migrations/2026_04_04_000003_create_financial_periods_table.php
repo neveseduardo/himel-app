@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('financial_periods', function (Blueprint $table) {
             $table->uuid('uid')->primary();
-            $table->uuid('user_uid');
             $table->tinyInteger('month');
             $table->smallInteger('year');
             $table->timestamps();

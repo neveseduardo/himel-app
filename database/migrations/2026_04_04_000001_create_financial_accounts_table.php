@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('financial_accounts', function (Blueprint $table) {
             $table->uuid('uid')->primary();
-            $table->uuid('user_uid');
             $table->string('name');
             $table->enum('type', ['CHECKING', 'SAVINGS', 'CASH', 'OTHER'])->default('CHECKING');
             $table->decimal('balance', 15, 2)->default(0);
