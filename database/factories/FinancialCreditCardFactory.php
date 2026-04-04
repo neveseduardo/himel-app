@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\FinancialCreditCard;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,15 +11,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FinancialCreditCardFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'user_uid' => fn () => User::factory()->create()->uid,
+            'name' => fake()->word(),
+            'card_type' => fake()->randomElement(FinancialCreditCard::getCardTypes()),
+            'due_day' => fake()->numberBetween(1, 28),
         ];
     }
 }

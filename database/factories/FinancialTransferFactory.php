@@ -2,7 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\FinancialAccount;
 use App\Models\FinancialTransfer;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,15 +12,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FinancialTransferFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'user_uid' => fn () => User::factory()->create()->uid,
+            'from_account_uid' => fn () => FinancialAccount::factory()->create()->uid,
+            'to_account_uid' => fn () => FinancialAccount::factory()->create()->uid,
+            'amount' => fake()->randomFloat(2, 1, 5000),
         ];
     }
 }

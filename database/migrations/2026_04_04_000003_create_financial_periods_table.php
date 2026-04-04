@@ -6,20 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('financial_periods', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('uid')->primary();
+            $table->uuid('user_uid');
+            $table->tinyInteger('month');
+            $table->smallInteger('year');
             $table->timestamps();
+
+            $table->foreignUuid('user_uid')->references('uid')->on('users')->onDelete('cascade');
+            $table->unique(['user_uid', 'month', 'year']);
+            $table->index('user_uid');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('financial_periods');

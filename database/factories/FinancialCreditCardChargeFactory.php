@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\FinancialCreditCard;
 use App\Models\FinancialCreditCardCharge;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -10,15 +11,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FinancialCreditCardChargeFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'credit_card_uid' => fn () => FinancialCreditCard::factory()->create()->uid,
+            'amount' => fake()->randomFloat(2, 50, 5000),
+            'description' => fake()->sentence(),
+            'total_installments' => fake()->numberBetween(1, 12),
         ];
     }
 }

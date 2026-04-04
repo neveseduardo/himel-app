@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\FinancialAccount;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,15 +11,13 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FinancialAccountFactory extends Factory
 {
-    /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
-     */
     public function definition(): array
     {
         return [
-            //
+            'user_uid' => fn () => User::factory()->create()->uid,
+            'name' => fake()->word(),
+            'type' => fake()->randomElement(FinancialAccount::getTypes()),
+            'balance' => fake()->randomFloat(2, 0, 10000),
         ];
     }
 }
