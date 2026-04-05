@@ -10,8 +10,9 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import { useTwoFactorAuth } from '@/Modules/Auth/composables/useTwoFactorAuth';
 import { regenerateRecoveryCodes } from '@/routes/two-factor';
+
+import { useTwoFactorAuth } from '@/Modules/Auth/composables/useTwoFactorAuth';
 
 const { recoveryCodesList, fetchRecoveryCodes, errors } = useTwoFactorAuth();
 const isRecoveryCodesVisible = ref<boolean>(false);

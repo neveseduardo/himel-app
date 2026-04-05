@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\FinancialAccount;
-use App\Models\FinancialCategory;
-use App\Models\FinancialTransaction;
-use App\Models\User;
+use App\Domain\Account\Models\Account;
+use App\Domain\Category\Models\Category;
+use App\Domain\Transaction\Models\Transaction;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
 class FinancialTransactionSeeder extends Seeder
@@ -15,9 +15,9 @@ class FinancialTransactionSeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            $accounts = FinancialAccount::forUser($user->uid)->get();
-            $inflowCategories = FinancialCategory::forUser($user->uid)->inflow()->get();
-            $outflowCategories = FinancialCategory::forUser($user->uid)->outflow()->get();
+            $accounts = Account::forUser($user->uid)->get();
+            $inflowCategories = Category::forUser($user->uid)->inflow()->get();
+            $outflowCategories = Category::forUser($user->uid)->outflow()->get();
 
             if ($accounts->isEmpty() || $inflowCategories->isEmpty() || $outflowCategories->isEmpty()) {
                 continue;
@@ -27,14 +27,14 @@ class FinancialTransactionSeeder extends Seeder
 
             for ($i = 0; $i < 10; $i++) {
                 $category = $inflowCategories->random();
-                FinancialTransaction::create([
+                Transaction::create([
                     'user_uid' => $user->uid,
                     'financial_account_uid' => $account->uid,
                     'financial_category_uid' => $category->uid,
                     'amount' => rand(1000, 10000),
-                    'direction' => FinancialTransaction::DIRECTION_INFLOW,
-                    'status' => FinancialTransaction::STATUS_PAID,
-                    'source' => FinancialTransaction::SOURCE_MANUAL,
+                    'direction' => Transaction::DIRECTION_INFLOW,
+                    'status' => Transaction::STATUS_PAID,
+                    'source' => Transaction::SOURCE_MANUAL,
                     'occurred_at' => now()->subDays(rand(0, 30)),
                     'paid_at' => now()->subDays(rand(0, 30)),
                 ]);
@@ -42,19 +42,19 @@ class FinancialTransactionSeeder extends Seeder
 
             for ($i = 0; $i < 10; $i++) {
                 $category = $outflowCategories->random();
-                $status = rand(0, 2) === 0 ? FinancialTransaction::STATUS_PENDING : FinancialTransaction::STATUS_PAID;
+                $status = rand(0, 2) === 0 ? Transaction::STATUS_PENDING : Transaction::STATUS_PAID;
 
-                FinancialTransaction::create([
+                Transaction::create([
                     'user_uid' => $user->uid,
                     'financial_account_uid' => $account->uid,
                     'financial_category_uid' => $category->uid,
                     'amount' => rand(50, 500),
-                    'direction' => FinancialTransaction::DIRECTION_OUTFLOW,
+                    'direction' => Transaction::DIRECTION_OUTFLOW,
                     'status' => $status,
-                    'source' => FinancialTransaction::SOURCE_MANUAL,
+                    'source' => Transaction::SOURCE_MANUAL,
                     'occurred_at' => now()->subDays(rand(0, 30)),
                     'due_date' => now()->addDays(rand(1, 15)),
-                    'paid_at' => $status === FinancialTransaction::STATUS_PAID ? now()->subDays(rand(0, 10)) : null,
+                    'paid_at' => $status === Transaction::STATUS_PAID ? now()->subDays(rand(0, 10)) : null,
                 ]);
             }
         }

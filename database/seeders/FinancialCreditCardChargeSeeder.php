@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\FinancialCreditCard;
-use App\Models\FinancialCreditCardCharge;
-use App\Models\User;
+use App\Domain\CreditCard\Models\CreditCard;
+use App\Domain\CreditCardCharge\Models\CreditCardCharge;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
 class FinancialCreditCardChargeSeeder extends Seeder
@@ -14,7 +14,7 @@ class FinancialCreditCardChargeSeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            $cards = FinancialCreditCard::forUser($user->uid)->get();
+            $cards = CreditCard::forUser($user->uid)->get();
 
             if ($cards->isEmpty()) {
                 continue;
@@ -24,7 +24,7 @@ class FinancialCreditCardChargeSeeder extends Seeder
                 $card = $cards->random();
                 $totalInstallments = rand(2, 12);
 
-                $charge = FinancialCreditCardCharge::create([
+                $charge = CreditCardCharge::create([
                     'credit_card_uid' => $card->uid,
                     'amount' => rand(500, 3000),
                     'description' => 'Compra parcelada '.($i + 1),

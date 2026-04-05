@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\FinancialCategory;
-use App\Models\FinancialFixedExpense;
-use App\Models\User;
+use App\Domain\Category\Models\Category;
+use App\Domain\FixedExpense\Models\FixedExpense;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
 class FinancialFixedExpenseSeeder extends Seeder
@@ -16,14 +16,14 @@ class FinancialFixedExpenseSeeder extends Seeder
         $expenseNames = ['Aluguel', 'Internet', 'Luz', 'Água', 'Telefone'];
 
         foreach ($users as $user) {
-            $outflowCategories = FinancialCategory::forUser($user->uid)->outflow()->get();
+            $outflowCategories = Category::forUser($user->uid)->outflow()->get();
 
             if ($outflowCategories->isEmpty()) {
                 continue;
             }
 
             foreach ($expenseNames as $name) {
-                FinancialFixedExpense::create([
+                FixedExpense::create([
                     'user_uid' => $user->uid,
                     'financial_category_uid' => $outflowCategories->random()->uid,
                     'name' => $name,

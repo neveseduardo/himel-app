@@ -38,8 +38,9 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 
-import AuthLayout from '@/layouts/AuthLayout.vue';
 import { store } from '@/routes/password/confirm';
+
+import AuthLayout from '@/layouts/AuthLayout.vue';
 
 defineOptions({
 	layout: AuthLayout,

@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\FinancialCreditCard;
-use App\Models\User;
+use App\Domain\CreditCard\Models\CreditCard;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<FinancialCreditCard>
+ * @extends Factory<CreditCard>
  */
 class FinancialCreditCardFactory extends Factory
 {
@@ -16,7 +16,7 @@ class FinancialCreditCardFactory extends Factory
         return [
             'user_uid' => fn () => User::factory()->create()->uid,
             'name' => fake()->word(),
-            'card_type' => fake()->randomElement(FinancialCreditCard::getCardTypes()),
+            'card_type' => fake()->randomElement(CreditCard::getCardTypes()),
             'due_day' => fake()->numberBetween(1, 28),
         ];
     }

@@ -2,12 +2,11 @@
 
 namespace Database\Factories;
 
-use App\Models\FinancialAccount;
-use App\Models\User;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<FinancialAccount>
+ * @extends Factory<Account>
  */
 class FinancialAccountFactory extends Factory
 {
@@ -16,7 +15,7 @@ class FinancialAccountFactory extends Factory
         return [
             'user_uid' => fn () => User::factory()->create()->uid,
             'name' => fake()->word(),
-            'type' => fake()->randomElement(FinancialAccount::getTypes()),
+            'type' => fake()->randomElement(Account::getTypes()),
             'balance' => fake()->randomFloat(2, 0, 10000),
         ];
     }

@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\FinancialCreditCard;
-use App\Models\User;
+use App\Domain\CreditCard\Models\CreditCard;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
 class FinancialCreditCardSeeder extends Seeder
@@ -13,17 +13,17 @@ class FinancialCreditCardSeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            FinancialCreditCard::create([
+            CreditCard::create([
                 'user_uid' => $user->uid,
                 'name' => 'Cartão Principal',
-                'card_type' => FinancialCreditCard::CARD_TYPE_PHYSICAL,
+                'card_type' => CreditCard::CARD_TYPE_PHYSICAL,
                 'due_day' => 15,
             ]);
 
-            FinancialCreditCard::create([
+            CreditCard::create([
                 'user_uid' => $user->uid,
                 'name' => 'Cartão Virtual',
-                'card_type' => FinancialCreditCard::CARD_TYPE_VIRTUAL,
+                'card_type' => CreditCard::CARD_TYPE_VIRTUAL,
                 'due_day' => 20,
             ]);
         }

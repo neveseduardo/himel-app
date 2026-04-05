@@ -2,22 +2,24 @@
 
 namespace App\Providers;
 
-use App\Services\AccountService;
-use App\Services\CategoryService;
-use App\Services\CreditCardService;
-use App\Services\FixedExpenseService;
-use App\Services\InstallmentService;
-use App\Services\Interfaces\IAccountService;
-use App\Services\Interfaces\ICategoryService;
-use App\Services\Interfaces\ICreditCardService;
-use App\Services\Interfaces\IFixedExpenseService;
-use App\Services\Interfaces\IInstallmentService;
-use App\Services\Interfaces\IPeriodService;
-use App\Services\Interfaces\ITransactionService;
-use App\Services\Interfaces\ITransferService;
-use App\Services\PeriodService;
-use App\Services\TransactionService;
-use App\Services\TransferService;
+use App\Domain\Account\Contracts\AccountServiceInterface;
+use App\Domain\Account\Services\AccountService;
+use App\Domain\Category\Contracts\CategoryServiceInterface;
+use App\Domain\Category\Services\CategoryService;
+use App\Domain\CreditCard\Contracts\CreditCardServiceInterface;
+use App\Domain\CreditCard\Services\CreditCardService;
+use App\Domain\CreditCardCharge\Contracts\CreditCardChargeServiceInterface;
+use App\Domain\CreditCardCharge\Services\CreditCardChargeService;
+use App\Domain\CreditCardInstallment\Contracts\CreditCardInstallmentServiceInterface;
+use App\Domain\CreditCardInstallment\Services\CreditCardInstallmentService;
+use App\Domain\FixedExpense\Contracts\FixedExpenseServiceInterface;
+use App\Domain\FixedExpense\Services\FixedExpenseService;
+use App\Domain\Period\Contracts\PeriodServiceInterface;
+use App\Domain\Period\Services\PeriodService;
+use App\Domain\Transaction\Contracts\TransactionServiceInterface;
+use App\Domain\Transaction\Services\TransactionService;
+use App\Domain\Transfer\Contracts\TransferServiceInterface;
+use App\Domain\Transfer\Services\TransferService;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -28,19 +30,25 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->bind(IAccountService::class, AccountService::class);
-        $this->app->bind(ICategoryService::class, CategoryService::class);
-        $this->app->bind(ICreditCardService::class, CreditCardService::class);
-        $this->app->bind(IFixedExpenseService::class, FixedExpenseService::class);
-        $this->app->bind(IInstallmentService::class, InstallmentService::class);
-        $this->app->bind(IPeriodService::class, PeriodService::class);
-        $this->app->bind(ITransactionService::class, TransactionService::class);
-        $this->app->bind(ITransferService::class, TransferService::class);
+        $this->registerServices();
     }
 
     public function boot(): void
     {
         $this->configureDefaults();
+    }
+
+    protected function registerServices(): void
+    {
+        $this->app->singleton(AccountServiceInterface::class, AccountService::class);
+        $this->app->singleton(CategoryServiceInterface::class, CategoryService::class);
+        $this->app->singleton(CreditCardServiceInterface::class, CreditCardService::class);
+        $this->app->singleton(CreditCardChargeServiceInterface::class, CreditCardChargeService::class);
+        $this->app->singleton(CreditCardInstallmentServiceInterface::class, CreditCardInstallmentService::class);
+        $this->app->singleton(FixedExpenseServiceInterface::class, FixedExpenseService::class);
+        $this->app->singleton(PeriodServiceInterface::class, PeriodService::class);
+        $this->app->singleton(TransactionServiceInterface::class, TransactionService::class);
+        $this->app->singleton(TransferServiceInterface::class, TransferService::class);
     }
 
     protected function configureDefaults(): void

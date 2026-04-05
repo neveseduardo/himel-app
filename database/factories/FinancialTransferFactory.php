@@ -2,13 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\FinancialAccount;
-use App\Models\FinancialTransfer;
-use App\Models\User;
+use App\Domain\Account\Models\Account;
+use App\Domain\Transfer\Models\Transfer;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<FinancialTransfer>
+ * @extends Factory<Transfer>
  */
 class FinancialTransferFactory extends Factory
 {
@@ -16,8 +16,8 @@ class FinancialTransferFactory extends Factory
     {
         return [
             'user_uid' => fn () => User::factory()->create()->uid,
-            'from_account_uid' => fn () => FinancialAccount::factory()->create()->uid,
-            'to_account_uid' => fn () => FinancialAccount::factory()->create()->uid,
+            'from_account_uid' => fn () => Account::factory()->create()->uid,
+            'to_account_uid' => fn () => Account::factory()->create()->uid,
             'amount' => fake()->randomFloat(2, 1, 5000),
         ];
     }

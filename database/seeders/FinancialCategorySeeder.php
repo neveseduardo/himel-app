@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\FinancialCategory;
-use App\Models\User;
+use App\Domain\Category\Models\Category;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
 class FinancialCategorySeeder extends Seeder
@@ -17,18 +17,18 @@ class FinancialCategorySeeder extends Seeder
 
         foreach ($users as $user) {
             foreach ($inflowCategories as $name) {
-                FinancialCategory::create([
+                Category::create([
                     'user_uid' => $user->uid,
                     'name' => $name,
-                    'direction' => FinancialCategory::DIRECTION_INFLOW,
+                    'direction' => Category::DIRECTION_INFLOW,
                 ]);
             }
 
             foreach ($outflowCategories as $name) {
-                FinancialCategory::create([
+                Category::create([
                     'user_uid' => $user->uid,
                     'name' => $name,
-                    'direction' => FinancialCategory::DIRECTION_OUTFLOW,
+                    'direction' => Category::DIRECTION_OUTFLOW,
                 ]);
             }
         }

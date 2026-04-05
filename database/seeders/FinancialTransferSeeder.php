@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\FinancialAccount;
-use App\Models\FinancialTransfer;
-use App\Models\User;
+use App\Domain\Account\Models\Account;
+use App\Domain\Transfer\Models\Transfer;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
 class FinancialTransferSeeder extends Seeder
@@ -14,7 +14,7 @@ class FinancialTransferSeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            $accounts = FinancialAccount::forUser($user->uid)->get();
+            $accounts = Account::forUser($user->uid)->get();
 
             if ($accounts->count() < 2) {
                 continue;
@@ -25,7 +25,7 @@ class FinancialTransferSeeder extends Seeder
                 $fromAccount = $accounts->random();
                 $toAccount = $accounts->where('uid', '!=', $fromAccount->uid)->random();
 
-                FinancialTransfer::create([
+                Transfer::create([
                     'user_uid' => $user->uid,
                     'from_account_uid' => $fromAccount->uid,
                     'to_account_uid' => $toAccount->uid,

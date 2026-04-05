@@ -2,12 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\FinancialCategory;
-use App\Models\User;
+use App\Domain\Category\Models\Category;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<FinancialCategory>
+ * @extends Factory<Category>
  */
 class FinancialCategoryFactory extends Factory
 {
@@ -16,7 +16,7 @@ class FinancialCategoryFactory extends Factory
         return [
             'user_uid' => fn () => User::factory()->create()->uid,
             'name' => fake()->word(),
-            'direction' => fake()->randomElement(FinancialCategory::getDirections()),
+            'direction' => fake()->randomElement(Category::getDirections()),
         ];
     }
 }

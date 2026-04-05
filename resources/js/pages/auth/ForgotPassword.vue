@@ -47,9 +47,10 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 
-import AuthLayout from '@/layouts/AuthLayout.vue';
 import { login } from '@/routes';
 import { email } from '@/routes/password';
+
+import AuthLayout from '@/layouts/AuthLayout.vue';
 
 defineProps<{
     status?: string;

@@ -63,8 +63,9 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 
-import AuthLayout from '@/layouts/AuthLayout.vue';
 import { update } from '@/routes/password';
+
+import AuthLayout from '@/layouts/AuthLayout.vue';
 
 const props = defineProps<{
     token: string;

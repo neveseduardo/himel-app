@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\FinancialAccount;
-use App\Models\User;
+use App\Domain\Account\Models\Account;
+use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
 class FinancialAccountSeeder extends Seeder
@@ -13,24 +13,24 @@ class FinancialAccountSeeder extends Seeder
         $users = User::all();
 
         foreach ($users as $user) {
-            FinancialAccount::create([
+            Account::create([
                 'user_uid' => $user->uid,
                 'name' => 'Conta Corrente',
-                'type' => FinancialAccount::TYPE_CHECKING,
+                'type' => Account::TYPE_CHECKING,
                 'balance' => rand(1000, 10000),
             ]);
 
-            FinancialAccount::create([
+            Account::create([
                 'user_uid' => $user->uid,
                 'name' => 'Poupança',
-                'type' => FinancialAccount::TYPE_SAVINGS,
+                'type' => Account::TYPE_SAVINGS,
                 'balance' => rand(5000, 50000),
             ]);
 
-            FinancialAccount::create([
+            Account::create([
                 'user_uid' => $user->uid,
                 'name' => 'Dinheiro',
-                'type' => FinancialAccount::TYPE_CASH,
+                'type' => Account::TYPE_CASH,
                 'balance' => rand(500, 2000),
             ]);
         }

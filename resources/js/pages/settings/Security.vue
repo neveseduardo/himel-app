@@ -3,6 +3,7 @@ import { Form, Head } from '@inertiajs/vue3';
 import { ShieldCheck } from 'lucide-vue-next';
 
 import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
+
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
 import { useTwoFactorAuth } from '@/Modules/Auth/composables/useTwoFactorAuth';

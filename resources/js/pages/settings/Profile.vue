@@ -2,9 +2,10 @@
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import { send } from '@/routes/verification';
+
 import DashboardLayout from '@/layouts/DashboardLayout.vue';
 import SettingsLayout from '@/layouts/SettingsLayout.vue';
-import { send } from '@/routes/verification';
 
 defineOptions({ layout: DashboardLayout });
 

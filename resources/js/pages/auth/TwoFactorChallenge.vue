@@ -91,9 +91,10 @@ import {
 	InputOTPGroup,
 	InputOTPSlot,
 } from '@/components/ui/input-otp';
-import AuthLayout from '@/layouts/AuthLayout.vue';
 import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
+
+import AuthLayout from '@/layouts/AuthLayout.vue';
 
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
 	if (showRecoveryInput.value) {
