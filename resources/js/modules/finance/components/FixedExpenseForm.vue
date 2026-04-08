@@ -1,84 +1,132 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+import { store, update } from '@/actions/App/Domain/FixedExpense/Controllers/FixedExpensePageController';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ValidatedField from '@/components/ValidatedField.vue';
+import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
+
 import type { Category, FixedExpense } from '../types/finance';
+import { fixedExpenseSchema } from '../validations/fixed-expense-schema';
 
 const props = defineProps<{
-	fixedExpense?: FixedExpense;
+	item?: FixedExpense;
+	readonly?: boolean;
 	categories: Category[];
 }>();
 
-const isEditing = !!props.fixedExpense;
+const emit = defineEmits<{
+	success: [];
+	cancel: [];
+}>();
 
-const form = useForm({
-	name: props.fixedExpense?.description ?? '',
-	amount: props.fixedExpense?.amount ?? 0,
-	due_day: props.fixedExpense?.due_day ?? 1,
-	category_uid: props.fixedExpense?.category?.uid ?? '',
-	active: props.fixedExpense?.active ?? true,
-});
+const isEditing = computed(() => !!props.item);
+const action = computed(() =>
+	isEditing.value ? update.url(props.item!.uid) : store.url()
+);
+const method = computed(() => (isEditing.value ? 'put' : 'post'));
 
-function submit() {
-	if (isEditing) {
-		form.put(`/finance/fixed-expenses/${props.fixedExpense!.uid}`);
-	} else {
-		form.post('/finance/fixed-expenses');
-	}
-}
+const initialValues = computed(() => ({
+	description: props.item?.description ?? '',
+	amount: props.item?.amount ?? 0,
+	due_day: props.item?.due_day ?? 1,
+	category_uid: props.item?.category?.uid ?? '',
+	active: props.item?.active ?? true,
+}));
 </script>
 
 <template>
-	<form @submit.prevent="submit">
-		<Card>
-			<CardHeader>
-				<CardTitle>{{ isEditing ? 'Editar Despesa Fixa' : 'Nova Despesa Fixa' }}</CardTitle>
-			</CardHeader>
-			<CardContent class="space-y-4">
-				<div class="space-y-2">
-					<Label for="name">Descrição</Label>
-					<Input id="name" v-model="form.name" placeholder="Descrição da despesa" />
-					<p v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</p>
-				</div>
+	<ValidatedInertiaForm
+		:schema="fixedExpenseSchema"
+		:initial-values="initialValues"
+		:action="action"
+		:method="method"
+		@success="emit('success')"
+	>
+		<template #default="{ processing }">
+			<div class="space-y-4">
+				<ValidatedField name="description" label="Descrição">
+					<template #default="{ field }">
+						<Input
+							v-bind="field"
+							placeholder="Descrição da despesa"
+							:disabled="props.readonly"
+						/>
+					</template>
+				</ValidatedField>
+
 				<div class="grid gap-4 md:grid-cols-3">
-					<div class="space-y-2">
-						<Label for="amount">Valor</Label>
-						<Input id="amount" v-model.number="form.amount" type="number" step="0.01" min="0.01" />
-						<p v-if="form.errors.amount" class="text-sm text-destructive">{{ form.errors.amount }}</p>
-					</div>
-					<div class="space-y-2">
-						<Label for="due_day">Dia Vencimento</Label>
-						<Input id="due_day" v-model.number="form.due_day" type="number" min="1" max="31" />
-						<p v-if="form.errors.due_day" class="text-sm text-destructive">{{ form.errors.due_day }}</p>
-					</div>
-					<div class="space-y-2">
-						<Label for="category_uid">Categoria</Label>
-						<Select v-model="form.category_uid">
-							<SelectTrigger>
-								<SelectValue placeholder="Selecione" />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem v-for="cat in categories" :key="cat.uid" :value="cat.uid">
-									{{ cat.name }}
-								</SelectItem>
-							</SelectContent>
-						</Select>
-						<p v-if="form.errors.category_uid" class="text-sm text-destructive">{{ form.errors.category_uid }}</p>
-					</div>
+					<ValidatedField name="amount" label="Valor">
+						<template #default="{ field }">
+							<Input
+								v-bind="field"
+								type="number"
+								step="0.01"
+								min="0.01"
+								:disabled="props.readonly"
+							/>
+						</template>
+					</ValidatedField>
+
+					<ValidatedField name="due_day" label="Dia Vencimento">
+						<template #default="{ field }">
+							<Input
+								v-bind="field"
+								type="number"
+								min="1"
+								max="31"
+								:disabled="props.readonly"
+							/>
+						</template>
+					</ValidatedField>
+
+					<ValidatedField name="category_uid" label="Categoria">
+						<template #default="{ field, handleChange }">
+							<Select
+								:model-value="field.value as string"
+								:disabled="props.readonly"
+								@update:model-value="handleChange"
+							>
+								<SelectTrigger>
+									<SelectValue placeholder="Selecione" />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem v-for="cat in categories" :key="cat.uid" :value="cat.uid">
+										{{ cat.name }}
+									</SelectItem>
+								</SelectContent>
+							</Select>
+						</template>
+					</ValidatedField>
 				</div>
-				<div class="flex items-center gap-2">
-					<Checkbox id="active" :model-value="form.active" @update:model-value="form.active = !!$event" />
-					<Label for="active">Ativa</Label>
+
+				<ValidatedField name="active">
+					<template #default="{ field, handleChange }">
+						<div class="flex items-center gap-2">
+							<Checkbox
+								id="active"
+								:model-value="!!field.value"
+								:disabled="props.readonly"
+								@update:model-value="handleChange"
+							/>
+							<Label for="active">Ativa</Label>
+						</div>
+					</template>
+				</ValidatedField>
+
+				<div v-if="!props.readonly" class="flex justify-end gap-2">
+					<Button type="button" variant="outline" @click="emit('cancel')">
+						Cancelar
+					</Button>
+					<Button type="submit" :disabled="processing">
+						{{ isEditing ? 'Salvar' : 'Criar' }}
+					</Button>
 				</div>
-			</CardContent>
-			<CardFooter class="flex justify-end gap-2">
-				<Button type="button" variant="outline" @click="$inertia.visit('/finance/fixed-expenses')">Cancelar</Button>
-				<Button type="submit" :disabled="form.processing">{{ isEditing ? 'Salvar' : 'Criar' }}</Button>
-			</CardFooter>
-		</Card>
-	</form>
+			</div>
+		</template>
+	</ValidatedInertiaForm>
 </template>

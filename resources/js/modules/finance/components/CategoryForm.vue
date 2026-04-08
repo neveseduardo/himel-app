@@ -1,62 +1,89 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+import { store, update } from '@/actions/App/Domain/Category/Controllers/CategoryPageController';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ValidatedField from '@/components/ValidatedField.vue';
+import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
+
 import type { Category } from '../types/finance';
+import { categorySchema } from '../validations/category-schema';
 
 const props = defineProps<{
-	category?: Category;
+	item?: Category;
+	readonly?: boolean;
 }>();
 
-const isEditing = !!props.category;
+const emit = defineEmits<{
+	success: [];
+	cancel: [];
+}>();
 
-const form = useForm({
-	name: props.category?.name ?? '',
-	direction: props.category?.direction ?? 'OUTFLOW',
-});
+const isEditing = computed(() => !!props.item);
+const action = computed(() =>
+	isEditing.value ? update.url(props.item!.uid) : store.url()
+);
+const method = computed(() => (isEditing.value ? 'put' : 'post'));
 
-function submit() {
-	if (isEditing) {
-		form.put(`/finance/categories/${props.category!.uid}`);
-	} else {
-		form.post('/finance/categories');
-	}
-}
+const initialValues = computed(() => ({
+	name: props.item?.name ?? '',
+	direction: props.item?.direction ?? 'OUTFLOW',
+}));
 </script>
 
 <template>
-	<form @submit.prevent="submit">
-		<Card>
-			<CardHeader>
-				<CardTitle>{{ isEditing ? 'Editar Categoria' : 'Nova Categoria' }}</CardTitle>
-			</CardHeader>
-			<CardContent class="space-y-4">
-				<div class="space-y-2">
-					<Label for="name">Nome</Label>
-					<Input id="name" v-model="form.name" placeholder="Nome da categoria" />
-					<p v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</p>
+	<ValidatedInertiaForm
+		:schema="categorySchema"
+		:initial-values="initialValues"
+		:action="action"
+		:method="method"
+		@success="emit('success')"
+	>
+		<template #default="{ processing }">
+			<div class="space-y-4">
+				<ValidatedField name="name" label="Nome">
+					<template #default="{ field }">
+						<Input
+							v-bind="field"
+							placeholder="Nome da categoria"
+							:disabled="props.readonly"
+						/>
+					</template>
+				</ValidatedField>
+
+				<ValidatedField name="direction" label="Direção">
+					<template #default="{ field, handleChange }">
+						<Select
+							:model-value="field.value as string"
+							:disabled="props.readonly"
+							@update:model-value="handleChange"
+						>
+							<SelectTrigger>
+								<SelectValue placeholder="Selecione a direção" />
+							</SelectTrigger>
+							<SelectContent>
+								<SelectItem value="INFLOW">
+									Entrada
+								</SelectItem>
+								<SelectItem value="OUTFLOW">
+									Saída
+								</SelectItem>
+							</SelectContent>
+						</Select>
+					</template>
+				</ValidatedField>
+
+				<div v-if="!props.readonly" class="flex justify-end gap-2">
+					<Button type="button" variant="outline" @click="emit('cancel')">
+						Cancelar
+					</Button>
+					<Button type="submit" :disabled="processing">
+						{{ isEditing ? 'Salvar' : 'Criar' }}
+					</Button>
 				</div>
-				<div class="space-y-2">
-					<Label for="direction">Direção</Label>
-					<Select v-model="form.direction">
-						<SelectTrigger>
-							<SelectValue placeholder="Selecione a direção" />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="INFLOW">Entrada</SelectItem>
-							<SelectItem value="OUTFLOW">Saída</SelectItem>
-						</SelectContent>
-					</Select>
-					<p v-if="form.errors.direction" class="text-sm text-destructive">{{ form.errors.direction }}</p>
-				</div>
-			</CardContent>
-			<CardFooter class="flex justify-end gap-2">
-				<Button type="button" variant="outline" @click="$inertia.visit('/finance/categories')">Cancelar</Button>
-				<Button type="submit" :disabled="form.processing">{{ isEditing ? 'Salvar' : 'Criar' }}</Button>
-			</CardFooter>
-		</Card>
-	</form>
+			</div>
+		</template>
+	</ValidatedInertiaForm>
 </template>

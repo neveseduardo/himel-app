@@ -1,84 +1,131 @@
 <script setup lang="ts">
-import { useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
+
+import { store, update } from '@/actions/App/Domain/CreditCard/Controllers/CreditCardPageController';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import ValidatedField from '@/components/ValidatedField.vue';
+import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
+
 import type { CreditCard } from '../types/finance';
+import { creditCardSchema } from '../validations/credit-card-schema';
 
 const props = defineProps<{
-	creditCard?: CreditCard;
+	item?: CreditCard;
+	readonly?: boolean;
 }>();
 
-const isEditing = !!props.creditCard;
+const emit = defineEmits<{
+	success: [];
+	cancel: [];
+}>();
 
-const form = useForm({
-	name: props.creditCard?.name ?? '',
-	closing_day: props.creditCard?.closing_day ?? 1,
-	due_day: props.creditCard?.due_day ?? 10,
-	card_type: props.creditCard?.card_type ?? 'PHYSICAL',
-	last_four_digits: props.creditCard?.last_four_digits ?? '',
-});
+const isEditing = computed(() => !!props.item);
+const action = computed(() =>
+	isEditing.value ? update.url(props.item!.uid) : store.url()
+);
+const method = computed(() => (isEditing.value ? 'put' : 'post'));
 
-function submit() {
-	if (isEditing) {
-		form.put(`/finance/credit-cards/${props.creditCard!.uid}`);
-	} else {
-		form.post('/finance/credit-cards');
-	}
-}
+const initialValues = computed(() => ({
+	name: props.item?.name ?? '',
+	closing_day: props.item?.closing_day ?? 1,
+	due_day: props.item?.due_day ?? 10,
+	card_type: props.item?.card_type ?? 'PHYSICAL',
+	last_four_digits: props.item?.last_four_digits ?? '',
+}));
 </script>
 
 <template>
-	<form @submit.prevent="submit">
-		<Card>
-			<CardHeader>
-				<CardTitle>{{ isEditing ? 'Editar Cartão' : 'Novo Cartão' }}</CardTitle>
-			</CardHeader>
-			<CardContent class="space-y-4">
-				<div class="space-y-2">
-					<Label for="name">Nome</Label>
-					<Input id="name" v-model="form.name" placeholder="Nome do cartão" />
-					<p v-if="form.errors.name" class="text-sm text-destructive">{{ form.errors.name }}</p>
-				</div>
+	<ValidatedInertiaForm
+		:schema="creditCardSchema"
+		:initial-values="initialValues"
+		:action="action"
+		:method="method"
+		@success="emit('success')"
+	>
+		<template #default="{ processing }">
+			<div class="space-y-4">
+				<ValidatedField name="name" label="Nome">
+					<template #default="{ field }">
+						<Input
+							v-bind="field"
+							placeholder="Nome do cartão"
+							:disabled="props.readonly"
+						/>
+					</template>
+				</ValidatedField>
+
 				<div class="grid gap-4 md:grid-cols-2">
-					<div class="space-y-2">
-						<Label for="closing_day">Dia Fechamento</Label>
-						<Input id="closing_day" v-model.number="form.closing_day" type="number" min="1" max="31" />
-						<p v-if="form.errors.closing_day" class="text-sm text-destructive">{{ form.errors.closing_day }}</p>
-					</div>
-					<div class="space-y-2">
-						<Label for="due_day">Dia Vencimento</Label>
-						<Input id="due_day" v-model.number="form.due_day" type="number" min="1" max="31" />
-						<p v-if="form.errors.due_day" class="text-sm text-destructive">{{ form.errors.due_day }}</p>
-					</div>
+					<ValidatedField name="closing_day" label="Dia Fechamento">
+						<template #default="{ field }">
+							<Input
+								v-bind="field"
+								type="number"
+								min="1"
+								max="31"
+								:disabled="props.readonly"
+							/>
+						</template>
+					</ValidatedField>
+
+					<ValidatedField name="due_day" label="Dia Vencimento">
+						<template #default="{ field }">
+							<Input
+								v-bind="field"
+								type="number"
+								min="1"
+								max="31"
+								:disabled="props.readonly"
+							/>
+						</template>
+					</ValidatedField>
 				</div>
+
 				<div class="grid gap-4 md:grid-cols-2">
-					<div class="space-y-2">
-						<Label for="card_type">Tipo</Label>
-						<Select v-model="form.card_type">
-							<SelectTrigger>
-								<SelectValue />
-							</SelectTrigger>
-							<SelectContent>
-								<SelectItem value="PHYSICAL">Físico</SelectItem>
-								<SelectItem value="VIRTUAL">Virtual</SelectItem>
-							</SelectContent>
-						</Select>
-						<p v-if="form.errors.card_type" class="text-sm text-destructive">{{ form.errors.card_type }}</p>
-					</div>
-					<div class="space-y-2">
-						<Label for="last_four_digits">Últimos 4 dígitos</Label>
-						<Input id="last_four_digits" v-model="form.last_four_digits" maxlength="4" placeholder="0000" />
-						<p v-if="form.errors.last_four_digits" class="text-sm text-destructive">{{ form.errors.last_four_digits }}</p>
-					</div>
+					<ValidatedField name="card_type" label="Tipo">
+						<template #default="{ field, handleChange }">
+							<Select
+								:model-value="field.value as string"
+								:disabled="props.readonly"
+								@update:model-value="handleChange"
+							>
+								<SelectTrigger>
+									<SelectValue />
+								</SelectTrigger>
+								<SelectContent>
+									<SelectItem value="PHYSICAL">
+										Físico
+									</SelectItem>
+									<SelectItem value="VIRTUAL">
+										Virtual
+									</SelectItem>
+								</SelectContent>
+							</Select>
+						</template>
+					</ValidatedField>
+
+					<ValidatedField name="last_four_digits" label="Últimos 4 dígitos">
+						<template #default="{ field }">
+							<Input
+								v-bind="field"
+								maxlength="4"
+								placeholder="0000"
+								:disabled="props.readonly"
+							/>
+						</template>
+					</ValidatedField>
 				</div>
-			</CardContent>
-			<CardFooter class="flex justify-end gap-2">
-				<Button type="button" variant="outline" @click="$inertia.visit('/finance/credit-cards')">Cancelar</Button>
-				<Button type="submit" :disabled="form.processing">{{ isEditing ? 'Salvar' : 'Criar' }}</Button>
-			</CardFooter>
-		</Card>
-	</form>
+
+				<div v-if="!props.readonly" class="flex justify-end gap-2">
+					<Button type="button" variant="outline" @click="emit('cancel')">
+						Cancelar
+					</Button>
+					<Button type="submit" :disabled="processing">
+						{{ isEditing ? 'Salvar' : 'Criar' }}
+					</Button>
+				</div>
+			</div>
+		</template>
+	</ValidatedInertiaForm>
 </template>
