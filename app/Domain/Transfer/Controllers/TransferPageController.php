@@ -28,6 +28,7 @@ class TransferPageController
             'transfers' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
+            'accounts' => Inertia::optional(fn () => $this->accountService->getAll($userUid)),
         ]);
     }
 

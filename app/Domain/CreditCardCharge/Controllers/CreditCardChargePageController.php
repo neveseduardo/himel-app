@@ -28,6 +28,7 @@ class CreditCardChargePageController
             'charges' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
+            'creditCards' => Inertia::optional(fn () => $this->creditCardService->getAll($userUid)),
         ]);
     }
 

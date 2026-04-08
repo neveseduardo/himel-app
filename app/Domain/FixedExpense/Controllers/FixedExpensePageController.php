@@ -29,6 +29,7 @@ class FixedExpensePageController
             'fixedExpenses' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
+            'categories' => Inertia::optional(fn () => $this->categoryService->getByDirection($userUid, 'OUTFLOW')),
         ]);
     }
 
