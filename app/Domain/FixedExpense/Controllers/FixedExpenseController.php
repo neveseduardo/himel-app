@@ -5,9 +5,9 @@ namespace App\Domain\FixedExpense\Controllers;
 use App\Domain\FixedExpense\Contracts\FixedExpenseServiceInterface;
 use App\Domain\FixedExpense\Requests\StoreFixedExpenseRequest;
 use App\Domain\FixedExpense\Requests\UpdateFixedExpenseRequest;
+use App\Domain\FixedExpense\Resources\FixedExpenseResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class FixedExpenseController
@@ -21,6 +21,7 @@ class FixedExpenseController
         $userUid = $request->user()->uid;
         $filters = $request->only(['page', 'per_page', 'active', 'category_uid', 'search']);
         $result = $this->fixedExpenseService->getAllWithFilters($userUid, $filters);
+        $result['data'] = FixedExpenseResource::collection($result['data']);
 
         return response()->json($result);
     }
@@ -30,11 +31,9 @@ class FixedExpenseController
         try {
             $userUid = $request->user()->uid;
 
-            $expense = DB::transaction(function () use ($request, $userUid) {
-                return $this->fixedExpenseService->create($request->validated(), $userUid);
-            });
+            $expense = $this->fixedExpenseService->create($request->validated(), $userUid);
 
-            return response()->json(['data' => $expense], 201);
+            return response()->json(['data' => new FixedExpenseResource($expense)], 201);
         } catch (\Throwable $e) {
             Log::error('Failed to create fixed expense', [
                 'user_uid' => $request->user()->uid,
@@ -57,7 +56,7 @@ class FixedExpenseController
             return response()->json(['error' => 'Despesa fixa não encontrada.'], 404);
         }
 
-        return response()->json(['data' => $expense]);
+        return response()->json(['data' => new FixedExpenseResource($expense)]);
     }
 
     public function update(UpdateFixedExpenseRequest $request, string $uid): JsonResponse
@@ -65,15 +64,13 @@ class FixedExpenseController
         try {
             $userUid = $request->user()->uid;
 
-            $expense = DB::transaction(function () use ($request, $uid, $userUid) {
-                return $this->fixedExpenseService->update($uid, $request->validated(), $userUid);
-            });
+            $expense = $this->fixedExpenseService->update($uid, $request->validated(), $userUid);
 
             if (! $expense) {
                 return response()->json(['error' => 'Despesa fixa não encontrada.'], 404);
             }
 
-            return response()->json(['data' => $expense]);
+            return response()->json(['data' => new FixedExpenseResource($expense)]);
         } catch (\Throwable $e) {
             Log::error('Failed to update fixed expense', [
                 'uid' => $uid,
@@ -93,9 +90,7 @@ class FixedExpenseController
         try {
             $userUid = $request->user()->uid;
 
-            $deleted = DB::transaction(function () use ($uid, $userUid) {
-                return $this->fixedExpenseService->delete($uid, $userUid);
-            });
+            $deleted = $this->fixedExpenseService->delete($uid, $userUid);
 
             if (! $deleted) {
                 return response()->json(['error' => 'Despesa fixa não encontrada.'], 404);

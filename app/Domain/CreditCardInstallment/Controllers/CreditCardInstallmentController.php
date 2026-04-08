@@ -3,9 +3,9 @@
 namespace App\Domain\CreditCardInstallment\Controllers;
 
 use App\Domain\CreditCardInstallment\Contracts\CreditCardInstallmentServiceInterface;
+use App\Domain\CreditCardInstallment\Resources\CreditCardInstallmentResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CreditCardInstallmentController
@@ -19,6 +19,7 @@ class CreditCardInstallmentController
         $userUid = $request->user()->uid;
         $filters = $request->only(['page', 'per_page', 'charge_uid', 'paid', 'date_from', 'date_to']);
         $result = $this->creditCardInstallmentService->getAllWithFilters($userUid, $filters);
+        $result['data'] = CreditCardInstallmentResource::collection($result['data']);
 
         return response()->json($result);
     }
@@ -32,7 +33,7 @@ class CreditCardInstallmentController
             return response()->json(['error' => 'Parcela não encontrada.'], 404);
         }
 
-        return response()->json(['data' => $installment]);
+        return response()->json(['data' => new CreditCardInstallmentResource($installment)]);
     }
 
     public function markAsPaid(Request $request, string $uid): JsonResponse
@@ -40,15 +41,13 @@ class CreditCardInstallmentController
         try {
             $userUid = $request->user()->uid;
 
-            $installment = DB::transaction(function () use ($uid, $userUid) {
-                return $this->creditCardInstallmentService->markAsPaid($uid, $userUid);
-            });
+            $installment = $this->creditCardInstallmentService->markAsPaid($uid, $userUid);
 
             if (! $installment) {
                 return response()->json(['error' => 'Parcela não encontrada.'], 404);
             }
 
-            return response()->json(['data' => $installment]);
+            return response()->json(['data' => new CreditCardInstallmentResource($installment)]);
         } catch (\Throwable $e) {
             Log::error('Failed to mark credit card installment as paid', [
                 'uid' => $uid,

@@ -5,9 +5,9 @@ namespace App\Domain\CreditCard\Controllers;
 use App\Domain\CreditCard\Contracts\CreditCardServiceInterface;
 use App\Domain\CreditCard\Requests\StoreCreditCardRequest;
 use App\Domain\CreditCard\Requests\UpdateCreditCardRequest;
+use App\Domain\CreditCard\Resources\CreditCardResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CreditCardController
@@ -21,6 +21,7 @@ class CreditCardController
         $userUid = $request->user()->uid;
         $filters = $request->only(['page', 'per_page', 'card_type', 'search']);
         $result = $this->creditCardService->getAllWithFilters($userUid, $filters);
+        $result['data'] = CreditCardResource::collection($result['data']);
 
         return response()->json($result);
     }
@@ -30,11 +31,9 @@ class CreditCardController
         try {
             $userUid = $request->user()->uid;
 
-            $card = DB::transaction(function () use ($request, $userUid) {
-                return $this->creditCardService->create($request->validated(), $userUid);
-            });
+            $card = $this->creditCardService->create($request->validated(), $userUid);
 
-            return response()->json(['data' => $card], 201);
+            return response()->json(['data' => new CreditCardResource($card)], 201);
         } catch (\Throwable $e) {
             Log::error('Failed to create credit card', [
                 'user_uid' => $request->user()->uid,
@@ -57,7 +56,7 @@ class CreditCardController
             return response()->json(['error' => 'Cartão de crédito não encontrado.'], 404);
         }
 
-        return response()->json(['data' => $card]);
+        return response()->json(['data' => new CreditCardResource($card)]);
     }
 
     public function update(UpdateCreditCardRequest $request, string $uid): JsonResponse
@@ -65,15 +64,13 @@ class CreditCardController
         try {
             $userUid = $request->user()->uid;
 
-            $card = DB::transaction(function () use ($request, $uid, $userUid) {
-                return $this->creditCardService->update($uid, $request->validated(), $userUid);
-            });
+            $card = $this->creditCardService->update($uid, $request->validated(), $userUid);
 
             if (! $card) {
                 return response()->json(['error' => 'Cartão de crédito não encontrado.'], 404);
             }
 
-            return response()->json(['data' => $card]);
+            return response()->json(['data' => new CreditCardResource($card)]);
         } catch (\Throwable $e) {
             Log::error('Failed to update credit card', [
                 'uid' => $uid,
@@ -93,9 +90,7 @@ class CreditCardController
         try {
             $userUid = $request->user()->uid;
 
-            $deleted = DB::transaction(function () use ($uid, $userUid) {
-                return $this->creditCardService->delete($uid, $userUid);
-            });
+            $deleted = $this->creditCardService->delete($uid, $userUid);
 
             if (! $deleted) {
                 return response()->json(['error' => 'Cartão de crédito não encontrado.'], 404);

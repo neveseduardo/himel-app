@@ -5,9 +5,9 @@ namespace App\Domain\Category\Controllers;
 use App\Domain\Category\Contracts\CategoryServiceInterface;
 use App\Domain\Category\Requests\StoreCategoryRequest;
 use App\Domain\Category\Requests\UpdateCategoryRequest;
+use App\Domain\Category\Resources\CategoryResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CategoryController
@@ -21,6 +21,7 @@ class CategoryController
         $userUid = $request->user()->uid;
         $filters = $request->only(['page', 'per_page', 'direction', 'search']);
         $result = $this->categoryService->getAllWithFilters($userUid, $filters);
+        $result['data'] = CategoryResource::collection($result['data']);
 
         return response()->json($result);
     }
@@ -30,11 +31,9 @@ class CategoryController
         try {
             $userUid = $request->user()->uid;
 
-            $category = DB::transaction(function () use ($request, $userUid) {
-                return $this->categoryService->create($request->validated(), $userUid);
-            });
+            $category = $this->categoryService->create($request->validated(), $userUid);
 
-            return response()->json(['data' => $category], 201);
+            return response()->json(['data' => new CategoryResource($category)], 201);
         } catch (\Throwable $e) {
             Log::error('Failed to create category', [
                 'user_uid' => $request->user()->uid,
@@ -57,7 +56,7 @@ class CategoryController
             return response()->json(['error' => 'Categoria não encontrada.'], 404);
         }
 
-        return response()->json(['data' => $category]);
+        return response()->json(['data' => new CategoryResource($category)]);
     }
 
     public function update(UpdateCategoryRequest $request, string $uid): JsonResponse
@@ -65,15 +64,13 @@ class CategoryController
         try {
             $userUid = $request->user()->uid;
 
-            $category = DB::transaction(function () use ($request, $uid, $userUid) {
-                return $this->categoryService->update($uid, $request->validated(), $userUid);
-            });
+            $category = $this->categoryService->update($uid, $request->validated(), $userUid);
 
             if (! $category) {
                 return response()->json(['error' => 'Categoria não encontrada.'], 404);
             }
 
-            return response()->json(['data' => $category]);
+            return response()->json(['data' => new CategoryResource($category)]);
         } catch (\Throwable $e) {
             Log::error('Failed to update category', [
                 'uid' => $uid,
@@ -93,9 +90,7 @@ class CategoryController
         try {
             $userUid = $request->user()->uid;
 
-            $deleted = DB::transaction(function () use ($uid, $userUid) {
-                return $this->categoryService->delete($uid, $userUid);
-            });
+            $deleted = $this->categoryService->delete($uid, $userUid);
 
             if (! $deleted) {
                 return response()->json(['error' => 'Categoria não encontrada.'], 404);

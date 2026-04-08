@@ -42,7 +42,10 @@ class TransactionService implements TransactionServiceInterface
 
         $query->when($filters['date_to'] ?? null, fn ($q, $dateTo) => $q->where('occurred_at', '<=', $dateTo));
 
-        $query->when($filters['search'] ?? null, fn ($q, $search) => $q->whereHas('account', fn ($aq) => $aq->where('name', 'like', "%{$search}%")));
+        $query->when($filters['search'] ?? null, fn ($q, $search) => $q->where(function ($subQ) use ($search) {
+            $subQ->where('description', 'like', "%{$search}%")
+                ->orWhereHas('account', fn ($aq) => $aq->where('name', 'like', "%{$search}%"));
+        }));
 
         $query->orderByDesc('occurred_at');
 
@@ -90,6 +93,7 @@ class TransactionService implements TransactionServiceInterface
                     'direction' => $data['direction'],
                     'status' => $data['status'],
                     'source' => $data['source'],
+                    'description' => $data['description'] ?? null,
                     'occurred_at' => $data['occurred_at'],
                     'due_date' => $data['due_date'] ?? null,
                     'paid_at' => $data['paid_at'] ?? null,

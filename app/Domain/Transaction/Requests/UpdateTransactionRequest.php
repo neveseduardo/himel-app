@@ -25,6 +25,7 @@ class UpdateTransactionRequest extends FormRequest
             'due_date' => ['nullable', 'date'],
             'paid_at' => ['nullable', 'date'],
             'reference_id' => ['nullable', 'uuid'],
+            'description' => ['nullable', 'string', 'max:255'],
         ];
     }
 

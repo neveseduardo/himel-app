@@ -6,6 +6,7 @@ use App\Domain\CreditCard\Models\CreditCard;
 use App\Domain\CreditCardCharge\Contracts\CreditCardChargeServiceInterface;
 use App\Domain\CreditCardCharge\Models\CreditCardCharge;
 use App\Domain\CreditCardInstallment\Models\CreditCardInstallment;
+use App\Domain\Transaction\Models\Transaction;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -62,6 +63,10 @@ class CreditCardChargeService implements CreditCardChargeServiceInterface
 
     public function create(array $data, string $userUid): CreditCardCharge
     {
+        if ($data['total_installments'] < 1 || $data['total_installments'] > 48) {
+            throw new \InvalidArgumentException('O número de parcelas deve ser entre 1 e 48.');
+        }
+
         try {
             return DB::transaction(function () use ($data, $userUid) {
                 $card = CreditCard::where('uid', $data['credit_card_uid'])
@@ -79,14 +84,40 @@ class CreditCardChargeService implements CreditCardChargeServiceInterface
                     'total_installments' => $data['total_installments'],
                 ]);
 
-                $installmentAmount = $data['amount'] / $data['total_installments'];
+                $totalCents = (int) round($data['amount'] * 100);
+                $baseCents = intdiv($totalCents, $data['total_installments']);
+                $remainder = $totalCents % $data['total_installments'];
+
+                $canCreateTransactions = ! empty($data['account_uid']) && ! empty($data['category_uid']);
 
                 for ($i = 1; $i <= $data['total_installments']; $i++) {
+                    $installmentCents = $baseCents + ($i === $data['total_installments'] ? $remainder : 0);
+                    $installmentAmount = $installmentCents / 100;
                     $dueDate = now()->addMonths($i)->day($card->due_day);
+
+                    $transactionUid = null;
+
+                    if ($canCreateTransactions) {
+                        $transaction = Transaction::create([
+                            'user_uid' => $userUid,
+                            'account_uid' => $data['account_uid'],
+                            'category_uid' => $data['category_uid'],
+                            'amount' => $installmentAmount,
+                            'direction' => Transaction::DIRECTION_OUTFLOW,
+                            'status' => Transaction::STATUS_PENDING,
+                            'source' => Transaction::SOURCE_CREDIT_CARD,
+                            'description' => $charge->description . " ({$i}/{$data['total_installments']})",
+                            'occurred_at' => $dueDate,
+                            'due_date' => $dueDate,
+                            'reference_id' => $charge->uid,
+                        ]);
+
+                        $transactionUid = $transaction->uid;
+                    }
 
                     CreditCardInstallment::create([
                         'credit_card_charge_uid' => $charge->uid,
-                        'transaction_uid' => null,
+                        'transaction_uid' => $transactionUid,
                         'installment_number' => $i,
                         'due_date' => $dueDate,
                         'amount' => $installmentAmount,

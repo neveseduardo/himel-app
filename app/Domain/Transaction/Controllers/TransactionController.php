@@ -5,9 +5,9 @@ namespace App\Domain\Transaction\Controllers;
 use App\Domain\Transaction\Contracts\TransactionServiceInterface;
 use App\Domain\Transaction\Requests\StoreTransactionRequest;
 use App\Domain\Transaction\Requests\UpdateTransactionRequest;
+use App\Domain\Transaction\Resources\TransactionResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class TransactionController
@@ -21,6 +21,7 @@ class TransactionController
         $userUid = $request->user()->uid;
         $filters = $request->only(['page', 'per_page', 'status', 'direction', 'source', 'account_uid', 'category_uid', 'date_from', 'date_to', 'search']);
         $result = $this->transactionService->getAllWithFilters($userUid, $filters);
+        $result['data'] = TransactionResource::collection($result['data']);
 
         return response()->json($result);
     }
@@ -30,11 +31,9 @@ class TransactionController
         try {
             $userUid = $request->user()->uid;
 
-            $transaction = DB::transaction(function () use ($request, $userUid) {
-                return $this->transactionService->create($request->validated(), $userUid);
-            });
+            $transaction = $this->transactionService->create($request->validated(), $userUid);
 
-            return response()->json(['data' => $transaction], 201);
+            return response()->json(['data' => new TransactionResource($transaction)], 201);
         } catch (\Throwable $e) {
             Log::error('Failed to create transaction', [
                 'user_uid' => $request->user()->uid,
@@ -57,7 +56,7 @@ class TransactionController
             return response()->json(['error' => 'Transação não encontrada.'], 404);
         }
 
-        return response()->json(['data' => $transaction]);
+        return response()->json(['data' => new TransactionResource($transaction)]);
     }
 
     public function update(UpdateTransactionRequest $request, string $uid): JsonResponse
@@ -65,15 +64,13 @@ class TransactionController
         try {
             $userUid = $request->user()->uid;
 
-            $transaction = DB::transaction(function () use ($request, $uid, $userUid) {
-                return $this->transactionService->update($uid, $request->validated(), $userUid);
-            });
+            $transaction = $this->transactionService->update($uid, $request->validated(), $userUid);
 
             if (! $transaction) {
                 return response()->json(['error' => 'Transação não encontrada.'], 404);
             }
 
-            return response()->json(['data' => $transaction]);
+            return response()->json(['data' => new TransactionResource($transaction)]);
         } catch (\Throwable $e) {
             Log::error('Failed to update transaction', [
                 'uid' => $uid,
@@ -93,9 +90,7 @@ class TransactionController
         try {
             $userUid = $request->user()->uid;
 
-            $deleted = DB::transaction(function () use ($uid, $userUid) {
-                return $this->transactionService->delete($uid, $userUid);
-            });
+            $deleted = $this->transactionService->delete($uid, $userUid);
 
             if (! $deleted) {
                 return response()->json(['error' => 'Transação não encontrada.'], 404);

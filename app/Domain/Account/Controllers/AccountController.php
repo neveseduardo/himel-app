@@ -5,9 +5,9 @@ namespace App\Domain\Account\Controllers;
 use App\Domain\Account\Contracts\AccountServiceInterface;
 use App\Domain\Account\Requests\StoreAccountRequest;
 use App\Domain\Account\Requests\UpdateAccountRequest;
+use App\Domain\Account\Resources\AccountResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class AccountController
@@ -21,6 +21,7 @@ class AccountController
         $userUid = $request->user()->uid;
         $filters = $request->only(['page', 'per_page', 'type', 'search']);
         $result = $this->accountService->getAllWithFilters($userUid, $filters);
+        $result['data'] = AccountResource::collection($result['data']);
 
         return response()->json($result);
     }
@@ -30,11 +31,9 @@ class AccountController
         try {
             $userUid = $request->user()->uid;
 
-            $account = DB::transaction(function () use ($request, $userUid) {
-                return $this->accountService->create($request->validated(), $userUid);
-            });
+            $account = $this->accountService->create($request->validated(), $userUid);
 
-            return response()->json(['data' => $account], 201);
+            return response()->json(['data' => new AccountResource($account)], 201);
         } catch (\Throwable $e) {
             Log::error('Failed to create account', [
                 'user_uid' => $request->user()->uid,
@@ -57,7 +56,7 @@ class AccountController
             return response()->json(['error' => 'Conta não encontrada.'], 404);
         }
 
-        return response()->json(['data' => $account]);
+        return response()->json(['data' => new AccountResource($account)]);
     }
 
     public function update(UpdateAccountRequest $request, string $uid): JsonResponse
@@ -65,15 +64,13 @@ class AccountController
         try {
             $userUid = $request->user()->uid;
 
-            $account = DB::transaction(function () use ($request, $uid, $userUid) {
-                return $this->accountService->update($uid, $request->validated(), $userUid);
-            });
+            $account = $this->accountService->update($uid, $request->validated(), $userUid);
 
             if (! $account) {
                 return response()->json(['error' => 'Conta não encontrada.'], 404);
             }
 
-            return response()->json(['data' => $account]);
+            return response()->json(['data' => new AccountResource($account)]);
         } catch (\Throwable $e) {
             Log::error('Failed to update account', [
                 'uid' => $uid,
@@ -93,9 +90,7 @@ class AccountController
         try {
             $userUid = $request->user()->uid;
 
-            $deleted = DB::transaction(function () use ($uid, $userUid) {
-                return $this->accountService->delete($uid, $userUid);
-            });
+            $deleted = $this->accountService->delete($uid, $userUid);
 
             if (! $deleted) {
                 return response()->json(['error' => 'Conta não encontrada.'], 404);

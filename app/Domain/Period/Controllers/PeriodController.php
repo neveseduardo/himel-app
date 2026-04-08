@@ -4,9 +4,9 @@ namespace App\Domain\Period\Controllers;
 
 use App\Domain\Period\Contracts\PeriodServiceInterface;
 use App\Domain\Period\Requests\StorePeriodRequest;
+use App\Domain\Period\Resources\PeriodResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class PeriodController
@@ -20,6 +20,7 @@ class PeriodController
         $userUid = $request->user()->uid;
         $filters = $request->only(['page', 'per_page', 'month', 'year']);
         $result = $this->periodService->getAllWithFilters($userUid, $filters);
+        $result['data'] = PeriodResource::collection($result['data']);
 
         return response()->json($result);
     }
@@ -29,15 +30,13 @@ class PeriodController
         try {
             $userUid = $request->user()->uid;
 
-            $period = DB::transaction(function () use ($request, $userUid) {
-                return $this->periodService->getOrCreate(
-                    $userUid,
-                    $request->validated()['month'],
-                    $request->validated()['year']
-                );
-            });
+            $period = $this->periodService->getOrCreate(
+                $userUid,
+                $request->validated()['month'],
+                $request->validated()['year']
+            );
 
-            return response()->json(['data' => $period], 201);
+            return response()->json(['data' => new PeriodResource($period)], 201);
         } catch (\Throwable $e) {
             Log::error('Failed to create period', [
                 'user_uid' => $request->user()->uid,
@@ -60,7 +59,7 @@ class PeriodController
             return response()->json(['error' => 'Período não encontrado.'], 404);
         }
 
-        return response()->json(['data' => $period]);
+        return response()->json(['data' => new PeriodResource($period)]);
     }
 
     public function destroy(Request $request, string $uid): JsonResponse
@@ -68,9 +67,7 @@ class PeriodController
         try {
             $userUid = $request->user()->uid;
 
-            $deleted = DB::transaction(function () use ($uid, $userUid) {
-                return $this->periodService->delete($uid, $userUid);
-            });
+            $deleted = $this->periodService->delete($uid, $userUid);
 
             if (! $deleted) {
                 return response()->json(['error' => 'Período não encontrado.'], 404);
@@ -100,6 +97,6 @@ class PeriodController
             return response()->json(['error' => 'Período atual não encontrado.'], 404);
         }
 
-        return response()->json(['data' => $period]);
+        return response()->json(['data' => new PeriodResource($period)]);
     }
 }

@@ -5,9 +5,9 @@ namespace App\Domain\CreditCardCharge\Controllers;
 use App\Domain\CreditCardCharge\Contracts\CreditCardChargeServiceInterface;
 use App\Domain\CreditCardCharge\Requests\StoreCreditCardChargeRequest;
 use App\Domain\CreditCardCharge\Requests\UpdateCreditCardChargeRequest;
+use App\Domain\CreditCardCharge\Resources\CreditCardChargeResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class CreditCardChargeController
@@ -21,6 +21,7 @@ class CreditCardChargeController
         $userUid = $request->user()->uid;
         $filters = $request->only(['page', 'per_page', 'card_uid', 'search']);
         $result = $this->creditCardChargeService->getAllWithFilters($userUid, $filters);
+        $result['data'] = CreditCardChargeResource::collection($result['data']);
 
         return response()->json($result);
     }
@@ -30,11 +31,9 @@ class CreditCardChargeController
         try {
             $userUid = $request->user()->uid;
 
-            $charge = DB::transaction(function () use ($request, $userUid) {
-                return $this->creditCardChargeService->create($request->validated(), $userUid);
-            });
+            $charge = $this->creditCardChargeService->create($request->validated(), $userUid);
 
-            return response()->json(['data' => $charge], 201);
+            return response()->json(['data' => new CreditCardChargeResource($charge)], 201);
         } catch (\Throwable $e) {
             Log::error('Failed to create credit card charge', [
                 'user_uid' => $request->user()->uid,
@@ -57,7 +56,7 @@ class CreditCardChargeController
             return response()->json(['error' => 'Compra não encontrada.'], 404);
         }
 
-        return response()->json(['data' => $charge]);
+        return response()->json(['data' => new CreditCardChargeResource($charge)]);
     }
 
     public function update(UpdateCreditCardChargeRequest $request, string $uid): JsonResponse
@@ -65,15 +64,13 @@ class CreditCardChargeController
         try {
             $userUid = $request->user()->uid;
 
-            $charge = DB::transaction(function () use ($request, $uid, $userUid) {
-                return $this->creditCardChargeService->update($uid, $request->validated(), $userUid);
-            });
+            $charge = $this->creditCardChargeService->update($uid, $request->validated(), $userUid);
 
             if (! $charge) {
                 return response()->json(['error' => 'Compra não encontrada.'], 404);
             }
 
-            return response()->json(['data' => $charge]);
+            return response()->json(['data' => new CreditCardChargeResource($charge)]);
         } catch (\Throwable $e) {
             Log::error('Failed to update credit card charge', [
                 'uid' => $uid,
@@ -93,9 +90,7 @@ class CreditCardChargeController
         try {
             $userUid = $request->user()->uid;
 
-            $deleted = DB::transaction(function () use ($uid, $userUid) {
-                return $this->creditCardChargeService->delete($uid, $userUid);
-            });
+            $deleted = $this->creditCardChargeService->delete($uid, $userUid);
 
             if (! $deleted) {
                 return response()->json(['error' => 'Compra não encontrada.'], 404);

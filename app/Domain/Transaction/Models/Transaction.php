@@ -36,6 +36,7 @@ class Transaction extends Model
         'occurred_at',
         'due_date',
         'paid_at',
+        'description',
         'reference_id',
     ];
 

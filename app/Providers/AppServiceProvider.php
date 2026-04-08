@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Domain\Account\Contracts\AccountServiceInterface;
 use App\Domain\Account\Services\AccountService;
 use App\Domain\Category\Contracts\CategoryServiceInterface;
+use App\Domain\Category\Listeners\CreateDefaultCategoriesListener;
 use App\Domain\Category\Services\CategoryService;
 use App\Domain\CreditCard\Contracts\CreditCardServiceInterface;
 use App\Domain\CreditCard\Services\CreditCardService;
@@ -21,8 +22,10 @@ use App\Domain\Transaction\Services\TransactionService;
 use App\Domain\Transfer\Contracts\TransferServiceInterface;
 use App\Domain\Transfer\Services\TransferService;
 use Carbon\CarbonImmutable;
+use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 
@@ -36,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureDefaults();
+        $this->registerListeners();
     }
 
     protected function registerServices(): void
@@ -68,5 +72,10 @@ class AppServiceProvider extends ServiceProvider
                 ->uncompromised()
             : null,
         );
+    }
+
+    protected function registerListeners(): void
+    {
+        Event::listen(Login::class, CreateDefaultCategoriesListener::class);
     }
 }
