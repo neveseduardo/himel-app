@@ -1,8 +1,11 @@
 <script setup lang="ts">
-defineProps<{
-    title: string;
-    description?: string;
+const props = defineProps<{
+	title: string;
+	description?: string;
+	subtitle?: string;
 }>();
+
+const displaySubtitle = computed(() => props.subtitle ?? props.description);
 
 const showDialog = ref(false);
 
@@ -25,8 +28,8 @@ defineExpose({
 		<DialogContent class="pointer-events-auto">
 			<DialogHeader>
 				<DialogTitle>{{ title }}</DialogTitle>
-				<DialogDescription v-if="description">
-					{{ description }}
+				<DialogDescription v-if="displaySubtitle">
+					{{ displaySubtitle }}
 				</DialogDescription>
 			</DialogHeader>
 
