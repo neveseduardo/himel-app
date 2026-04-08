@@ -1,9 +1,0 @@
-{
-  "profile": "openai",
-  "env": {
-    "OPENAI_BASE_URL": "https://api.openai.com/v1",
-    "OPENAI_MODEL": "gpt-4o",
-    "OPENAI_API_KEY": "djsdkjkjdsd"
-  },
-  "createdAt": "2026-04-08T01:19:02.914Z"
-}
