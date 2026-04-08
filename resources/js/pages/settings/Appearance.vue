@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3';
 
-import DashboardLayout from '@/layouts/DashboardLayout.vue';
-import SettingsLayout from '@/layouts/SettingsLayout.vue';
+import AppLayout from '@/components/layouts/AppLayout.vue';
+import SettingsLayout from '@/components/layouts/settings/Layout.vue';
 
-defineOptions({ layout: DashboardLayout });
+defineOptions({ layout: AppLayout });
 </script>
 
 <template>

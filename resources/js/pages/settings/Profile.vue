@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
+import AppLayout from '@/components/layouts/AppLayout.vue';
+import SettingsLayout from '@/components/layouts/settings/Layout.vue';
 import { send } from '@/routes/verification';
 
-import DashboardLayout from '@/layouts/DashboardLayout.vue';
-import SettingsLayout from '@/layouts/SettingsLayout.vue';
+import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 
-defineOptions({ layout: DashboardLayout });
+defineOptions({ layout: AppLayout });
 
 defineProps<{
     mustVerifyEmail: boolean;

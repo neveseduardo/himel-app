@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Skeleton } from '@/components/ui/skeleton';
 import {
 	Table,
 	TableBody,
@@ -8,7 +9,6 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table';
-import { Skeleton } from '@/components/ui/skeleton';
 
 export interface Column {
 	key: string;

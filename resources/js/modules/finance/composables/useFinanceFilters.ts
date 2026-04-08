@@ -1,12 +1,12 @@
-import { ref } from 'vue';
 import { router } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 export function useFinanceFilters(initialFilters: Record<string, string | number | null> = {}) {
 	const filters = ref({ ...initialFilters });
 
 	function applyFilters(routeName: string) {
 		const cleanFilters = Object.fromEntries(
-			Object.entries(filters.value).filter(([, v]) => v !== null && v !== ''),
+			Object.entries(filters.value).filter(([, v]) => v !== null && v !== '')
 		);
 		router.get(routeName, cleanFilters, { preserveState: true, preserveScroll: true });
 	}

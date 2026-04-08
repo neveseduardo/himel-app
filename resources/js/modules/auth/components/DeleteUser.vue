@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Form } from '@inertiajs/vue3';
 
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 import { Button } from '@/components/ui/button';
 import {
 	Dialog,
@@ -14,6 +13,8 @@ import {
 	DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
+
+import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
 
 const passwordInput = useTemplateRef('passwordInput');
 </script>

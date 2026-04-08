@@ -108,12 +108,11 @@ import { Field, useForm } from 'vee-validate';
 import { watch } from 'vue';
 import { toast } from 'vue-sonner';
 
+import AuthLayout from '@/components/layouts/AuthLayout.vue';
 import { loginSchema } from '@/lib/validations/auth-schemas';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
-
-import AuthLayout from '@/layouts/AuthLayout.vue';
 
 const props = defineProps<{
     status?: string;

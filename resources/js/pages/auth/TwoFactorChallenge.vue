@@ -86,6 +86,7 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 
+import AuthLayout from '@/components/layouts/AuthLayout.vue';
 import {
 	InputOTP,
 	InputOTPGroup,
@@ -93,8 +94,6 @@ import {
 } from '@/components/ui/input-otp';
 import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
-
-import AuthLayout from '@/layouts/AuthLayout.vue';
 
 const authConfigContent = computed<TwoFactorConfigContent>(() => {
 	if (showRecoveryInput.value) {

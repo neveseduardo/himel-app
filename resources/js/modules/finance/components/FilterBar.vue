@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Search, X } from 'lucide-vue-next';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 const model = defineModel<string>({ default: '' });
 

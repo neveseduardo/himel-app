@@ -1,4 +1,5 @@
 import { router } from '@inertiajs/vue3';
+
 import type { PaginationMeta } from '../types/finance';
 
 export function usePagination() {

@@ -2,13 +2,13 @@
 import { Form, Head } from '@inertiajs/vue3';
 import { ShieldCheck } from 'lucide-vue-next';
 
-import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
+import AppLayout from '@/components/layouts/AppLayout.vue';
+import SettingsLayout from '@/components/layouts/settings/Layout.vue';
 
-import DashboardLayout from '@/layouts/DashboardLayout.vue';
-import SettingsLayout from '@/layouts/SettingsLayout.vue';
+import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
 import { useTwoFactorAuth } from '@/Modules/Auth/composables/useTwoFactorAuth';
 
-defineOptions({ layout: DashboardLayout });
+defineOptions({ layout: AppLayout });
 
 withDefaults(
 	defineProps<{
