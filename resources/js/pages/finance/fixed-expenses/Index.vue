@@ -2,7 +2,6 @@
 import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
 
 import { destroy, index } from '@/actions/App/Domain/FixedExpense/Controllers/FixedExpensePageController';
 import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
@@ -14,6 +13,7 @@ import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import DataTable from '@/modules/finance/components/DataTable.vue';
 import FilterBar from '@/modules/finance/components/FilterBar.vue';
 import FixedExpenseForm from '@/modules/finance/components/FixedExpenseForm.vue';
+import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { formatCurrency } from '@/modules/finance/services/finance.services';
@@ -42,6 +42,7 @@ const columns = [
 ];
 
 const store = useFixedExpenseStore();
+const { onSuccess, onError } = useCrudToast('Despesa fixa');
 const { filters, applyFilters, resetFilters } = useFinanceFilters(props.filters);
 const { goToPage } = usePagination();
 
@@ -58,16 +59,21 @@ const modalTitle = computed(() => {
 	return 'Detalhes da Despesa Fixa';
 });
 
+function handleFormSuccess() {
+	onSuccess(store.modalMode === 'edit' ? 'update' : 'create');
+	store.closeModal();
+}
+
 function handleDelete(uid: string) {
 	store.deletingUid = uid;
 	router.delete(destroy.url(uid), {
 		onSuccess: () => {
 			store.deletingUid = null;
-			toast.success('Despesa fixa excluída com sucesso!');
+			onSuccess('delete');
 		},
 		onError: (errors) => {
 			store.deletingUid = null;
-			toast.error(Object.values(errors)[0] as string);
+			onError('delete', errors as Record<string, string>);
 		},
 	});
 }
@@ -123,7 +129,7 @@ function handleDelete(uid: string) {
 					:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 					:readonly="store.modalMode === 'view'"
 					:categories="categories ?? []"
-					@success="store.closeModal()"
+					@success="handleFormSuccess"
 					@cancel="store.closeModal()"
 				/>
 			</ModalDialog>

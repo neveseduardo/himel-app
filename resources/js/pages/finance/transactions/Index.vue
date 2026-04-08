@@ -2,7 +2,6 @@
 import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
 
 import { destroy, index } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
 import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
@@ -15,6 +14,7 @@ import DirectionBadge from '@/modules/finance/components/DirectionBadge.vue';
 import FilterBar from '@/modules/finance/components/FilterBar.vue';
 import StatusBadge from '@/modules/finance/components/StatusBadge.vue';
 import TransactionForm from '@/modules/finance/components/TransactionForm.vue';
+import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { formatCurrency, formatDate } from '@/modules/finance/services/finance.services';
@@ -45,6 +45,7 @@ const columns = [
 ];
 
 const store = useTransactionStore();
+const { onSuccess, onError } = useCrudToast('Transação');
 const { filters, applyFilters, resetFilters } = useFinanceFilters(props.filters);
 const { goToPage } = usePagination();
 
@@ -61,16 +62,21 @@ const modalTitle = computed(() => {
 	return 'Detalhes da Transação';
 });
 
+function handleFormSuccess() {
+	onSuccess(store.modalMode === 'edit' ? 'update' : 'create');
+	store.closeModal();
+}
+
 function handleDelete(uid: string) {
 	store.deletingUid = uid;
 	router.delete(destroy.url(uid), {
 		onSuccess: () => {
 			store.deletingUid = null;
-			toast.success('Transação excluída com sucesso!');
+			onSuccess('delete');
 		},
 		onError: (errors) => {
 			store.deletingUid = null;
-			toast.error(Object.values(errors)[0] as string);
+			onError('delete', errors as Record<string, string>);
 		},
 	});
 }
@@ -134,7 +140,7 @@ function handleDelete(uid: string) {
 					:readonly="store.modalMode === 'view'"
 					:accounts="accounts ?? []"
 					:categories="categories ?? []"
-					@success="store.closeModal()"
+					@success="handleFormSuccess"
 					@cancel="store.closeModal()"
 				/>
 			</ModalDialog>

@@ -2,7 +2,6 @@
 import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
 
 import { destroy, index } from '@/actions/App/Domain/Category/Controllers/CategoryPageController';
 import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
@@ -14,6 +13,7 @@ import CategoryForm from '@/modules/finance/components/CategoryForm.vue';
 import DataTable from '@/modules/finance/components/DataTable.vue';
 import DirectionBadge from '@/modules/finance/components/DirectionBadge.vue';
 import FilterBar from '@/modules/finance/components/FilterBar.vue';
+import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { useCategoryStore } from '@/modules/finance/stores/useCategoryStore';
@@ -38,6 +38,7 @@ const columns = [
 ];
 
 const store = useCategoryStore();
+const { onSuccess, onError } = useCrudToast('Categoria');
 const { filters, applyFilters, resetFilters } = useFinanceFilters(props.filters);
 const { goToPage } = usePagination();
 
@@ -54,16 +55,21 @@ const modalTitle = computed(() => {
 	return 'Detalhes da Categoria';
 });
 
+function handleFormSuccess() {
+	onSuccess(store.modalMode === 'edit' ? 'update' : 'create');
+	store.closeModal();
+}
+
 function handleDelete(uid: string) {
 	store.deletingUid = uid;
 	router.delete(destroy.url(uid), {
 		onSuccess: () => {
 			store.deletingUid = null;
-			toast.success('Categoria excluída com sucesso!');
+			onSuccess('delete');
 		},
 		onError: (errors) => {
 			store.deletingUid = null;
-			toast.error(Object.values(errors)[0] as string);
+			onError('delete', errors as Record<string, string>);
 		},
 	});
 }
@@ -113,7 +119,7 @@ function handleDelete(uid: string) {
 				<CategoryForm
 					:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 					:readonly="store.modalMode === 'view'"
-					@success="store.closeModal()"
+					@success="handleFormSuccess"
 					@cancel="store.closeModal()"
 				/>
 			</ModalDialog>

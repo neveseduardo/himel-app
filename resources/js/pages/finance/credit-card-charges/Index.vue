@@ -10,6 +10,7 @@ import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import CreditCardChargeForm from '@/modules/finance/components/CreditCardChargeForm.vue';
 import DataTable from '@/modules/finance/components/DataTable.vue';
 import FilterBar from '@/modules/finance/components/FilterBar.vue';
+import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { formatCurrency } from '@/modules/finance/services/finance.services';
@@ -38,6 +39,7 @@ const columns = [
 ];
 
 const store = useCreditCardChargeStore();
+const { onSuccess } = useCrudToast('Compra no cartão');
 const { filters, applyFilters, resetFilters } = useFinanceFilters(props.filters);
 const { goToPage } = usePagination();
 
@@ -52,6 +54,11 @@ const modalTitle = computed(() => {
 	if (store.modalMode === 'create') return 'Nova Compra';
 	return 'Detalhes da Compra';
 });
+
+function handleFormSuccess() {
+	onSuccess('create');
+	store.closeModal();
+}
 </script>
 
 <template>
@@ -95,7 +102,7 @@ const modalTitle = computed(() => {
 					:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 					:readonly="store.modalMode === 'view'"
 					:credit-cards="creditCards ?? []"
-					@success="store.closeModal()"
+					@success="handleFormSuccess"
 					@cancel="store.closeModal()"
 				/>
 			</ModalDialog>

@@ -2,7 +2,6 @@
 import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
-import { toast } from 'vue-sonner';
 
 import { destroy, index } from '@/actions/App/Domain/CreditCard/Controllers/CreditCardPageController';
 import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
@@ -14,6 +13,7 @@ import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import CreditCardForm from '@/modules/finance/components/CreditCardForm.vue';
 import DataTable from '@/modules/finance/components/DataTable.vue';
 import FilterBar from '@/modules/finance/components/FilterBar.vue';
+import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { useCreditCardStore } from '@/modules/finance/stores/useCreditCardStore';
@@ -41,6 +41,7 @@ const columns = [
 ];
 
 const store = useCreditCardStore();
+const { onSuccess, onError } = useCrudToast('Cartão');
 const { filters, applyFilters, resetFilters } = useFinanceFilters(props.filters);
 const { goToPage } = usePagination();
 
@@ -57,16 +58,21 @@ const modalTitle = computed(() => {
 	return 'Detalhes do Cartão';
 });
 
+function handleFormSuccess() {
+	onSuccess(store.modalMode === 'edit' ? 'update' : 'create');
+	store.closeModal();
+}
+
 function handleDelete(uid: string) {
 	store.deletingUid = uid;
 	router.delete(destroy.url(uid), {
 		onSuccess: () => {
 			store.deletingUid = null;
-			toast.success('Cartão excluído com sucesso!');
+			onSuccess('delete');
 		},
 		onError: (errors) => {
 			store.deletingUid = null;
-			toast.error(Object.values(errors)[0] as string);
+			onError('delete', errors as Record<string, string>);
 		},
 	});
 }
@@ -127,7 +133,7 @@ function handleDelete(uid: string) {
 				<CreditCardForm
 					:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 					:readonly="store.modalMode === 'view'"
-					@success="store.closeModal()"
+					@success="handleFormSuccess"
 					@cancel="store.closeModal()"
 				/>
 			</ModalDialog>
