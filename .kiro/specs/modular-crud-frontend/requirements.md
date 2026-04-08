@@ -123,8 +123,8 @@ Este documento especifica os requisitos para a refatoração do frontend do Hime
 7.3. WHEN o usuário clicar na ação "Ver" de uma linha da tabela, THE Index_Page SHALL abrir o ModalDialog em modo visualização com os dados do registro.
 7.4. WHEN o usuário clicar na ação "Editar" de uma linha da tabela, THE Index_Page SHALL abrir o ModalDialog em modo edição com os dados do registro preenchidos no Module_Form.
 7.5. WHEN o usuário clicar na ação "Excluir" de uma linha da tabela, THE Index_Page SHALL exibir o DeleteConfirmPopover para confirmação.
-7.6. WHEN a operação CRUD for concluída com sucesso, THE Index_Page SHALL recarregar os dados da tabela via Inertia e exibir toast de sucesso via vue-sonner.
-7.7. IF uma operação CRUD falhar, THEN THE Index_Page SHALL exibir toast de erro via vue-sonner com a mensagem retornada pelo backend.
+7.6. WHEN a operação CRUD for concluída com sucesso, THE Index_Page SHALL recarregar os dados da tabela via Inertia e exibir toast de sucesso padronizado via `useCrudToast`.
+7.7. IF uma operação CRUD falhar, THEN THE Index_Page SHALL exibir toast de erro padronizado via `useCrudToast` com a mensagem retornada pelo backend ou mensagem fallback.
 
 ---
 
@@ -152,16 +152,19 @@ Este documento especifica os requisitos para a refatoração do frontend do Hime
 
 ---
 
-### Requisito 10: Feedback ao Usuário via Toasts
+### Requisito 10: Feedback ao Usuário via Toasts Padronizados
 
-**User Story:** Como usuário, quero receber notificações visuais sobre o resultado de minhas ações, para que eu saiba se a operação foi bem-sucedida ou se houve erro.
+**User Story:** Como usuário, quero receber notificações visuais padronizadas sobre o resultado de minhas ações, para que eu saiba se a operação foi bem-sucedida ou se houve erro, com mensagens consistentes em todos os módulos.
 
 #### Critérios de Aceitação
 
-10.1. WHEN uma operação de criação for bem-sucedida, THE Sistema_CRUD SHALL exibir toast de sucesso via vue-sonner.
-10.2. WHEN uma operação de edição for bem-sucedida, THE Sistema_CRUD SHALL exibir toast de sucesso via vue-sonner.
-10.3. WHEN uma operação de exclusão for bem-sucedida, THE Sistema_CRUD SHALL exibir toast de sucesso via vue-sonner.
-10.4. IF uma operação CRUD retornar erro do backend, THEN THE Sistema_CRUD SHALL exibir toast de erro via vue-sonner com a mensagem de erro retornada.
+10.1. WHEN uma operação de criação for bem-sucedida, THE Sistema_CRUD SHALL exibir toast de sucesso via vue-sonner com mensagem padronizada "{entidade} criado(a) com sucesso!".
+10.2. WHEN uma operação de edição for bem-sucedida, THE Sistema_CRUD SHALL exibir toast de sucesso via vue-sonner com mensagem padronizada "{entidade} atualizado(a) com sucesso!".
+10.3. WHEN uma operação de exclusão for bem-sucedida, THE Sistema_CRUD SHALL exibir toast de sucesso via vue-sonner com mensagem padronizada "{entidade} excluído(a) com sucesso!".
+10.4. IF uma operação CRUD retornar erro do backend, THEN THE Sistema_CRUD SHALL exibir toast de erro via vue-sonner com a mensagem de erro retornada pelo backend, ou mensagem fallback padronizada caso não haja mensagem.
+10.5. THE Sistema_CRUD SHALL centralizar todas as mensagens de toast em um composable `useCrudToast` reutilizável, evitando mensagens hardcoded nas páginas.
+10.6. THE Sistema_CRUD SHALL utilizar o composable `useCrudToast` em todas as páginas Index de módulos financeiros para garantir consistência de mensagens.
+10.7. THE Index_Page SHALL interceptar o evento `success` emitido pelo formulário para exibir toast de sucesso antes de fechar o modal.
 
 ---
 
@@ -197,6 +200,6 @@ Este documento especifica os requisitos para a refatoração do frontend do Hime
 
 13.1. IF a validação frontend do Zod_Schema falhar, THEN THE ValidatedInertiaForm SHALL exibir erros inline nos campos correspondentes sem enviar requisição HTTP.
 13.2. IF o backend retornar erro 422, THEN THE ValidatedInertiaForm SHALL mapear erros do backend para campos do formulário e exibi-los inline.
-13.3. IF o backend retornar erro 500, THEN THE Sistema_CRUD SHALL exibir toast de erro genérico via vue-sonner.
-13.4. IF a exclusão falhar por dependências (ex: conta com transações), THEN THE Sistema_CRUD SHALL exibir toast de erro com mensagem explicativa e redefinir `deletingUid` como `null`.
-13.5. IF ocorrer erro de rede, THEN THE Sistema_CRUD SHALL exibir toast de erro e manter o modal aberto com dados preenchidos para nova tentativa.
+13.3. IF o backend retornar erro 500, THEN THE Sistema_CRUD SHALL exibir toast de erro genérico via `useCrudToast` com mensagem fallback padronizada.
+13.4. IF a exclusão falhar por dependências (ex: conta com transações), THEN THE Sistema_CRUD SHALL exibir toast de erro via `useCrudToast` com mensagem explicativa do backend e redefinir `deletingUid` como `null`.
+13.5. IF ocorrer erro de rede, THEN THE Sistema_CRUD SHALL exibir toast de erro via `useCrudToast` e manter o modal aberto com dados preenchidos para nova tentativa.

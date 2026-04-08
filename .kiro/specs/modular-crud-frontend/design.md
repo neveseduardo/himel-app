@@ -866,6 +866,187 @@ const initialValues = computed(() => ({
 ### A verificar
 - `pinia` — confirmar se já está registrado no `app.ts`; se não, instalar e registrar
 
+## Padronização de Notificações Toast (vue-sonner)
+
+### Problema Atual
+
+As notificações toast estão inconsistentes no sistema:
+- Operações de **exclusão** possuem toasts de sucesso/erro nas páginas Index, mas com mensagens hardcoded por módulo.
+- Operações de **criação e edição** NÃO possuem toasts — os formulários apenas emitem `success` e o modal fecha silenciosamente.
+- O `DeleteConfirmDialog.vue` possui seus próprios toasts genéricos, duplicando lógica.
+- Não existe um padrão centralizado para mensagens de toast.
+
+### Solução: Composable `useCrudToast`
+
+Criar um composable centralizado em `resources/js/modules/finance/composables/useCrudToast.ts` que padroniza todas as mensagens de toast para operações CRUD.
+
+#### Interface
+
+```typescript
+// modules/finance/composables/useCrudToast.ts
+import { toast } from 'vue-sonner'
+
+type CrudOperation = 'create' | 'update' | 'delete'
+
+interface CrudToast {
+  onSuccess: (operation: CrudOperation) => void
+  onError: (operation: CrudOperation, errors?: Record<string, unknown>) => void
+}
+
+export function useCrudToast(entityLabel: string): CrudToast
+```
+
+#### Mapeamento de Mensagens
+
+| Operação | Sucesso | Erro |
+|----------|---------|------|
+| `create` | `"{entityLabel} criado(a) com sucesso!"` | `"Erro ao criar {entityLabel}."` ou mensagem do backend |
+| `update` | `"{entityLabel} atualizado(a) com sucesso!"` | `"Erro ao atualizar {entityLabel}."` ou mensagem do backend |
+| `delete` | `"{entityLabel} excluído(a) com sucesso!"` | `"Erro ao excluir {entityLabel}."` ou mensagem do backend |
+
+#### Implementação
+
+```typescript
+import { toast } from 'vue-sonner'
+
+type CrudOperation = 'create' | 'update' | 'delete'
+
+const successMessages: Record<CrudOperation, (label: string) => string> = {
+  create: (label) => `${label} criado(a) com sucesso!`,
+  update: (label) => `${label} atualizado(a) com sucesso!`,
+  delete: (label) => `${label} excluído(a) com sucesso!`,
+}
+
+const errorMessages: Record<CrudOperation, (label: string) => string> = {
+  create: (label) => `Erro ao criar ${label}.`,
+  update: (label) => `Erro ao atualizar ${label}.`,
+  delete: (label) => `Erro ao excluir ${label}.`,
+}
+
+export function useCrudToast(entityLabel: string) {
+  function onSuccess(operation: CrudOperation) {
+    toast.success(successMessages[operation](entityLabel))
+  }
+
+  function onError(operation: CrudOperation, errors?: Record<string, unknown>) {
+    const backendMessage = errors
+      ? Object.values(errors)[0]
+      : undefined
+
+    const message = typeof backendMessage === 'string'
+      ? backendMessage
+      : errorMessages[operation](entityLabel)
+
+    toast.error(message)
+  }
+
+  return { onSuccess, onError }
+}
+```
+
+#### Mapeamento de Entidades por Módulo
+
+| Módulo | `entityLabel` |
+|--------|---------------|
+| Accounts | `'Conta'` |
+| Categories | `'Categoria'` |
+| Transactions | `'Transação'` |
+| Transfers | `'Transferência'` |
+| Fixed Expenses | `'Despesa fixa'` |
+| Credit Cards | `'Cartão'` |
+| Credit Card Charges | `'Compra no cartão'` |
+
+### Integração com Páginas Index
+
+Cada página Index DEVE usar o composable para operações de exclusão:
+
+```typescript
+// Exemplo: pages/finance/accounts/Index.vue
+const { onSuccess, onError } = useCrudToast('Conta')
+
+function handleDelete(uid: string) {
+  store.deletingUid = uid
+  router.delete(destroy.url(uid), {
+    onSuccess: () => {
+      store.deletingUid = null
+      onSuccess('delete')
+    },
+    onError: (errors) => {
+      store.deletingUid = null
+      onError('delete', errors)
+    },
+  })
+}
+```
+
+### Integração com Formulários (Create/Edit)
+
+Os formulários emitem `success` via `ValidatedInertiaForm`. A página Index DEVE interceptar esse evento para exibir o toast antes de fechar o modal:
+
+```typescript
+// Exemplo: pages/finance/accounts/Index.vue
+const { onSuccess, onError } = useCrudToast('Conta')
+
+function handleFormSuccess() {
+  const operation = store.modalMode === 'edit' ? 'update' : 'create'
+  onSuccess(operation)
+  store.closeModal()
+}
+```
+
+No template:
+```vue
+<AccountForm
+  :item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
+  :readonly="store.modalMode === 'view'"
+  @success="handleFormSuccess"
+  @cancel="store.closeModal()"
+/>
+```
+
+### Integração com ValidatedInertiaForm (Erros)
+
+O `ValidatedInertiaForm` já emite `error` quando o backend retorna erros. Para erros de rede ou erros 500 (que não são erros de validação por campo), a página Index DEVE escutar o evento `error` e exibir toast:
+
+```typescript
+function handleFormError(errors: Record<string, unknown>) {
+  const operation = store.modalMode === 'edit' ? 'update' : 'create'
+  // Apenas exibir toast para erros genéricos (não validação por campo)
+  // Erros de validação por campo já são exibidos inline pelo ValidatedField
+  if (errors && typeof Object.values(errors)[0] !== 'string') {
+    onError(operation)
+  }
+}
+```
+
+### Diagrama de Sequência: Fluxo de Toast Padronizado
+
+```mermaid
+sequenceDiagram
+    participant U as Usuário
+    participant P as Index Page
+    participant CT as useCrudToast
+    participant F as Form
+    participant I as Inertia Router
+    participant T as vue-sonner
+
+    Note over U,T: Criação com Sucesso
+    U->>F: Submete formulário
+    F->>I: router.post(store.url, data)
+    I-->>F: onSuccess
+    F-->>P: emit('success')
+    P->>CT: onSuccess('create')
+    CT->>T: toast.success('Conta criado(a) com sucesso!')
+    P->>P: store.closeModal()
+
+    Note over U,T: Exclusão com Erro
+    U->>P: Confirma exclusão
+    P->>I: router.delete(destroy.url)
+    I-->>P: onError(errors)
+    P->>CT: onError('delete', errors)
+    CT->>T: toast.error(mensagem do backend ou fallback)
+```
+
 ## Estrutura de Arquivos (Mudanças)
 
 ```
@@ -892,6 +1073,11 @@ resources/js/
 │   │   ├── FixedExpenseForm.vue                # REFATORAR
 │   │   ├── CreditCardForm.vue                  # REFATORAR
 │   │   └── CreditCardChargeForm.vue            # REFATORAR
+│   ├── composables/
+│   │   ├── useCrudToast.ts                     # NOVO — toast padronizado para CRUD
+│   │   ├── useFinanceFilters.ts                # EXISTENTE
+│   │   ├── useFlashMessages.ts                 # EXISTENTE
+│   │   └── usePagination.ts                    # EXISTENTE
 │   └── validations/                            # EXISTENTE — manter
 ├── pages/finance/
 │   ├── accounts/

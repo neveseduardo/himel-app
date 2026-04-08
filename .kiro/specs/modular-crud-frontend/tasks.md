@@ -184,26 +184,78 @@ Refatoração incremental do frontend do Himel App para centralizar operações 
     - Executar `php artisan test --compact` para validar
     - _Requisitos: 11.2_
 
-- [-] 10. Validação final e build
-  - [~] 10.1 Executar verificações de qualidade
+- [x] 10. Validação final e build
+  - [x] 10.1 Executar verificações de qualidade
     - `npm run lint` — sem erros
     - `npx vue-tsc --noEmit` — sem erros de tipo
     - `npm run build` — build bem-sucedido
     - `php artisan test --compact` — todos os testes passando
     - _Requisitos: 12.1, 12.2, 12.3_
 
-  - [~] 10.2 Regenerar rotas Wayfinder
+  - [x] 10.2 Regenerar rotas Wayfinder
     - Executar `php artisan wayfinder:generate` para atualizar funções TypeScript após remoção de rotas
     - Verificar que imports de `@/actions/` não referenciam controllers/métodos removidos
     - _Requisitos: 8.1, 8.2, 8.3_
 
-- [ ] 11. Checkpoint final — Garantir que tudo funciona
+- [x] 11. Checkpoint final — Garantir que tudo funciona
   - Garantir que todos os testes passam, build compila sem erros, e o sistema está funcional. Perguntar ao usuário se há dúvidas.
+
+- [x] 12. Padronizar notificações toast com composable `useCrudToast`
+  - [x] 12.1 Criar composable `useCrudToast.ts` em `resources/js/modules/finance/composables/`
+    - Exportar função `useCrudToast(entityLabel: string)` que retorna `{ onSuccess, onError }`
+    - `onSuccess(operation)` exibe `toast.success` com mensagem padronizada por operação (create/update/delete)
+    - `onError(operation, errors?)` exibe `toast.error` com mensagem do backend (se disponível) ou fallback padronizado
+    - Mensagens em português: "criado(a) com sucesso!", "atualizado(a) com sucesso!", "excluído(a) com sucesso!"
+    - _Requisitos: 10.5, 10.6_
+
+  - [x] 12.2 Refatorar `pages/finance/accounts/Index.vue` para usar `useCrudToast`
+    - Importar e inicializar `useCrudToast('Conta')`
+    - Substituir `toast.success('Conta excluída com sucesso!')` por `onSuccess('delete')`
+    - Substituir `toast.error(...)` no handleDelete por `onError('delete', errors)`
+    - Criar `handleFormSuccess()` que chama `onSuccess('create')` ou `onSuccess('update')` baseado em `store.modalMode`, e depois `store.closeModal()`
+    - Alterar `@success="store.closeModal()"` para `@success="handleFormSuccess"` no template
+    - Remover import direto de `toast` de `vue-sonner`
+    - _Requisitos: 10.1, 10.2, 10.3, 10.4, 10.6, 10.7_
+
+  - [x] 12.3 Refatorar `pages/finance/categories/Index.vue` para usar `useCrudToast`
+    - Mesmo padrão do 12.2 com `useCrudToast('Categoria')`
+    - _Requisitos: 10.1, 10.2, 10.3, 10.4, 10.6, 10.7_
+
+  - [x] 12.4 Refatorar `pages/finance/transactions/Index.vue` para usar `useCrudToast`
+    - Mesmo padrão do 12.2 com `useCrudToast('Transação')`
+    - _Requisitos: 10.1, 10.2, 10.3, 10.4, 10.6, 10.7_
+
+  - [x] 12.5 Refatorar `pages/finance/transfers/Index.vue` para usar `useCrudToast`
+    - Mesmo padrão do 12.2 com `useCrudToast('Transferência')`
+    - Nota: transfers não possuem Edit, apenas Create e Delete
+    - _Requisitos: 10.1, 10.3, 10.4, 10.6, 10.7_
+
+  - [x] 12.6 Refatorar `pages/finance/fixed-expenses/Index.vue` para usar `useCrudToast`
+    - Mesmo padrão do 12.2 com `useCrudToast('Despesa fixa')`
+    - _Requisitos: 10.1, 10.2, 10.3, 10.4, 10.6, 10.7_
+
+  - [x] 12.7 Refatorar `pages/finance/credit-cards/Index.vue` para usar `useCrudToast`
+    - Mesmo padrão do 12.2 com `useCrudToast('Cartão')`
+    - _Requisitos: 10.1, 10.2, 10.3, 10.4, 10.6, 10.7_
+
+  - [x] 12.8 Refatorar `pages/finance/credit-card-charges/Index.vue` para usar `useCrudToast`
+    - Mesmo padrão do 12.2 com `useCrudToast('Compra no cartão')`
+    - Nota: credit-card-charges possui apenas Create e View (sem Edit/Delete na Index)
+    - _Requisitos: 10.1, 10.4, 10.6, 10.7_
+
+- [x] 13. Validação final — Toast padronizado
+  - [x] 13.1 Executar verificações de qualidade
+    - `npm run lint` — sem erros
+    - `npx vue-tsc --noEmit` — sem erros de tipo
+    - `npm run build` — build bem-sucedido
+    - Verificar que nenhuma página Index importa `toast` diretamente de `vue-sonner` (exceto o composable)
+    - _Requisitos: 10.5, 10.6, 12.1, 12.2_
 
 ## Notas
 
 - Tasks marcadas com `*` são opcionais e podem ser puladas para um MVP mais rápido
 - Cada task referencia requisitos específicos para rastreabilidade
 - Checkpoints garantem validação incremental
-- A ordem de implementação garante que dependências são resolvidas antes do uso (componentes → stores → forms → pages → cleanup)
-- Commits devem ser feitos após cada grupo de tasks (1, 3, 5, 7, 9) para versionamento granular
+- A ordem de implementação garante que dependências são resolvidas antes do uso (componentes → stores → forms → pages → cleanup → toast)
+- Commits devem ser feitos após cada grupo de tasks (1, 3, 5, 7, 9, 12) para versionamento granular
+- Tasks 12.x padronizam toasts que antes eram hardcoded em cada página Index, centralizando no composable `useCrudToast`
