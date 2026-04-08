@@ -32,15 +32,6 @@ class CreditCardChargePageController
         ]);
     }
 
-    public function create(Request $request): Response
-    {
-        $userUid = $request->user()->uid;
-
-        return Inertia::render('finance/credit-card-charges/Create', [
-            'creditCards' => $this->creditCardService->getAll($userUid),
-        ]);
-    }
-
     public function store(StoreCreditCardChargeRequest $request): RedirectResponse
     {
         try {
@@ -52,13 +43,5 @@ class CreditCardChargePageController
 
             return back()->with('error', 'Erro ao registrar compra.');
         }
-    }
-
-    public function show(Request $request, string $uid): Response
-    {
-        $charge = $this->creditCardChargeService->getByUid($uid, $request->user()->uid);
-        abort_unless($charge, 404);
-
-        return Inertia::render('finance/credit-card-charges/Show', ['charge' => $charge]);
     }
 }

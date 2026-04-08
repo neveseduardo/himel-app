@@ -6,4 +6,4 @@ use Illuminate\Support\Facades\Route;
 Route::resource('accounts', AccountPageController::class)
     ->parameters(['accounts' => 'uid'])
     ->names('finance.accounts')
-    ->except(['show']);
+    ->except(['show', 'create', 'edit']);

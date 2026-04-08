@@ -6,4 +6,4 @@ use Illuminate\Support\Facades\Route;
 Route::resource('transfers', TransferPageController::class)
     ->parameters(['transfers' => 'uid'])
     ->names('finance.transfers')
-    ->except(['edit', 'update', 'show']);
+    ->except(['show', 'create', 'edit', 'update']);

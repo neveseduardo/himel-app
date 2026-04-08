@@ -30,11 +30,6 @@ class AccountPageController
         ]);
     }
 
-    public function create(): Response
-    {
-        return Inertia::render('finance/accounts/Create');
-    }
-
     public function store(StoreAccountRequest $request): RedirectResponse
     {
         try {
@@ -46,14 +41,6 @@ class AccountPageController
 
             return back()->with('error', 'Erro ao criar conta.');
         }
-    }
-
-    public function edit(Request $request, string $uid): Response
-    {
-        $account = $this->accountService->getByUid($uid, $request->user()->uid);
-        abort_unless($account, 404);
-
-        return Inertia::render('finance/accounts/Edit', ['account' => $account]);
     }
 
     public function update(UpdateAccountRequest $request, string $uid): RedirectResponse

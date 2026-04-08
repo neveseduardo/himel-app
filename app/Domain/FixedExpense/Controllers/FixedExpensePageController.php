@@ -33,15 +33,6 @@ class FixedExpensePageController
         ]);
     }
 
-    public function create(Request $request): Response
-    {
-        $userUid = $request->user()->uid;
-
-        return Inertia::render('finance/fixed-expenses/Create', [
-            'categories' => $this->categoryService->getByDirection($userUid, 'OUTFLOW'),
-        ]);
-    }
-
     public function store(StoreFixedExpenseRequest $request): RedirectResponse
     {
         try {
@@ -53,18 +44,6 @@ class FixedExpensePageController
 
             return back()->with('error', 'Erro ao criar despesa fixa.');
         }
-    }
-
-    public function edit(Request $request, string $uid): Response
-    {
-        $userUid = $request->user()->uid;
-        $fixedExpense = $this->fixedExpenseService->getByUid($uid, $userUid);
-        abort_unless($fixedExpense, 404);
-
-        return Inertia::render('finance/fixed-expenses/Edit', [
-            'fixedExpense' => $fixedExpense,
-            'categories' => $this->categoryService->getByDirection($userUid, 'OUTFLOW'),
-        ]);
     }
 
     public function update(UpdateFixedExpenseRequest $request, string $uid): RedirectResponse

@@ -36,16 +36,6 @@ class TransactionPageController
         ]);
     }
 
-    public function create(Request $request): Response
-    {
-        $userUid = $request->user()->uid;
-
-        return Inertia::render('finance/transactions/Create', [
-            'accounts' => $this->accountService->getAll($userUid),
-            'categories' => $this->categoryService->getAll($userUid),
-        ]);
-    }
-
     public function store(StoreTransactionRequest $request): RedirectResponse
     {
         try {
@@ -57,19 +47,6 @@ class TransactionPageController
 
             return back()->with('error', 'Erro ao criar transação.');
         }
-    }
-
-    public function edit(Request $request, string $uid): Response
-    {
-        $userUid = $request->user()->uid;
-        $transaction = $this->transactionService->getByUid($uid, $userUid);
-        abort_unless($transaction, 404);
-
-        return Inertia::render('finance/transactions/Edit', [
-            'transaction' => $transaction,
-            'accounts' => $this->accountService->getAll($userUid),
-            'categories' => $this->categoryService->getAll($userUid),
-        ]);
     }
 
     public function update(UpdateTransactionRequest $request, string $uid): RedirectResponse

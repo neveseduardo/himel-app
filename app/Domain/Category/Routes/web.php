@@ -6,4 +6,4 @@ use Illuminate\Support\Facades\Route;
 Route::resource('categories', CategoryPageController::class)
     ->parameters(['categories' => 'uid'])
     ->names('finance.categories')
-    ->except(['show']);
+    ->except(['show', 'create', 'edit']);

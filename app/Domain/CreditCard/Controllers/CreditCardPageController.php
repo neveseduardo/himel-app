@@ -30,11 +30,6 @@ class CreditCardPageController
         ]);
     }
 
-    public function create(): Response
-    {
-        return Inertia::render('finance/credit-cards/Create');
-    }
-
     public function store(StoreCreditCardRequest $request): RedirectResponse
     {
         try {
@@ -46,14 +41,6 @@ class CreditCardPageController
 
             return back()->with('error', 'Erro ao criar cartão.');
         }
-    }
-
-    public function edit(Request $request, string $uid): Response
-    {
-        $creditCard = $this->creditCardService->getByUid($uid, $request->user()->uid);
-        abort_unless($creditCard, 404);
-
-        return Inertia::render('finance/credit-cards/Edit', ['creditCard' => $creditCard]);
     }
 
     public function update(UpdateCreditCardRequest $request, string $uid): RedirectResponse

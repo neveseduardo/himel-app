@@ -32,15 +32,6 @@ class TransferPageController
         ]);
     }
 
-    public function create(Request $request): Response
-    {
-        $userUid = $request->user()->uid;
-
-        return Inertia::render('finance/transfers/Create', [
-            'accounts' => $this->accountService->getAll($userUid),
-        ]);
-    }
-
     public function store(StoreTransferRequest $request): RedirectResponse
     {
         try {

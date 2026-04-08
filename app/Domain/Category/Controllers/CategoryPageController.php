@@ -30,11 +30,6 @@ class CategoryPageController
         ]);
     }
 
-    public function create(): Response
-    {
-        return Inertia::render('finance/categories/Create');
-    }
-
     public function store(StoreCategoryRequest $request): RedirectResponse
     {
         try {
@@ -46,14 +41,6 @@ class CategoryPageController
 
             return back()->with('error', 'Erro ao criar categoria.');
         }
-    }
-
-    public function edit(Request $request, string $uid): Response
-    {
-        $category = $this->categoryService->getByUid($uid, $request->user()->uid);
-        abort_unless($category, 404);
-
-        return Inertia::render('finance/categories/Edit', ['category' => $category]);
     }
 
     public function update(UpdateCategoryRequest $request, string $uid): RedirectResponse
