@@ -5,7 +5,6 @@ import { computed, ref, watch } from 'vue';
 
 import { destroy, index } from '@/actions/App/Domain/Account/Controllers/AccountPageController';
 import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
-import AppLayout from '@/components/layouts/AppLayout.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
@@ -77,53 +76,51 @@ function handleDelete(uid: string) {
 </script>
 
 <template>
-	<AppLayout :breadcrumbs="breadcrumbs">
-		<div class="flex flex-col gap-6 p-6">
-			<PageHeader title="Contas" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
+	<div class="flex flex-col gap-6 p-6">
+		<PageHeader title="Contas" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
-			<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
+		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 
-			<DataTable :columns="columns" :data="accounts as unknown as Record<string, unknown>[]">
-				<template #cell-balance="{ row }">
-					{{ formatCurrency((row as unknown as Account).balance) }}
-				</template>
-				<template #cell-actions="{ row }">
-					<div class="flex justify-end gap-1">
-						<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as Account)">
-							<Eye class="size-4" />
-						</Button>
-						<Button variant="ghost" size="icon" @click="store.openEditModal(row as unknown as Account)">
-							<Pencil class="size-4" />
-						</Button>
-						<DeleteConfirmPopover :loading="store.deletingUid === (row as unknown as Account).uid" @confirm="handleDelete((row as unknown as Account).uid)">
-							<template #trigger>
-								<Button variant="ghost" size="icon">
-									<Trash2 class="size-4" />
-								</Button>
-							</template>
-						</DeleteConfirmPopover>
-					</div>
-				</template>
-			</DataTable>
+		<DataTable :columns="columns" :data="accounts as unknown as Record<string, unknown>[]">
+			<template #cell-balance="{ row }">
+				{{ formatCurrency((row as unknown as Account).balance) }}
+			</template>
+			<template #cell-actions="{ row }">
+				<div class="flex justify-end gap-1">
+					<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as Account)">
+						<Eye class="size-4" />
+					</Button>
+					<Button variant="ghost" size="icon" @click="store.openEditModal(row as unknown as Account)">
+						<Pencil class="size-4" />
+					</Button>
+					<DeleteConfirmPopover :loading="store.deletingUid === (row as unknown as Account).uid" @confirm="handleDelete((row as unknown as Account).uid)">
+						<template #trigger>
+							<Button variant="ghost" size="icon">
+								<Trash2 class="size-4" />
+							</Button>
+						</template>
+					</DeleteConfirmPopover>
+				</div>
+			</template>
+		</DataTable>
 
-			<div v-if="meta.last_page > 1" class="flex justify-center gap-2">
-				<Button variant="outline" size="sm" :disabled="meta.current_page <= 1" @click="goToPage(index.url(), meta.current_page - 1, filters)">
-					Anterior
-				</Button>
-				<span class="flex items-center px-3 text-sm">{{ meta.current_page }} / {{ meta.last_page }}</span>
-				<Button variant="outline" size="sm" :disabled="meta.current_page >= meta.last_page" @click="goToPage(index.url(), meta.current_page + 1, filters)">
-					Próxima
-				</Button>
-			</div>
-
-			<ModalDialog ref="modalRef" :title="modalTitle">
-				<AccountForm
-					:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
-					:readonly="store.modalMode === 'view'"
-					@success="handleFormSuccess"
-					@cancel="store.closeModal()"
-				/>
-			</ModalDialog>
+		<div v-if="meta.last_page > 1" class="flex justify-center gap-2">
+			<Button variant="outline" size="sm" :disabled="meta.current_page <= 1" @click="goToPage(index.url(), meta.current_page - 1, filters)">
+				Anterior
+			</Button>
+			<span class="flex items-center px-3 text-sm">{{ meta.current_page }} / {{ meta.last_page }}</span>
+			<Button variant="outline" size="sm" :disabled="meta.current_page >= meta.last_page" @click="goToPage(index.url(), meta.current_page + 1, filters)">
+				Próxima
+			</Button>
 		</div>
-	</AppLayout>
+
+		<ModalDialog ref="modalRef" :title="modalTitle">
+			<AccountForm
+				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
+				:readonly="store.modalMode === 'view'"
+				@success="handleFormSuccess"
+				@cancel="store.closeModal()"
+			/>
+		</ModalDialog>
+	</div>
 </template>

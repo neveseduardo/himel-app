@@ -86,7 +86,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 
-import AuthLayout from '@/components/layouts/AuthLayout.vue';
 import {
 	InputOTP,
 	InputOTPGroup,
@@ -122,8 +121,4 @@ const toggleRecoveryMode = (clearErrors: () => void): void => {
 };
 
 const code = ref<string>('');
-
-defineOptions({
-	layout: AuthLayout,
-});
 </script>

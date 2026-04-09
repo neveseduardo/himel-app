@@ -16,6 +16,7 @@ class PeriodResource extends JsonResource
             'uid' => $this->uid,
             'month' => $this->month,
             'year' => $this->year,
+            'transactions_count' => $this->whenCounted('transactions'),
         ];
     }
 }

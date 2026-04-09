@@ -16,11 +16,10 @@ import {
 	InputOTPSlot,
 } from '@/components/ui/input-otp';
 import { Spinner } from '@/components/ui/spinner';
+import { useAppearance } from '@/composables/useAppearance';
+import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
-
-import { useTwoFactorAuth } from '@/Modules/Auth/composables/useTwoFactorAuth';
-import { useAppearance } from '@/shared/composables/useAppearance';
 
 type Props = {
     requiresConfirmation: boolean;

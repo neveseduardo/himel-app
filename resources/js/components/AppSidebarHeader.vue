@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
+import { ChevronsUpDown } from 'lucide-vue-next';
 
 import {
 	Breadcrumb,
@@ -9,6 +10,11 @@ import {
 	BreadcrumbPage,
 	BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import UserMenuContent from '@/modules/settings/components/UserMenuContent.vue';
@@ -45,7 +51,17 @@ const page = usePage();
 			</Breadcrumb>
 		</div>
 		<div class="ml-auto flex items-center gap-2">
-			<UserMenuContent :user="page.props.auth.user" />
+			<DropdownMenu>
+				<DropdownMenuTrigger as-child>
+					<button class="flex items-center gap-2 rounded-lg px-2 py-1.5 text-left text-sm hover:bg-accent">
+						<UserInfo :user="page.props.auth.user" :show-email="false" />
+						<ChevronsUpDown class="ml-auto size-4" />
+					</button>
+				</DropdownMenuTrigger>
+				<DropdownMenuContent class="w-56" align="end" side="bottom">
+					<UserMenuContent :user="page.props.auth.user" />
+				</DropdownMenuContent>
+			</DropdownMenu>
 		</div>
 	</header>
 </template>

@@ -5,6 +5,7 @@ namespace App\Domain\Transfer\Controllers;
 use App\Domain\Account\Contracts\AccountServiceInterface;
 use App\Domain\Transfer\Contracts\TransferServiceInterface;
 use App\Domain\Transfer\Requests\StoreTransferRequest;
+use App\Domain\Transfer\Resources\TransferResource;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -25,7 +26,7 @@ class TransferPageController
         $result = $this->transferService->getAllWithFilters($userUid, $filters);
 
         return Inertia::render('finance/transfers/Index', [
-            'transfers' => $result['data'],
+            'transfers' => TransferResource::collection($result['data'])->resolve(),
             'meta' => $result['meta'],
             'filters' => $filters,
             'accounts' => Inertia::optional(fn () => $this->accountService->getAll($userUid)),

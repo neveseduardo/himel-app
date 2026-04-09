@@ -16,5 +16,13 @@ interface PeriodServiceInterface
 
     public function getCurrent(string $userUid): ?Period;
 
+    public function create(string $userUid, int $month, int $year): Period;
+
+    public function initializePeriod(string $uid, string $userUid): array;
+
+    public function getByUidWithSummary(string $uid, string $userUid): ?array;
+
+    public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array;
+
     public function delete(string $uid, string $userUid): bool;
 }

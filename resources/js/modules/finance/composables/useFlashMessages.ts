@@ -4,8 +4,8 @@ import { computed } from 'vue';
 export function useFlashMessages() {
 	const page = usePage();
 
-	const success = computed(() => (page.props as Record<string, unknown>).flash?.success as string | undefined);
-	const error = computed(() => (page.props as Record<string, unknown>).flash?.error as string | undefined);
+	const success = computed(() => page.props.flash?.success);
+	const error = computed(() => page.props.flash?.error);
 
 	return { success, error };
 }

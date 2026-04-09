@@ -3,7 +3,6 @@ import { Eye, Plus } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 
 import { index } from '@/actions/App/Domain/CreditCardCharge/Controllers/CreditCardChargePageController';
-import AppLayout from '@/components/layouts/AppLayout.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
@@ -62,50 +61,48 @@ function handleFormSuccess() {
 </script>
 
 <template>
-	<AppLayout :breadcrumbs="breadcrumbs">
-		<div class="flex flex-col gap-6 p-6">
-			<PageHeader title="Compras no Cartão" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
+	<div class="flex flex-col gap-6 p-6">
+		<PageHeader title="Compras no Cartão" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
-			<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
+		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 
-			<DataTable :columns="columns" :data="charges as unknown as Record<string, unknown>[]">
-				<template #cell-total_amount="{ row }">
-					{{ formatCurrency((row as unknown as CreditCardCharge).total_amount) }}
-				</template>
-				<template #cell-installments="{ row }">
-					{{ (row as unknown as CreditCardCharge).installments }}x
-				</template>
-				<template #cell-credit_card="{ row }">
-					{{ (row as unknown as CreditCardCharge).credit_card?.name ?? '—' }}
-				</template>
-				<template #cell-actions="{ row }">
-					<div class="flex justify-end gap-1">
-						<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as CreditCardCharge)">
-							<Eye class="size-4" />
-						</Button>
-					</div>
-				</template>
-			</DataTable>
+		<DataTable :columns="columns" :data="charges as unknown as Record<string, unknown>[]">
+			<template #cell-total_amount="{ row }">
+				{{ formatCurrency((row as unknown as CreditCardCharge).total_amount) }}
+			</template>
+			<template #cell-installments="{ row }">
+				{{ (row as unknown as CreditCardCharge).installments }}x
+			</template>
+			<template #cell-credit_card="{ row }">
+				{{ (row as unknown as CreditCardCharge).credit_card?.name ?? '—' }}
+			</template>
+			<template #cell-actions="{ row }">
+				<div class="flex justify-end gap-1">
+					<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as CreditCardCharge)">
+						<Eye class="size-4" />
+					</Button>
+				</div>
+			</template>
+		</DataTable>
 
-			<div v-if="meta.last_page > 1" class="flex justify-center gap-2">
-				<Button variant="outline" size="sm" :disabled="meta.current_page <= 1" @click="goToPage(index.url(), meta.current_page - 1, filters)">
-					Anterior
-				</Button>
-				<span class="flex items-center px-3 text-sm">{{ meta.current_page }} / {{ meta.last_page }}</span>
-				<Button variant="outline" size="sm" :disabled="meta.current_page >= meta.last_page" @click="goToPage(index.url(), meta.current_page + 1, filters)">
-					Próxima
-				</Button>
-			</div>
-
-			<ModalDialog ref="modalRef" :title="modalTitle">
-				<CreditCardChargeForm
-					:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
-					:readonly="store.modalMode === 'view'"
-					:credit-cards="creditCards ?? []"
-					@success="handleFormSuccess"
-					@cancel="store.closeModal()"
-				/>
-			</ModalDialog>
+		<div v-if="meta.last_page > 1" class="flex justify-center gap-2">
+			<Button variant="outline" size="sm" :disabled="meta.current_page <= 1" @click="goToPage(index.url(), meta.current_page - 1, filters)">
+				Anterior
+			</Button>
+			<span class="flex items-center px-3 text-sm">{{ meta.current_page }} / {{ meta.last_page }}</span>
+			<Button variant="outline" size="sm" :disabled="meta.current_page >= meta.last_page" @click="goToPage(index.url(), meta.current_page + 1, filters)">
+				Próxima
+			</Button>
 		</div>
-	</AppLayout>
+
+		<ModalDialog ref="modalRef" :title="modalTitle">
+			<CreditCardChargeForm
+				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
+				:readonly="store.modalMode === 'view'"
+				:credit-cards="creditCards ?? []"
+				@success="handleFormSuccess"
+				@cancel="store.closeModal()"
+			/>
+		</ModalDialog>
+	</div>
 </template>

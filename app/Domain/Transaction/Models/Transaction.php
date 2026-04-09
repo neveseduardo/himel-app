@@ -4,6 +4,7 @@ namespace App\Domain\Transaction\Models;
 
 use App\Domain\Account\Models\Account;
 use App\Domain\Category\Models\Category;
+use App\Domain\Period\Models\Period;
 use App\Domain\Shared\HasUids;
 use App\Domain\User\Models\User;
 use Database\Factories\TransactionFactory;
@@ -38,6 +39,7 @@ class Transaction extends Model
         'paid_at',
         'description',
         'reference_id',
+        'period_uid',
     ];
 
     protected $casts = [
@@ -93,6 +95,11 @@ class Transaction extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class, 'category_uid', 'uid');
+    }
+
+    public function period(): BelongsTo
+    {
+        return $this->belongsTo(Period::class, 'period_uid', 'uid');
     }
 
     public function scopeForUser($query, string $userUid)

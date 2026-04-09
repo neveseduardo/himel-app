@@ -63,7 +63,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 
-import AuthLayout from '@/components/layouts/AuthLayout.vue';
 import { update } from '@/routes/password';
 
 const props = defineProps<{
@@ -72,8 +71,4 @@ const props = defineProps<{
 }>();
 
 const inputEmail = ref(props.email);
-
-defineOptions({
-	layout: AuthLayout,
-});
 </script>

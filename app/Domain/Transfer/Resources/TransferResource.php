@@ -16,6 +16,7 @@ class TransferResource extends JsonResource
         return [
             'uid' => $this->uid,
             'amount' => $this->amount,
+            'occurred_at' => $this->created_at,
             'created_at' => $this->created_at,
             'from_account' => new AccountResource($this->whenLoaded('fromAccount')),
             'to_account' => new AccountResource($this->whenLoaded('toAccount')),

@@ -3,6 +3,8 @@
 namespace App\Domain\Period\Controllers;
 
 use App\Domain\Period\Contracts\PeriodServiceInterface;
+use App\Domain\Period\Exceptions\PeriodAlreadyExistsException;
+use App\Domain\Period\Exceptions\PeriodHasPaidTransactionsException;
 use App\Domain\Period\Requests\StorePeriodRequest;
 use App\Domain\Period\Resources\PeriodResource;
 use Illuminate\Http\JsonResponse;
@@ -30,13 +32,15 @@ class PeriodController
         try {
             $userUid = $request->user()->uid;
 
-            $period = $this->periodService->getOrCreate(
+            $period = $this->periodService->create(
                 $userUid,
-                $request->validated()['month'],
-                $request->validated()['year']
+                $request->validated('month'),
+                $request->validated('year'),
             );
 
             return response()->json(['data' => new PeriodResource($period)], 201);
+        } catch (PeriodAlreadyExistsException $e) {
+            return response()->json(['error' => $e->getMessage()], 409);
         } catch (\Throwable $e) {
             Log::error('Failed to create period', [
                 'user_uid' => $request->user()->uid,
@@ -62,6 +66,25 @@ class PeriodController
         return response()->json(['data' => new PeriodResource($period)]);
     }
 
+    public function initialize(Request $request, string $uid): JsonResponse
+    {
+        try {
+            $result = $this->periodService->initializePeriod($uid, $request->user()->uid);
+
+            return response()->json(['data' => $result]);
+        } catch (\Throwable $e) {
+            Log::error('Failed to initialize period', [
+                'uid' => $uid,
+                'error' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'error' => 'Erro ao inicializar período.',
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
     public function destroy(Request $request, string $uid): JsonResponse
     {
         try {
@@ -74,6 +97,8 @@ class PeriodController
             }
 
             return response()->json(null, 204);
+        } catch (PeriodHasPaidTransactionsException $e) {
+            return response()->json(['error' => $e->getMessage()], 422);
         } catch (\Throwable $e) {
             Log::error('Failed to delete period', [
                 'uid' => $uid,
@@ -84,7 +109,7 @@ class PeriodController
             return response()->json([
                 'error' => 'Erro ao excluir período.',
                 'message' => $e->getMessage(),
-            ], 422);
+            ], 500);
         }
     }
 

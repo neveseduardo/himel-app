@@ -37,6 +37,7 @@ export default defineConfig({
 				'./resources/js/components/shared',
 				'./resources/js/components/layouts',
 				'./resources/js/modules/auth/components',
+				'./resources/js/modules/settings/components',
 			],
 		}),
 	],

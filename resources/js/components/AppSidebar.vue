@@ -4,6 +4,7 @@ import {
 	ArrowLeftRight,
 	ArrowRightLeft,
 	CalendarClock,
+	CalendarDays,
 	CreditCard,
 	LayoutDashboard,
 	ShoppingCart,
@@ -35,6 +36,7 @@ const financeNavItems: NavItem[] = [
 	{ title: 'Despesas Fixas', href: '/finance/fixed-expenses', icon: CalendarClock },
 	{ title: 'Cartões', href: '/finance/credit-cards', icon: CreditCard },
 	{ title: 'Compras Cartão', href: '/finance/credit-card-charges', icon: ShoppingCart },
+	{ title: 'Períodos', href: '/finance/periods', icon: CalendarDays },
 ];
 
 const { isCurrentOrParentUrl, isCurrentUrl } = useCurrentUrl();

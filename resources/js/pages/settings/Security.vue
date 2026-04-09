@@ -2,13 +2,8 @@
 import { Form, Head } from '@inertiajs/vue3';
 import { ShieldCheck } from 'lucide-vue-next';
 
-import AppLayout from '@/components/layouts/AppLayout.vue';
-import SettingsLayout from '@/components/layouts/settings/Layout.vue';
-
-import SecurityController from '@/actions/App/Http/Controllers/Settings/SecurityController';
-import { useTwoFactorAuth } from '@/Modules/Auth/composables/useTwoFactorAuth';
-
-defineOptions({ layout: AppLayout });
+import SecurityController from '@/actions/App/Domain/Settings/Controllers/SecurityController';
+import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 
 withDefaults(
 	defineProps<{
@@ -31,8 +26,7 @@ onUnmounted(() => clearTwoFactorAuthData());
 
 <template>
 	<div>
-		<SettingsLayout>
-			<Head title="Security settings" />
+		<Head title="Security settings" />
 
 			<div class="space-y-6">
 				<Heading
@@ -184,6 +178,5 @@ onUnmounted(() => clearTwoFactorAuthData());
 					:two-factor-enabled="twoFactorEnabled"
 				/>
 			</div>
-		</SettingsLayout>
 	</div>
 </template>

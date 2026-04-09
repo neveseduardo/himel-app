@@ -28,15 +28,10 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 
-import AuthLayout from '@/components/layouts/AuthLayout.vue';
 import { logout } from '@/routes';
 import { send } from '@/routes/verification';
 
 defineProps<{
     status?: string;
 }>();
-
-defineOptions({
-	layout: AuthLayout,
-});
 </script>

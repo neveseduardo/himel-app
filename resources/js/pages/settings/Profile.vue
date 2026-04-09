@@ -1,13 +1,8 @@
 <script setup lang="ts">
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
 
-import AppLayout from '@/components/layouts/AppLayout.vue';
-import SettingsLayout from '@/components/layouts/settings/Layout.vue';
+import ProfileController from '@/actions/App/Domain/Settings/Controllers/ProfileController';
 import { send } from '@/routes/verification';
-
-import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-
-defineOptions({ layout: AppLayout });
 
 defineProps<{
     mustVerifyEmail: boolean;
@@ -20,8 +15,7 @@ const user = computed(() => page.props.auth.user);
 
 <template>
 	<div>
-		<SettingsLayout>
-			<Head title="Profile settings" />
+		<Head title="Profile settings" />
 
 			<div class="flex flex-col space-y-6">
 				<Heading
@@ -111,6 +105,5 @@ const user = computed(() => page.props.auth.user);
 			</div>
 
 			<DeleteUser />
-		</SettingsLayout>
 	</div>
 </template>

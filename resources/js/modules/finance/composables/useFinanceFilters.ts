@@ -1,7 +1,7 @@
 import { router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-export function useFinanceFilters(initialFilters: Record<string, string | number | null> = {}) {
+export function useFinanceFilters(initialFilters: Record<string, string> = {}) {
 	const filters = ref({ ...initialFilters });
 
 	function applyFilters(routeName: string) {

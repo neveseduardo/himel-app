@@ -5,7 +5,6 @@ import { computed, ref, watch } from 'vue';
 
 import { destroy, index } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
 import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
-import AppLayout from '@/components/layouts/AppLayout.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
@@ -83,67 +82,65 @@ function handleDelete(uid: string) {
 </script>
 
 <template>
-	<AppLayout :breadcrumbs="breadcrumbs">
-		<div class="flex flex-col gap-6 p-6">
-			<PageHeader title="Transações" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
+	<div class="flex flex-col gap-6 p-6">
+		<PageHeader title="Transações" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
-			<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
+		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 
-			<DataTable :columns="columns" :data="transactions as unknown as Record<string, unknown>[]">
-				<template #cell-description="{ row }">
-					{{ (row as unknown as Transaction).description || '—' }}
-				</template>
-				<template #cell-amount="{ row }">
-					{{ formatCurrency((row as unknown as Transaction).amount) }}
-				</template>
-				<template #cell-direction="{ row }">
-					<DirectionBadge :direction="(row as unknown as Transaction).direction" />
-				</template>
-				<template #cell-status="{ row }">
-					<StatusBadge :status="(row as unknown as Transaction).status" />
-				</template>
-				<template #cell-occurred_at="{ row }">
-					{{ formatDate((row as unknown as Transaction).occurred_at) }}
-				</template>
-				<template #cell-actions="{ row }">
-					<div class="flex justify-end gap-1">
-						<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as Transaction)">
-							<Eye class="size-4" />
-						</Button>
-						<Button variant="ghost" size="icon" @click="store.openEditModal(row as unknown as Transaction)">
-							<Pencil class="size-4" />
-						</Button>
-						<DeleteConfirmPopover :loading="store.deletingUid === (row as unknown as Transaction).uid" @confirm="handleDelete((row as unknown as Transaction).uid)">
-							<template #trigger>
-								<Button variant="ghost" size="icon">
-									<Trash2 class="size-4" />
-								</Button>
-							</template>
-						</DeleteConfirmPopover>
-					</div>
-				</template>
-			</DataTable>
+		<DataTable :columns="columns" :data="transactions as unknown as Record<string, unknown>[]">
+			<template #cell-description="{ row }">
+				{{ (row as unknown as Transaction).description || '—' }}
+			</template>
+			<template #cell-amount="{ row }">
+				{{ formatCurrency((row as unknown as Transaction).amount) }}
+			</template>
+			<template #cell-direction="{ row }">
+				<DirectionBadge :direction="(row as unknown as Transaction).direction" />
+			</template>
+			<template #cell-status="{ row }">
+				<StatusBadge :status="(row as unknown as Transaction).status" />
+			</template>
+			<template #cell-occurred_at="{ row }">
+				{{ formatDate((row as unknown as Transaction).occurred_at) }}
+			</template>
+			<template #cell-actions="{ row }">
+				<div class="flex justify-end gap-1">
+					<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as Transaction)">
+						<Eye class="size-4" />
+					</Button>
+					<Button variant="ghost" size="icon" @click="store.openEditModal(row as unknown as Transaction)">
+						<Pencil class="size-4" />
+					</Button>
+					<DeleteConfirmPopover :loading="store.deletingUid === (row as unknown as Transaction).uid" @confirm="handleDelete((row as unknown as Transaction).uid)">
+						<template #trigger>
+							<Button variant="ghost" size="icon">
+								<Trash2 class="size-4" />
+							</Button>
+						</template>
+					</DeleteConfirmPopover>
+				</div>
+			</template>
+		</DataTable>
 
-			<div v-if="meta.last_page > 1" class="flex justify-center gap-2">
-				<Button variant="outline" size="sm" :disabled="meta.current_page <= 1" @click="goToPage(index.url(), meta.current_page - 1, filters)">
-					Anterior
-				</Button>
-				<span class="flex items-center px-3 text-sm">{{ meta.current_page }} / {{ meta.last_page }}</span>
-				<Button variant="outline" size="sm" :disabled="meta.current_page >= meta.last_page" @click="goToPage(index.url(), meta.current_page + 1, filters)">
-					Próxima
-				</Button>
-			</div>
-
-			<ModalDialog ref="modalRef" :title="modalTitle">
-				<TransactionForm
-					:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
-					:readonly="store.modalMode === 'view'"
-					:accounts="accounts ?? []"
-					:categories="categories ?? []"
-					@success="handleFormSuccess"
-					@cancel="store.closeModal()"
-				/>
-			</ModalDialog>
+		<div v-if="meta.last_page > 1" class="flex justify-center gap-2">
+			<Button variant="outline" size="sm" :disabled="meta.current_page <= 1" @click="goToPage(index.url(), meta.current_page - 1, filters)">
+				Anterior
+			</Button>
+			<span class="flex items-center px-3 text-sm">{{ meta.current_page }} / {{ meta.last_page }}</span>
+			<Button variant="outline" size="sm" :disabled="meta.current_page >= meta.last_page" @click="goToPage(index.url(), meta.current_page + 1, filters)">
+				Próxima
+			</Button>
 		</div>
-	</AppLayout>
+
+		<ModalDialog ref="modalRef" :title="modalTitle">
+			<TransactionForm
+				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
+				:readonly="store.modalMode === 'view'"
+				:accounts="accounts ?? []"
+				:categories="categories ?? []"
+				@success="handleFormSuccess"
+				@cancel="store.closeModal()"
+			/>
+		</ModalDialog>
+	</div>
 </template>
