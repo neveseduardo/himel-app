@@ -1,5 +1,17 @@
 {
     "$schema": "https://opencode.ai/config.json",
+    "instructions": [
+        ".kiro/steering/global.md",
+        ".kiro/steering/architecture.md",
+        ".kiro/steering/backend.md",
+        ".kiro/steering/frontend.md",
+        ".kiro/steering/financial-rules.md",
+        ".kiro/steering/data-model.md",
+        ".kiro/steering/api.md",
+        ".kiro/steering/validation.md",
+        ".kiro/steering/security.md",
+        ".kiro/steering/testing.md"
+    ],
     "mcp": {
         "laravel-boost": {
             "type": "local",
