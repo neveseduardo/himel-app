@@ -1,0 +1,16 @@
+{
+  "enabled": true,
+  "name": "Financial Domain Guard",
+  "description": "Before any write operation to financial domain files, reminds the agent to verify financial business rules from financial-rules.md, check data model consistency, and ensure business logic stays in the Service Layer.",
+  "version": "1",
+  "when": {
+    "type": "preToolUse",
+    "toolTypes": [
+      "write"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "You are about to write to a file. If this file is in the financial domain (app/Domain/**, resources/js/modules/finance/**, resources/js/pages/finance/**), verify:\n\n1. Business logic is ONLY in the Service Layer (never in Controllers or frontend)\n2. Financial calculations (balance, installments, projections) are backend-only\n3. DB::transaction is used in Service for composite operations\n4. Multi-tenant isolation: all queries use forUser() scope\n5. Enum values match financial-rules.md (direction, status, source, type)\n6. Category direction matches transaction direction (INFLOW↔INFLOW, OUTFLOW↔OUTFLOW)\n\nIf the file is NOT in the financial domain, proceed normally."
+  }
+}

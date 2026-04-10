@@ -25,6 +25,7 @@ const props = defineProps<{
 	filters: Record<string, string>;
 }>();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/finance' },
 	{ title: 'Contas', href: index.url() },

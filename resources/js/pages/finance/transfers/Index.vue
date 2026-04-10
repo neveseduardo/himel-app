@@ -26,6 +26,7 @@ const props = defineProps<{
 	accounts?: Account[];
 }>();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/finance' },
 	{ title: 'Transferências', href: index.url() },

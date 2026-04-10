@@ -1,41 +1,53 @@
+---
+inclusion: auto
+priority: 40
+---
+
 # Arquitetura — Himel App
 
-> Este arquivo define a arquitetura e estrutura de pastas do projeto.
+> Estrutura de pastas e padrões arquiteturais do projeto.
 
 ## Arquitetura Geral
 
-O projeto segue Domain-Driven Design (DDD) simplificado no backend e arquitetura modular no frontend, conectados via Inertia.js (sem API REST separada para o frontend).
+Domain-Driven Design (DDD) simplificado no backend + arquitetura modular no frontend, conectados via Inertia.js.
 
 ```
 Usuário → Vue 3 (Inertia) → Laravel Controller → Service Layer → Eloquent → MySQL
 ```
+
+- NÃO existe API REST separada para o frontend SPA.
+- Toda comunicação frontend ↔ backend é via Inertia.js.
 
 ## Estrutura Backend (Domain-Driven)
 
 ```
 app/Domain/{Entity}/
 ├── Contracts/          # Interfaces de Services
-├── Controllers/        # PageController (Inertia) + Controller (API)
+├── Controllers/        # PageController (Inertia) + Controller (CRUD)
 ├── Exceptions/         # Exceções de domínio
 ├── Listeners/          # Event listeners
 ├── Models/             # Eloquent Models
 ├── Policies/           # Authorization Policies
 ├── Requests/           # FormRequests (validação)
 ├── Resources/          # API Resources (serialização)
-├── Routes/             # web.php e api.php do domínio
-└── Services/           # Lógica de negócio
+├── Routes/             # web.php do domínio
+└── Services/           # Lógica de negócio (DONO das regras)
 ```
 
 ### Entidades de Domínio
 
-- `Account` — Contas financeiras
-- `Auth` — Autenticação (Fortify)
-- `Category` — Categorias financeiras
-- `CreditCard` — Cartões de crédito e compras/parcelas
-- `FixedExpense` — Despesas fixas recorrentes
-- `Period` — Períodos mensais (eixo central de organização)
-- `Transaction` — Transações financeiras
-- `Transfer` — Transferências entre contas
+| Entidade | Responsabilidade |
+|----------|-----------------|
+| `Account` | Contas financeiras |
+| `Auth` | Autenticação (Fortify) |
+| `Category` | Categorias financeiras (INFLOW/OUTFLOW) |
+| `CreditCard` | Cartões de crédito |
+| `CreditCardCharge` | Compras no cartão |
+| `CreditCardInstallment` | Parcelas de compras |
+| `FixedExpense` | Despesas fixas recorrentes |
+| `Period` | Períodos mensais (eixo central) |
+| `Transaction` | Transações financeiras |
+| `Transfer` | Transferências entre contas |
 
 ### Padrão de Controllers
 
@@ -49,47 +61,39 @@ Cada entidade possui dois controllers:
 resources/js/
 ├── components/             # Componentes globais reutilizáveis
 │   ├── ui/                 # Shadcn/Vue components
-│   ├── layouts/            # AppLayout, AppSidebar, etc.
-│   ├── PageHeader.vue      # Cabeçalho de páginas Index
+│   ├── layouts/            # AppLayout, AppSidebar
+│   ├── PageHeader.vue
 │   ├── DeleteConfirmPopover.vue
 │   ├── ValidatedInertiaForm.vue
 │   └── ValidatedField.vue
 ├── modules/finance/        # Módulo financeiro
-│   ├── components/         # Componentes do módulo (DataTable, FilterBar, Forms)
-│   ├── composables/        # Hooks reutilizáveis (useFinanceFilters, usePagination, useCrudToast)
-│   ├── services/           # Serviços (formatCurrency, formatDate)
+│   ├── components/         # Forms, DataTable, FilterBar
+│   ├── composables/        # useFinanceFilters, usePagination, useCrudToast
+│   ├── services/           # formatCurrency, formatDate
 │   ├── stores/             # Pinia stores por entidade
-│   ├── types/              # TypeScript types (finance.ts)
+│   ├── types/              # TypeScript types
 │   └── validations/        # Zod schemas por entidade
 ├── pages/finance/          # Páginas Inertia por entidade
-│   ├── accounts/Index.vue
-│   ├── categories/Index.vue
-│   ├── credit-cards/Index.vue
-│   ├── periods/Index.vue
-│   ├── periods/Show.vue
-│   ├── transactions/Index.vue
-│   └── transfers/Index.vue
 └── actions/                # Wayfinder (auto-gerado)
 ```
-
-## Padrão CRUD Frontend (Modal-Based)
-
-Todas as operações CRUD são centralizadas na página Index de cada módulo via modais:
-- Criação e edição via `ModalDialog` com formulário reutilizável
-- Exclusão via `DeleteConfirmPopover` inline na tabela
-- Estado gerenciado por Pinia store dedicado por módulo
-- Sem páginas Create/Edit separadas
 
 ## Fluxo de Dados
 
 ```
 1. Usuário interage com Vue component
 2. Pinia store gerencia estado de UI (modal, item atual)
-3. Formulário valida com Vee-Validate + Zod
+3. Formulário valida com Vee-Validate + Zod (UX only)
 4. Inertia router envia request ao Laravel
-5. Controller delega ao Service (via Interface)
-6. Service executa lógica + DB::transaction
-7. Controller retorna redirect com flash message
-8. Inertia recarrega props automaticamente
-9. Toast exibido via useCrudToast
+5. FormRequest valida no backend (segurança)
+6. Controller delega ao Service (via Interface)
+7. Service executa lógica + DB::transaction
+8. Controller retorna redirect com flash message
+9. Inertia recarrega props automaticamente
+10. Toast exibido via useCrudToast
 ```
+
+## Regras Estruturais
+
+- NUNCA criar novas pastas raiz sem aprovação do usuário.
+- Novas entidades DEVEM seguir a mesma estrutura DDD existente.
+- NUNCA criar páginas Create/Edit separadas — usar modais na Index.

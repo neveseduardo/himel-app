@@ -11,6 +11,7 @@ export const transactionSchema = z.object({
 	occurred_at: z.string().min(1, 'Data é obrigatória'),
 	due_date: z.string().nullable().optional(),
 	paid_at: z.string().nullable().optional(),
+	period_uid: z.string().uuid().nullable().optional(),
 });
 
 export type TransactionFormData = z.infer<typeof transactionSchema>;

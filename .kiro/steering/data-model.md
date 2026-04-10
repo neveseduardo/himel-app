@@ -1,8 +1,13 @@
+---
+inclusion: fileMatch
+fileMatchPattern: "database/migrations/**/*.php,app/Domain/**/Models/*.php"
+priority: 55
+---
+
 # Modelo de Dados — Himel App
 
-> **Glob:** `database/migrations/**/*.php, app/Domain/**/Models/*.php`
->
-> Schema completo do banco de dados. Consultar ao criar migrations, models ou queries.
+> Schema completo do banco de dados. Consultar ANTES de criar migrations, models ou queries.
+> NUNCA inventar nomes de tabelas ou colunas — usar este arquivo como fonte de verdade.
 
 ## financial_accounts
 

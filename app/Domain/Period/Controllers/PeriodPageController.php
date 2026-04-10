@@ -2,10 +2,14 @@
 
 namespace App\Domain\Period\Controllers;
 
+use App\Domain\Account\Contracts\AccountServiceInterface;
+use App\Domain\Category\Contracts\CategoryServiceInterface;
 use App\Domain\Period\Contracts\PeriodServiceInterface;
 use App\Domain\Period\Exceptions\PeriodAlreadyExistsException;
 use App\Domain\Period\Exceptions\PeriodHasPaidTransactionsException;
 use App\Domain\Period\Requests\StorePeriodRequest;
+use App\Domain\Transaction\Contracts\TransactionServiceInterface;
+use App\Domain\Transaction\Requests\StoreTransactionRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -15,7 +19,10 @@ use Inertia\Response;
 class PeriodPageController
 {
     public function __construct(
-        private readonly PeriodServiceInterface $periodService
+        private readonly PeriodServiceInterface $periodService,
+        private readonly AccountServiceInterface $accountService,
+        private readonly CategoryServiceInterface $categoryService,
+        private readonly TransactionServiceInterface $transactionService,
     ) {}
 
     public function index(Request $request): Response
@@ -40,7 +47,7 @@ class PeriodPageController
                 $request->validated('year'),
             );
 
-            return redirect()->route('finance.periods.index')->with('success', 'Período criado com sucesso.');
+            return redirect()->route('finance.finance.periods.index')->with('success', 'Período criado com sucesso.');
         } catch (PeriodAlreadyExistsException $e) {
             return back()->with('error', $e->getMessage());
         } catch (\Throwable $e) {
@@ -61,6 +68,9 @@ class PeriodPageController
 
         $transactions = $this->periodService->getTransactionsForPeriod($uid, $userUid, $filters);
 
+        $accounts = $this->accountService->getAll($userUid);
+        $categories = $this->categoryService->getAll($userUid);
+
         return Inertia::render('finance/periods/Show', [
             'period' => $periodSummary['period'],
             'summary' => [
@@ -71,6 +81,8 @@ class PeriodPageController
             'transactions' => $transactions['data'],
             'meta' => $transactions['meta'],
             'filters' => $filters,
+            'accounts' => $accounts,
+            'categories' => $categories,
         ]);
     }
 
@@ -79,13 +91,51 @@ class PeriodPageController
         try {
             $this->periodService->delete($uid, $request->user()->uid);
 
-            return redirect()->route('finance.periods.index')->with('success', 'Período excluído com sucesso.');
+            return redirect()->route('finance.finance.periods.index')->with('success', 'Período excluído com sucesso.');
         } catch (PeriodHasPaidTransactionsException $e) {
             return back()->with('error', $e->getMessage());
         } catch (\Throwable $e) {
             Log::error('Failed to delete period', ['error' => $e->getMessage()]);
 
             return back()->with('error', 'Erro ao excluir período.');
+        }
+    }
+
+    public function storeTransaction(StoreTransactionRequest $request, string $uid): RedirectResponse
+    {
+        try {
+            $data = $request->validated();
+            $data['period_uid'] = $uid;
+
+            $this->transactionService->create($data, $request->user()->uid);
+
+            return redirect()->route('finance.finance.periods.show', $uid)->with('success', 'Transação criada com sucesso.');
+        } catch (\Throwable $e) {
+            Log::error('Failed to create transaction for period', [
+                'period_uid' => $uid,
+                'user_uid' => $request->user()->uid,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Erro ao criar transação.');
+        }
+    }
+
+    public function detachTransactions(Request $request, string $uid): RedirectResponse
+    {
+        try {
+            $count = $this->periodService->detachAllTransactions($uid, $request->user()->uid);
+
+            return redirect()->route('finance.finance.periods.show', $uid)
+                ->with('success', sprintf('%d transação(ões) desvinculada(s) do período.', $count));
+        } catch (\Throwable $e) {
+            Log::error('Failed to detach transactions from period', [
+                'period_uid' => $uid,
+                'user_uid' => $request->user()->uid,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Erro ao desvincular transações do período.');
         }
     }
 
@@ -102,7 +152,7 @@ class PeriodPageController
                 $result['skipped'],
             );
 
-            return redirect()->route('finance.periods.show', $uid)->with('success', $message);
+            return redirect()->route('finance.finance.periods.show', $uid)->with('success', $message);
         } catch (\Throwable $e) {
             Log::error('Failed to initialize period', [
                 'uid' => $uid,

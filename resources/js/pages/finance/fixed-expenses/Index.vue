@@ -27,6 +27,7 @@ const props = defineProps<{
 	categories?: Category[];
 }>();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/finance' },
 	{ title: 'Despesas Fixas', href: index.url() },

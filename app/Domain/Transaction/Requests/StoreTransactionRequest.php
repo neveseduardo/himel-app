@@ -26,6 +26,7 @@ class StoreTransactionRequest extends FormRequest
             'paid_at' => ['nullable', 'date'],
             'reference_id' => ['nullable', 'uuid'],
             'description' => ['nullable', 'string', 'max:255'],
+            'period_uid' => ['nullable', 'uuid', 'exists:financial_periods,uid'],
         ];
     }
 
@@ -50,6 +51,8 @@ class StoreTransactionRequest extends FormRequest
             'due_date.date' => 'A data de vencimento deve ser uma data válida.',
             'paid_at.date' => 'A data de pagamento deve ser uma data válida.',
             'reference_id.uuid' => 'A referência deve ser um UUID válido.',
+            'period_uid.uuid' => 'O período deve ser um UUID válido.',
+            'period_uid.exists' => 'O período informado não existe.',
         ];
     }
 }

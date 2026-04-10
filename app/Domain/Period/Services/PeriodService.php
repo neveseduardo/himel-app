@@ -375,13 +375,31 @@ class PeriodService implements PeriodServiceInterface
         ];
     }
 
+    public function detachAllTransactions(string $periodUid, string $userUid): int
+    {
+        return DB::transaction(function () use ($periodUid, $userUid) {
+            $count = Transaction::where('period_uid', $periodUid)
+                ->forUser($userUid)
+                ->update(['period_uid' => null]);
+
+            Log::info('All transactions detached from period', [
+                'period_uid' => $periodUid,
+                'user_uid' => $userUid,
+                'count' => $count,
+            ]);
+
+            return $count;
+        });
+    }
+
     public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array
     {
         $page = $filters['page'] ?? 1;
         $perPage = min($filters['per_page'] ?? 15, 100);
 
         $query = Transaction::where('period_uid', $periodUid)
-            ->forUser($userUid);
+            ->forUser($userUid)
+            ->with(['account', 'category']);
 
         $query->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status));
         $query->when($filters['direction'] ?? null, fn ($q, $direction) => $q->where('direction', $direction));

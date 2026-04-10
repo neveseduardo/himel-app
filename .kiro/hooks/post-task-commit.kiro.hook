@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Post-Task Commit Guide",
+  "description": "After completing a spec task, guides the developer through a structured commit workflow using Conventional Commits (type(scope): descrição).",
+  "version": "1",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A task was just completed. Follow this Conventional Commits workflow:\n\n1. Run `git status` and `git diff --stat` to show changed files.\n2. Present a summary of changes to the user.\n3. Ask the user for commit details:\n   - Commit type: feat, fix, chore, docs, refactor, test, style, perf, ci, build\n   - Scope (optional): account, transaction, transfer, period, category, credit-card, fixed-expense, auth, ui, api\n   - Brief description in Portuguese\n   - Is this a breaking change? (add ! after scope if yes)\n4. Suggest the final commit message following Conventional Commits:\n   Pattern: type(scope): descrição\n   Examples:\n   - \"feat(transaction): adicionar filtro por período na listagem\"\n   - \"fix(credit-card): corrigir cálculo de centavos residuais\"\n   - \"refactor(period): extrair lógica de inicialização para service\"\n   - \"chore: atualizar dependências do projeto\"\n5. Ask user to confirm the commit message.\n6. If confirmed, run:\n   - `git add -A`\n   - `git commit -m \"<message>\"`\n7. If not confirmed, ask for adjustments and repeat.\n\nIMPORTANT: Do NOT push automatically. Only commit."
+  }
+}

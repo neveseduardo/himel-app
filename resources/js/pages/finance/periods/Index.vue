@@ -8,8 +8,8 @@ import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DataTable from '@/modules/finance/components/DataTable.vue';
 import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
@@ -23,6 +23,7 @@ const props = defineProps<{
 	filters: Record<string, string>;
 }>();
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/finance' },
 	{ title: 'Períodos', href: index.url() },

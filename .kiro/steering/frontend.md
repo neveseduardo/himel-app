@@ -1,8 +1,29 @@
+---
+inclusion: fileMatch
+fileMatchPattern: "resources/js/**/*.{ts,vue}"
+priority: 60
+---
+
 # Regras de Frontend — Himel App
 
-> **Glob:** `resources/js/**/*.{ts,vue}`
->
 > Regras obrigatórias para todo código Vue/TypeScript do projeto.
+> O frontend é camada de APRESENTAÇÃO. Lógica de negócio financeira é PROIBIDA aqui.
+
+## Regra de Ouro: Sem Lógica de Negócio
+
+- O frontend NUNCA DEVE calcular saldos, parcelas, projeções ou qualquer valor financeiro.
+- O frontend DEVE apenas exibir dados calculados pelo backend.
+- Validação frontend (Zod) é para UX. A fonte de verdade é o backend (FormRequest).
+
+## Validação Frontend Obrigatória
+
+Antes de finalizar qualquer alteração em arquivos `.ts` ou `.vue`, o agente DEVE executar:
+
+```bash
+npx vue-tsc --noEmit 2>&1 && npm run lint
+```
+
+Este passo é OBRIGATÓRIO e NÃO PODE ser pulado.
 
 ## Componentes Vue
 
@@ -10,7 +31,6 @@
 - É PROIBIDO usar `any` em TypeScript. Todo código DEVE ser tipado.
 - Props DEVEM usar `defineProps<T>()` com interface tipada.
 - Emits DEVEM usar `defineEmits<T>()` com interface tipada.
-- Componentes expostos DEVEM usar `defineExpose()`.
 
 ## Shadcn/Vue
 
@@ -25,19 +45,20 @@ Toda lógica de frontend DEVE seguir a estrutura em `resources/js/modules/financ
 
 | Pasta | Conteúdo |
 |-------|----------|
-| `stores/` | Pinia stores por entidade (ex: `useAccountStore`) |
+| `stores/` | Pinia stores por entidade |
 | `components/` | Componentes específicos do módulo (Forms, DataTable, FilterBar) |
-| `services/` | Serviços utilitários (`finance.services.ts`) |
+| `services/` | Serviços utilitários (formatação, helpers) |
 | `composables/` | Hooks reutilizáveis (`useFinanceFilters`, `usePagination`, `useCrudToast`) |
 | `types/` | TypeScript types (`finance.ts`) |
 | `validations/` | Zod schemas por entidade |
 
 ## Pinia Stores
 
-Cada módulo DEVE ter um Pinia store dedicado com o padrão:
-- `isModalOpen`, `modalMode` ('create' | 'edit' | 'view'), `currentItem`, `deletingUid`
-- Ações: `openCreateModal()`, `openEditModal(item)`, `openViewModal(item)`, `closeModal()`
-- `closeModal()` DEVE ter delay de 200ms antes de resetar `currentItem` (animação do Dialog)
+- Cada módulo DEVE ter um Pinia store dedicado.
+- Padrão: `isModalOpen`, `modalMode` ('create' | 'edit' | 'view'), `currentItem`, `deletingUid`.
+- Ações: `openCreateModal()`, `openEditModal(item)`, `openViewModal(item)`, `closeModal()`.
+- `closeModal()` DEVE ter delay de 200ms antes de resetar `currentItem` (animação do Dialog).
+- Stores NUNCA DEVEM conter cálculos financeiros — apenas estado de UI.
 
 ## Roteamento
 
@@ -48,15 +69,15 @@ Cada módulo DEVE ter um Pinia store dedicado com o padrão:
 
 ## Formulários
 
-- Formulários DEVEM usar `ValidatedInertiaForm` + `ValidatedField` para integração vee-validate + zod + Inertia.
+- Formulários DEVEM usar `ValidatedInertiaForm` + `ValidatedField`.
 - Cada módulo DEVE ter um Zod schema em `modules/finance/validations/`.
 - Submissão via Inertia router (`router.post`, `router.put`, `router.delete`).
-- Formulários de módulo DEVEM ser reutilizáveis para create, edit e view (via props `item?` e `readonly?`).
+- Formulários DEVEM ser reutilizáveis para create, edit e view (via props `item?` e `readonly?`).
 
 ## Notificações
 
 - Toasts DEVEM usar `vue-sonner` via composable `useCrudToast`.
-- Mensagens padronizadas: "{entidade} criado(a)/atualizado(a)/excluído(a) com sucesso!"
+- Mensagens padronizadas em pt-BR: "{entidade} criado(a)/atualizado(a)/excluído(a) com sucesso!"
 - Erros do backend DEVEM ser exibidos via toast com mensagem retornada ou fallback genérico.
 
 ## Padrão CRUD (Modal-Based)

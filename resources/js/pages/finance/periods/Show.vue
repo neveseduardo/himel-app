@@ -1,21 +1,34 @@
 <script setup lang="ts">
 import { router, usePage } from '@inertiajs/vue3';
-import { ArrowLeft, CheckCircle, Play, X } from 'lucide-vue-next';
+import { ArrowLeft, CheckCircle, Play, Plus, Trash2, X } from 'lucide-vue-next';
 import { computed, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 
-import { index, initialize, show } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
+import { detachTransactions, index, initialize, show } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
 import { update as updateTransaction } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+	AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import DataTable from '@/modules/finance/components/DataTable.vue';
 import DirectionBadge from '@/modules/finance/components/DirectionBadge.vue';
 import StatusBadge from '@/modules/finance/components/StatusBadge.vue';
+import TransactionForm from '@/modules/finance/components/TransactionForm.vue';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { formatCurrency, formatDate } from '@/modules/finance/services/finance.services';
-import type { PaginationMeta, Period, PeriodSummary, Transaction } from '@/modules/finance/types/finance';
+import type { Account, Category, PaginationMeta, Period, PeriodSummary, Transaction } from '@/modules/finance/types/finance';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{
@@ -24,10 +37,13 @@ const props = defineProps<{
 	transactions: Transaction[];
 	meta: PaginationMeta;
 	filters: Record<string, string>;
+	accounts: Account[];
+	categories: Category[];
 }>();
 
 const monthNames = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/finance' },
 	{ title: 'Períodos', href: index.url() },
@@ -95,7 +111,7 @@ function handleMarkAsPaid(transaction: Transaction) {
 // 14.3 — Apply filters
 function applyFilters() {
 	const cleanFilters = Object.fromEntries(
-		Object.entries(filters.value).filter(([, v]) => v !== null && v !== '' && v !== 'all'),
+		Object.entries(filters.value).filter(([, v]) => v !== null && v !== '' && v !== 'all')
 	);
 	router.get(show.url(props.period.uid), cleanFilters, { preserveState: true, preserveScroll: true });
 }
@@ -103,6 +119,52 @@ function applyFilters() {
 function resetFilters() {
 	filters.value = {};
 	router.get(show.url(props.period.uid), {}, { preserveState: true });
+}
+
+// 7.2 — Group transactions by direction
+const inflowTransactions = computed(() =>
+	props.transactions.filter((t) => t.direction === 'INFLOW')
+);
+
+const outflowTransactions = computed(() =>
+	props.transactions.filter((t) => t.direction === 'OUTFLOW')
+);
+
+const inflowSubtotal = computed(() =>
+	inflowTransactions.value.reduce((sum, t) => sum + t.amount, 0)
+);
+
+const outflowSubtotal = computed(() =>
+	outflowTransactions.value.reduce((sum, t) => sum + t.amount, 0)
+);
+
+// 7.3 — Create transaction modal
+const createModalRef = ref<InstanceType<typeof ModalDialog> | null>(null);
+
+const periodDate = computed(() => {
+	const month = String(props.period.month).padStart(2, '0');
+	return `${props.period.year}-${month}-01`;
+});
+
+function handleCreateSuccess() {
+	createModalRef.value?.closeDialog();
+}
+
+// 7.4 — Detach all transactions
+const detaching = ref(false);
+
+function handleDetachAll() {
+	detaching.value = true;
+	router.delete(detachTransactions.url(props.period.uid), {
+		preserveScroll: true,
+		onSuccess: () => {
+			detaching.value = false;
+		},
+		onError: () => {
+			detaching.value = false;
+			toast.error('Erro ao remover transações do período.');
+		},
+	});
 }
 </script>
 
@@ -118,17 +180,47 @@ function resetFilters() {
 					{{ monthNames[period.month] }} {{ period.year }}
 				</h1>
 			</div>
-			<Button size="sm" :disabled="initializing" @click="handleInitialize">
-				<Play class="mr-2 size-4" />
-				{{ initializing ? 'Inicializando...' : 'Inicializar Período' }}
-			</Button>
+			<div class="flex items-center gap-2">
+				<AlertDialog>
+					<AlertDialogTrigger as-child>
+						<Button variant="destructive" size="sm">
+							<Trash2 class="mr-2 size-4" />
+							Remover Todas as Transações
+						</Button>
+					</AlertDialogTrigger>
+					<AlertDialogContent>
+						<AlertDialogHeader>
+							<AlertDialogTitle>Remover todas as transações?</AlertDialogTitle>
+							<AlertDialogDescription>
+								Essa ação irá desvincular todas as transações deste período. As transações não serão excluídas, apenas removidas do período.
+							</AlertDialogDescription>
+						</AlertDialogHeader>
+						<AlertDialogFooter>
+							<AlertDialogCancel>Cancelar</AlertDialogCancel>
+							<AlertDialogAction :disabled="detaching" @click="handleDetachAll">
+								{{ detaching ? 'Removendo...' : 'Confirmar Remoção' }}
+							</AlertDialogAction>
+						</AlertDialogFooter>
+					</AlertDialogContent>
+				</AlertDialog>
+				<Button size="sm" @click="createModalRef?.openDialog()">
+					<Plus class="mr-2 size-4" />
+					Nova Transação
+				</Button>
+				<Button size="sm" :disabled="initializing" @click="handleInitialize">
+					<Play class="mr-2 size-4" />
+					{{ initializing ? 'Inicializando...' : 'Inicializar Período' }}
+				</Button>
+			</div>
 		</div>
 
 		<!-- 14.1 — Financial summary cards -->
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
 			<Card>
 				<CardHeader class="pb-2">
-					<CardTitle class="text-sm font-medium text-muted-foreground">Entradas</CardTitle>
+					<CardTitle class="text-sm font-medium text-muted-foreground">
+						Entradas
+					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<p class="text-2xl font-bold text-green-600 dark:text-green-400">
@@ -138,7 +230,9 @@ function resetFilters() {
 			</Card>
 			<Card>
 				<CardHeader class="pb-2">
-					<CardTitle class="text-sm font-medium text-muted-foreground">Saídas</CardTitle>
+					<CardTitle class="text-sm font-medium text-muted-foreground">
+						Saídas
+					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<p class="text-2xl font-bold text-red-600 dark:text-red-400">
@@ -148,7 +242,9 @@ function resetFilters() {
 			</Card>
 			<Card>
 				<CardHeader class="pb-2">
-					<CardTitle class="text-sm font-medium text-muted-foreground">Saldo</CardTitle>
+					<CardTitle class="text-sm font-medium text-muted-foreground">
+						Saldo
+					</CardTitle>
 				</CardHeader>
 				<CardContent>
 					<p class="text-2xl font-bold" :class="summary.balance >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
@@ -167,10 +263,18 @@ function resetFilters() {
 						<SelectValue placeholder="Todos" />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">Todos</SelectItem>
-						<SelectItem value="PENDING">Pendente</SelectItem>
-						<SelectItem value="PAID">Pago</SelectItem>
-						<SelectItem value="OVERDUE">Atrasado</SelectItem>
+						<SelectItem value="all">
+							Todos
+						</SelectItem>
+						<SelectItem value="PENDING">
+							Pendente
+						</SelectItem>
+						<SelectItem value="PAID">
+							Pago
+						</SelectItem>
+						<SelectItem value="OVERDUE">
+							Atrasado
+						</SelectItem>
 					</SelectContent>
 				</Select>
 			</div>
@@ -181,9 +285,15 @@ function resetFilters() {
 						<SelectValue placeholder="Todas" />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">Todas</SelectItem>
-						<SelectItem value="INFLOW">Entrada</SelectItem>
-						<SelectItem value="OUTFLOW">Saída</SelectItem>
+						<SelectItem value="all">
+							Todas
+						</SelectItem>
+						<SelectItem value="INFLOW">
+							Entrada
+						</SelectItem>
+						<SelectItem value="OUTFLOW">
+							Saída
+						</SelectItem>
 					</SelectContent>
 				</Select>
 			</div>
@@ -194,11 +304,21 @@ function resetFilters() {
 						<SelectValue placeholder="Todas" />
 					</SelectTrigger>
 					<SelectContent>
-						<SelectItem value="all">Todas</SelectItem>
-						<SelectItem value="MANUAL">Manual</SelectItem>
-						<SelectItem value="CREDIT_CARD">Cartão</SelectItem>
-						<SelectItem value="FIXED">Fixa</SelectItem>
-						<SelectItem value="TRANSFER">Transferência</SelectItem>
+						<SelectItem value="all">
+							Todas
+						</SelectItem>
+						<SelectItem value="MANUAL">
+							Manual
+						</SelectItem>
+						<SelectItem value="CREDIT_CARD">
+							Cartão
+						</SelectItem>
+						<SelectItem value="FIXED">
+							Fixa
+						</SelectItem>
+						<SelectItem value="TRANSFER">
+							Transferência
+						</SelectItem>
 					</SelectContent>
 				</Select>
 			</div>
@@ -213,42 +333,113 @@ function resetFilters() {
 			</div>
 		</div>
 
-		<!-- 14.2 — Transactions table -->
-		<DataTable :columns="columns" :data="transactions as unknown as Record<string, unknown>[]">
-			<template #cell-description="{ row }">
-				{{ (row as unknown as Transaction).description || '—' }}
-			</template>
-			<template #cell-category="{ row }">
-				{{ (row as unknown as Transaction).category?.name || '—' }}
-			</template>
-			<template #cell-account="{ row }">
-				{{ (row as unknown as Transaction).account?.name || '—' }}
-			</template>
-			<template #cell-amount="{ row }">
-				<DirectionBadge :direction="(row as unknown as Transaction).direction" />
-				{{ formatCurrency((row as unknown as Transaction).amount) }}
-			</template>
-			<template #cell-due_date="{ row }">
-				{{ (row as unknown as Transaction).due_date ? formatDate((row as unknown as Transaction).due_date!) : '—' }}
-			</template>
-			<template #cell-status="{ row }">
-				<StatusBadge :status="(row as unknown as Transaction).status" />
-			</template>
-			<template #cell-actions="{ row }">
-				<div class="flex justify-end gap-1">
-					<Button
-						v-if="(row as unknown as Transaction).status !== 'PAID'"
-						variant="ghost"
-						size="icon"
-						:disabled="payingUid === (row as unknown as Transaction).uid"
-						title="Marcar como pago"
-						@click="handleMarkAsPaid(row as unknown as Transaction)"
-					>
-						<CheckCircle class="size-4" />
-					</Button>
-				</div>
-			</template>
-		</DataTable>
+		<!-- 7.2 — Entradas (INFLOW) section -->
+		<Card>
+			<CardHeader class="flex flex-row items-center justify-between pb-2">
+				<CardTitle class="text-lg font-semibold text-green-700 dark:text-green-400">
+					Entradas
+				</CardTitle>
+				<span class="text-lg font-bold text-green-600 dark:text-green-400">{{ formatCurrency(inflowSubtotal) }}</span>
+			</CardHeader>
+			<CardContent>
+				<template v-if="inflowTransactions.length === 0">
+					<p class="py-4 text-center text-sm text-muted-foreground">
+						Nenhuma entrada neste período.
+					</p>
+				</template>
+				<template v-else>
+					<DataTable :columns="columns" :data="inflowTransactions as unknown as Record<string, unknown>[]">
+						<template #cell-description="{ row }">
+							{{ (row as unknown as Transaction).description || '—' }}
+						</template>
+						<template #cell-category="{ row }">
+							{{ (row as unknown as Transaction).category?.name || '—' }}
+						</template>
+						<template #cell-account="{ row }">
+							{{ (row as unknown as Transaction).account?.name || '—' }}
+						</template>
+						<template #cell-amount="{ row }">
+							<DirectionBadge :direction="(row as unknown as Transaction).direction" />
+							{{ formatCurrency((row as unknown as Transaction).amount) }}
+						</template>
+						<template #cell-due_date="{ row }">
+							{{ (row as unknown as Transaction).due_date ? formatDate((row as unknown as Transaction).due_date!) : '—' }}
+						</template>
+						<template #cell-status="{ row }">
+							<StatusBadge :status="(row as unknown as Transaction).status" />
+						</template>
+						<template #cell-actions="{ row }">
+							<div class="flex justify-end gap-1">
+								<Button
+									v-if="(row as unknown as Transaction).status !== 'PAID'"
+									variant="ghost"
+									size="icon"
+									:disabled="payingUid === (row as unknown as Transaction).uid"
+									title="Marcar como pago"
+									@click="handleMarkAsPaid(row as unknown as Transaction)"
+								>
+									<CheckCircle class="size-4" />
+								</Button>
+							</div>
+						</template>
+					</DataTable>
+				</template>
+			</CardContent>
+		</Card>
+
+		<!-- 7.2 — Saídas (OUTFLOW) section -->
+		<Card>
+			<CardHeader class="flex flex-row items-center justify-between pb-2">
+				<CardTitle class="text-lg font-semibold text-red-700 dark:text-red-400">
+					Saídas
+				</CardTitle>
+				<span class="text-lg font-bold text-red-600 dark:text-red-400">{{ formatCurrency(outflowSubtotal) }}</span>
+			</CardHeader>
+			<CardContent>
+				<template v-if="outflowTransactions.length === 0">
+					<p class="py-4 text-center text-sm text-muted-foreground">
+						Nenhuma saída neste período.
+					</p>
+				</template>
+				<template v-else>
+					<DataTable :columns="columns" :data="outflowTransactions as unknown as Record<string, unknown>[]">
+						<template #cell-description="{ row }">
+							{{ (row as unknown as Transaction).description || '—' }}
+						</template>
+						<template #cell-category="{ row }">
+							{{ (row as unknown as Transaction).category?.name || '—' }}
+						</template>
+						<template #cell-account="{ row }">
+							{{ (row as unknown as Transaction).account?.name || '—' }}
+						</template>
+						<template #cell-amount="{ row }">
+							<DirectionBadge :direction="(row as unknown as Transaction).direction" />
+							{{ formatCurrency((row as unknown as Transaction).amount) }}
+						</template>
+						<template #cell-due_date="{ row }">
+							{{ (row as unknown as Transaction).due_date ? formatDate((row as unknown as Transaction).due_date!) : '—' }}
+						</template>
+						<template #cell-status="{ row }">
+							<StatusBadge :status="(row as unknown as Transaction).status" />
+						</template>
+						<template #cell-actions="{ row }">
+							<div class="flex justify-end gap-1">
+								<Button
+									v-if="(row as unknown as Transaction).status !== 'PAID'"
+									variant="ghost"
+									size="icon"
+									:disabled="payingUid === (row as unknown as Transaction).uid"
+									title="Marcar como pago"
+									@click="handleMarkAsPaid(row as unknown as Transaction)"
+								>
+									<CheckCircle class="size-4" />
+								</Button>
+							</div>
+						</template>
+					</DataTable>
+				</template>
+			</CardContent>
+		</Card>
 
 		<!-- Pagination -->
 		<div v-if="meta.last_page > 1" class="flex justify-center gap-2">
@@ -260,5 +451,17 @@ function resetFilters() {
 				Próxima
 			</Button>
 		</div>
+
+		<!-- 7.3 — Create transaction modal -->
+		<ModalDialog ref="createModalRef" title="Nova Transação" description="Criar transação vinculada ao período">
+			<TransactionForm
+				:accounts="accounts"
+				:categories="categories"
+				:period-uid="period.uid"
+				:period-date="periodDate"
+				@success="handleCreateSuccess"
+				@cancel="createModalRef?.closeDialog()"
+			/>
+		</ModalDialog>
 	</div>
 </template>

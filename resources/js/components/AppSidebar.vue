@@ -29,6 +29,7 @@ import type { NavItem } from '@/types';
 
 const financeNavItems: NavItem[] = [
 	{ title: 'Visão Geral', href: '/finance', icon: LayoutDashboard },
+	{ title: 'Períodos', href: '/finance/periods', icon: CalendarDays },
 	{ title: 'Contas', href: '/finance/accounts', icon: Wallet },
 	{ title: 'Categorias', href: '/finance/categories', icon: Tags },
 	{ title: 'Transações', href: '/finance/transactions', icon: ArrowLeftRight },
@@ -36,7 +37,6 @@ const financeNavItems: NavItem[] = [
 	{ title: 'Despesas Fixas', href: '/finance/fixed-expenses', icon: CalendarClock },
 	{ title: 'Cartões', href: '/finance/credit-cards', icon: CreditCard },
 	{ title: 'Compras Cartão', href: '/finance/credit-card-charges', icon: ShoppingCart },
-	{ title: 'Períodos', href: '/finance/periods', icon: CalendarDays },
 ];
 
 const { isCurrentOrParentUrl, isCurrentUrl } = useCurrentUrl();

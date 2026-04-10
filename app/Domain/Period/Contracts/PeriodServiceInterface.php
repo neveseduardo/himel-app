@@ -24,5 +24,7 @@ interface PeriodServiceInterface
 
     public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array;
 
+    public function detachAllTransactions(string $periodUid, string $userUid): int;
+
     public function delete(string $uid, string $userUid): bool;
 }

@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "Pre-Spec Workflow",
+  "description": "Before starting work on a spec, checks the current git branch and guides the developer through a structured branch workflow using Conventional Commits branch naming (type/descricao-curta).",
+  "version": "1",
+  "when": {
+    "type": "preTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "Before starting this task, follow this workflow:\n\n1. Run `git branch --show-current` to check the current branch.\n2. Present branch options to the user:\n   a) Criar nova branch (sugerir padrão: type/descricao-curta, ex: feat/filtro-periodo-transacoes)\n   b) Usar a branch atual\n   c) Selecionar branch existente (listar com `git branch`)\n   d) Pular (sem controle de branch)\n3. If creating a new branch, run `git checkout -b <branch-name>`.\n4. Confirm the setup before proceeding with the task.\n\nBranch naming follows Conventional Commits: type/descricao-curta (feat/, fix/, refactor/, chore/, docs/, etc.)."
+  }
+}

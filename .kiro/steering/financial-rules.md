@@ -1,19 +1,26 @@
+---
+inclusion: auto
+priority: 100
+---
+
 # Regras de Negócio Financeiras — Himel App
 
 > **Glob:** `app/Domain/**/*.php`
 >
-> Regras de negócio obrigatórias do domínio financeiro. Consultar ANTES de implementar qualquer funcionalidade.
+> Este arquivo tem PRIORIDADE MÁXIMA. Em caso de conflito com qualquer outro steering, estas regras PREVALECEM.
+> Consultar ANTES de implementar qualquer funcionalidade financeira.
 
-## Princípios
+## Princípios Fundamentais
 
-- NÃO existe fechamento de mês manual — o sistema opera como fluxo contínuo.
-- O conceito central baseia-se em movimentações vinculadas a contas e organizadas por períodos.
-- Valores monetários (`amount`) DEVEM ser sempre decimais positivos. A natureza é definida por `direction`.
+- O sistema opera como fluxo contínuo. NÃO existe fechamento de mês manual.
+- Movimentações são vinculadas a contas e organizadas por períodos mensais.
+- Valores monetários (`amount`) DEVEM ser sempre `DECIMAL(12,2)` positivos. A natureza é definida exclusivamente por `direction`.
+- Toda lógica financeira DEVE residir no Service Layer. Controllers e frontend NUNCA DEVEM conter cálculos financeiros.
 
 ## Onboarding
 
 - O usuário NÃO PODE registrar transações ou despesas fixas sem ao menos uma `FinancialAccount`.
-- No primeiro acesso, criar automaticamente categorias padrão:
+- No primeiro acesso, o sistema DEVE criar automaticamente categorias padrão:
   - **OUTFLOW:** Alimentação, Moradia, Transporte, Saúde, Educação, Lazer, Vestuário, Outros
   - **INFLOW:** Salário, Freelance, Investimentos, Outros
 
@@ -21,58 +28,61 @@
 
 ### Criação
 - Campos obrigatórios: `amount`, `financial_account_uid`, `financial_category_uid`, `occurred_at`, `direction`.
-- PROIBIDO vincular categoria INFLOW a transação OUTFLOW (e vice-versa).
+- É PROIBIDO vincular categoria INFLOW a transação OUTFLOW (e vice-versa). O Service DEVE validar essa consistência.
 - Campo opcional `period_uid` para vincular transação a um período.
 
 ### Ciclo de Vida (Status)
 
-| Status | Condição |
-|--------|----------|
-| `PENDING` | Transação com `due_date` futuro |
-| `PAID` | Usuário confirma pagamento → preencher `paid_at` |
-| `OVERDUE` | Automatizado: `PENDING` onde `due_date < now()` |
+| Status | Condição | Impacto no Saldo |
+|--------|----------|------------------|
+| `PENDING` | Transação com `due_date` futuro | Nenhum |
+| `PAID` | Usuário confirma pagamento → preencher `paid_at` | Atualiza saldo |
+| `OVERDUE` | Automatizado: `PENDING` onde `due_date < now()` | Nenhum |
 
 ### Cálculo de Saldo
-- Saldo da conta atualizado APENAS por transações com status `PAID`.
-- Transações `PENDING` ou `OVERDUE` NÃO afetam o saldo.
+- Saldo da conta DEVE ser atualizado APENAS por transações com status `PAID`.
+- Transações `PENDING` ou `OVERDUE` NUNCA DEVEM afetar o saldo.
+- Atualização de saldo DEVE ocorrer dentro de `DB::transaction` no Service.
 
 ## Cartão de Crédito
 
 - **Charge (Compra):** Registro pai com valor total e número de parcelas.
-- **Installments:** Sistema gera automaticamente N parcelas.
-- Cada parcela gera uma `FinancialTransaction` vinculada via `reference_id`.
-- `due_date` calculado a partir do `due_day` do cartão e mês de cada parcela.
-- Parcelas: entre 1 e 48.
-- Centavos residuais da divisão distribuídos na última parcela.
+- **Installments:** Sistema DEVE gerar automaticamente N parcelas ao criar um Charge.
+- Cada parcela DEVE gerar uma `FinancialTransaction` vinculada via `reference_id`.
+- `due_date` DEVE ser calculado a partir do `due_day` do cartão e mês de cada parcela.
+- Parcelas: mínimo 1, máximo 48.
+- Centavos residuais da divisão DEVEM ser distribuídos na última parcela.
 
 ## Despesas Fixas
 
 - Projetar transação para o mês atual/seguinte baseando-se no `due_day`.
 - Podem ser pausadas via `active: false`.
-- Na inicialização de período, geram transações com `source=FIXED`.
+- Na inicialização de período, DEVEM gerar transações com `source=FIXED`.
 
 ## Transferências
 
 - Operação atômica: débito na conta de origem + crédito na conta de destino.
-- DEVE ser tratada via `DB::transaction`.
+- DEVE ser tratada via `DB::transaction` no Service Layer.
+- Contas de origem e destino DEVEM ser diferentes.
 
 ## Períodos
 
 - Períodos são criados explicitamente pelo usuário (mês/ano).
-- Unique constraint: `(user_uid, month, year)`.
-- Inicialização de período carrega automaticamente:
+- Unique constraint: `(user_uid, month, year)`. Tentativa de duplicata DEVE retornar 409.
+- Inicialização de período DEVE carregar automaticamente:
   - Despesas fixas ativas → transações `PENDING` com `source=FIXED`
   - Parcelas de cartão pendentes do mês → vincula ou cria transações com `source=CREDIT_CARD`
 - Inicialização DEVE ser idempotente (re-execução segura sem duplicatas).
-- Exclusão de período bloqueada se houver transações `PAID` vinculadas.
-- Exclusão permitida desvincula transações `PENDING`/`OVERDUE` (define `period_uid=null`).
+- Exclusão de período DEVE ser bloqueada se houver transações `PAID` vinculadas.
+- Exclusão permitida DEVE desvincular transações `PENDING`/`OVERDUE` (define `period_uid=null`).
 
 ## Restrições de Edição
 
-- Transações geradas por "Cartão de Crédito" ou "Transferências" NÃO PODEM ter valor alterado isoladamente.
-- Alteração DEVE ser feita na entidade pai (Parcela ou Transferência).
+- Transações com `source=CREDIT_CARD` ou `source=TRANSFER` NÃO PODEM ter valor alterado isoladamente.
+- Alteração DEVE ser feita na entidade pai (Charge/Installment ou Transfer).
+- O Service DEVE rejeitar tentativas de edição direta com exceção de domínio.
 
-## Enums
+## Enums (Fonte de Verdade)
 
 | Entidade | Campo | Valores |
 |----------|-------|---------|

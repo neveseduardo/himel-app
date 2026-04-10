@@ -98,6 +98,7 @@ class TransactionService implements TransactionServiceInterface
                     'due_date' => $data['due_date'] ?? null,
                     'paid_at' => $data['paid_at'] ?? null,
                     'reference_id' => $data['reference_id'] ?? null,
+                    'period_uid' => $data['period_uid'] ?? null,
                 ]);
 
                 if ($transaction->status === Transaction::STATUS_PAID) {

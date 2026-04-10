@@ -10,3 +10,9 @@ Route::resource('periods', PeriodPageController::class)
 
 Route::post('periods/{uid}/initialize', [PeriodPageController::class, 'initialize'])
     ->name('finance.periods.initialize');
+
+Route::post('periods/{uid}/transactions', [PeriodPageController::class, 'storeTransaction'])
+    ->name('finance.periods.transactions.store');
+
+Route::delete('periods/{uid}/transactions', [PeriodPageController::class, 'detachTransactions'])
+    ->name('finance.periods.transactions.detach');

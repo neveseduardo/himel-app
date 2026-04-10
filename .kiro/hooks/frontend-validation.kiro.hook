@@ -1,0 +1,18 @@
+{
+  "enabled": true,
+  "name": "Frontend Validation Check",
+  "description": "Runs vue-tsc type checking and ESLint linting after any Vue or TypeScript file is edited. Ensures zero type errors and lint violations before proceeding.",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.ts",
+      "**/*.vue"
+    ]
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "npx vue-tsc --noEmit 2>&1 && npm run lint",
+    "timeout": 120
+  }
+}

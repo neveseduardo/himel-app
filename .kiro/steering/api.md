@@ -1,12 +1,16 @@
+---
+inclusion: fileMatch
+fileMatchPattern: "app/Domain/**/Controllers/*.php,app/Domain/**/Routes/*.php"
+priority: 50
+---
+
 # Padrões de API e Endpoints — Himel App
 
-> **Glob:** `app/Domain/**/Controllers/*.php, app/Domain/**/Routes/*.php`
->
-> Padrões para endpoints, respostas e comunicação backend ↔ frontend.
+> Padrões para endpoints, respostas e comunicação backend ↔ frontend via Inertia.js.
 
-## Comunicação Principal: Inertia.js
+## Comunicação: Inertia.js (Exclusiva)
 
-O frontend se comunica com o backend exclusivamente via Inertia.js. NÃO existe API REST separada para o frontend SPA.
+O frontend se comunica com o backend exclusivamente via Inertia.js. NÃO existe API REST separada.
 
 ### Padrão de Respostas Inertia
 
@@ -20,8 +24,8 @@ O frontend se comunica com o backend exclusivamente via Inertia.js. NÃO existe 
 // PageController — renderiza páginas
 class EntityPageController
 {
-    public function index(Request $request): Response      // Listagem paginada
-    public function show(Request $request, string $uid): Response  // Detalhes (quando aplicável)
+    public function index(Request $request): Response
+    public function show(Request $request, string $uid): Response
 }
 
 // Controller — operações CRUD
@@ -38,17 +42,11 @@ class EntityController
 ```php
 // app/Domain/{Entity}/Routes/web.php
 Route::prefix('finance')->middleware(['auth'])->group(function () {
-    // Páginas
     Route::get('{entities}', [EntityPageController::class, 'index'])->name('finance.entities.index');
     Route::get('{entities}/{uid}', [EntityPageController::class, 'show'])->name('finance.entities.show');
-
-    // CRUD
     Route::post('{entities}', [EntityController::class, 'store'])->name('finance.entities.store');
     Route::put('{entities}/{uid}', [EntityController::class, 'update'])->name('finance.entities.update');
     Route::delete('{entities}/{uid}', [EntityController::class, 'destroy'])->name('finance.entities.destroy');
-
-    // Ações customizadas
-    Route::post('periods/{uid}/initialize', [PeriodPageController::class, 'initialize'])->name('finance.periods.initialize');
 });
 ```
 
@@ -73,18 +71,20 @@ return Inertia::render('finance/entities/Index', [
 |--------|---------|----------|
 | 422 | Validação falhou | Erros por campo (automático via FormRequest) |
 | 409 | Conflito (ex: período duplicado) | `redirect()->back()->with('error', $message)` |
+| 403 | Não autorizado | Tratado via Policy |
 | 404 | Recurso não encontrado | Página 404 padrão do Laravel |
 | 500 | Erro interno | `redirect()->back()->with('error', 'Erro genérico')` + `Log::error()` |
 
 ## Wayfinder (Frontend)
 
-Rotas são consumidas no frontend via Wayfinder:
+Rotas DEVEM ser consumidas no frontend exclusivamente via Wayfinder:
 
 ```typescript
-import { index, store, update, destroy } from '@/actions/App/Domain/Entity/Controllers/EntityController'
+import { store, update, destroy } from '@/actions/App/Domain/Entity/Controllers/EntityController'
 
-// Gerar URL
 store.url()              // POST /finance/entities
 update.url({ uid })      // PUT /finance/entities/{uid}
 destroy.url({ uid })     // DELETE /finance/entities/{uid}
 ```
+
+URLs em string pura são PROIBIDAS no frontend.

@@ -9,9 +9,9 @@ import type { ButtonVariants } from '.';
 import { buttonVariants } from '.';
 
 interface Props extends PrimitiveProps {
-    variant?: ButtonVariants['variant'];
-    size?: ButtonVariants['size'];
-    class?: HTMLAttributes['class'];
+  variant?: ButtonVariants['variant']
+  size?: ButtonVariants['size']
+  class?: HTMLAttributes['class']
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -22,11 +22,11 @@ const props = withDefaults(defineProps<Props>(), {
 <template>
 	<Primitive
 		data-slot="button"
+		:data-variant="variant"
+		:data-size="size"
 		:as="as"
 		:as-child="asChild"
-		:class="
-			cn(buttonVariants({ variant, size }), props.class, 'cursor-pointer')
-		"
+		:class="cn(buttonVariants({ variant, size }), props.class)"
 	>
 		<slot />
 	</Primitive>

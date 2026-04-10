@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
+import { storeTransaction } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
 import { store, update } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,6 +17,8 @@ const props = defineProps<{
 	readonly?: boolean;
 	accounts: Account[];
 	categories: Category[];
+	periodUid?: string;
+	periodDate?: string;
 }>();
 
 const emit = defineEmits<{
@@ -24,9 +27,15 @@ const emit = defineEmits<{
 }>();
 
 const isEditing = computed(() => !!props.item);
-const action = computed(() =>
-	isEditing.value ? update.url(props.item!.uid) : store.url()
-);
+const action = computed(() => {
+	if (isEditing.value) {
+		return update.url(props.item!.uid);
+	}
+	if (props.periodUid) {
+		return storeTransaction.url(props.periodUid);
+	}
+	return store.url();
+});
 const method = computed(() => (isEditing.value ? 'put' : 'post'));
 
 const initialValues = computed(() => ({
@@ -37,9 +46,10 @@ const initialValues = computed(() => ({
 	status: props.item?.status ?? 'PENDING',
 	source: props.item?.source ?? 'MANUAL',
 	description: props.item?.description ?? '',
-	occurred_at: props.item?.occurred_at?.substring(0, 10) ?? new Date().toISOString().substring(0, 10),
+	occurred_at: props.item?.occurred_at?.substring(0, 10) ?? props.periodDate ?? new Date().toISOString().substring(0, 10),
 	due_date: props.item?.due_date?.substring(0, 10) ?? '',
 	paid_at: props.item?.paid_at?.substring(0, 10) ?? '',
+	...(props.periodUid ? { period_uid: props.periodUid } : {}),
 }));
 </script>
 
