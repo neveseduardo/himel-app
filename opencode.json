@@ -1,6 +1,8 @@
 {
     "$schema": "https://opencode.ai/config.json",
     "instructions": [
+        "AGENTS.md",
+
         ".kiro/steering/global.md",
         ".kiro/steering/architecture.md",
         ".kiro/steering/backend.md",
@@ -10,7 +12,44 @@
         ".kiro/steering/api.md",
         ".kiro/steering/validation.md",
         ".kiro/steering/security.md",
-        ".kiro/steering/testing.md"
+        ".kiro/steering/testing.md",
+        ".kiro/steering/conventions.yml",
+        ".kiro/steering/glossary.yml",
+        ".kiro/steering/personas.yml",
+        ".kiro/steering/steering.yml",
+
+        ".kiro/skills/laravel-patterns/SKILL.md",
+        ".kiro/skills/laravel-specialist/SKILL.md",
+        ".kiro/skills/php-pro/SKILL.md",
+        ".kiro/skills/vue/SKILL.md",
+        ".kiro/skills/vue-best-practices/SKILL.md",
+        ".kiro/skills/vue-debug-guides/SKILL.md",
+        ".kiro/skills/vue-pinia-best-practices/SKILL.md",
+        ".kiro/skills/tailwind-css-patterns/SKILL.md",
+        ".kiro/skills/tailwind-v4-shadcn/SKILL.md",
+        ".kiro/skills/vite/SKILL.md",
+        ".kiro/skills/typescript-advanced-types/SKILL.md",
+        ".kiro/skills/shadcn/SKILL.md",
+        ".kiro/skills/accessibility/SKILL.md",
+        ".kiro/skills/frontend-design/SKILL.md",
+        ".kiro/skills/seo/SKILL.md",
+
+        ".kiro/specs/modular-crud-frontend/requirements.md",
+        ".kiro/specs/modular-crud-frontend/design.md",
+        ".kiro/specs/modular-crud-frontend/tasks.md",
+        ".kiro/specs/period-based-data-management/requirements.md",
+        ".kiro/specs/period-based-data-management/design.md",
+        ".kiro/specs/period-based-data-management/tasks.md",
+        ".kiro/specs/period-transactions-management/requirements.md",
+        ".kiro/specs/period-transactions-management/design.md",
+        ".kiro/specs/period-transactions-management/tasks.md",
+
+        ".kiro/hooks/financial-domain-guard.kiro.hook",
+        ".kiro/hooks/frontend-validation.kiro.hook",
+        ".kiro/hooks/php-format-check.kiro.hook",
+        ".kiro/hooks/post-task-commit.kiro.hook",
+        ".kiro/hooks/pre-push-validation.kiro.hook",
+        ".kiro/hooks/pre-spec-workflow.kiro.hook"
     ],
     "mcp": {
         "laravel-boost": {
