@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import type { Category } from '../types/finance';
+import type { Category } from '@/domain/Category/types/category';
 
 export const useCategoryStore = defineStore('finance-categories', () => {
 	const isModalOpen = ref(false);

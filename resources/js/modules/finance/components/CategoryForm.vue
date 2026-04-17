@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ValidatedField from '@/components/ValidatedField.vue';
 import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 
-import type { Category } from '../types/finance';
+import type { Category } from '@/domain/Category/types/category';
 import { categorySchema } from '../validations/category-schema';
 
 const props = defineProps<{

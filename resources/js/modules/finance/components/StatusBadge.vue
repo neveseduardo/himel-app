@@ -3,7 +3,7 @@ import { computed } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
 
-import type { TransactionStatus } from '../types/finance';
+import type { TransactionStatus } from '@/domain/Transaction/types/transaction';
 
 const props = defineProps<{
 	status: TransactionStatus;

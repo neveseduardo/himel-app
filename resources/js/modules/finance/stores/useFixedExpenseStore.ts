@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import type { FixedExpense } from '../types/finance';
+import type { FixedExpense } from '@/domain/FixedExpense/types/fixed-expense';
 
 export const useFixedExpenseStore = defineStore('finance-fixed-expenses', () => {
 	const isModalOpen = ref(false);

@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ValidatedField from '@/components/ValidatedField.vue';
 import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 
-import type { Category, FixedExpense } from '../types/finance';
+import type { Category } from '@/domain/Category/types/category';
+import type { FixedExpense } from '@/domain/FixedExpense/types/fixed-expense';
 import { fixedExpenseSchema } from '../validations/fixed-expense-schema';
 
 const props = defineProps<{

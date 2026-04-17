@@ -16,7 +16,8 @@ import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { useCategoryStore } from '@/modules/finance/stores/useCategoryStore';
-import type { Category, PaginationMeta } from '@/modules/finance/types/finance';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import type { Category } from '@/domain/Category/types/category';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

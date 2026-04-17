@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ValidatedField from '@/components/ValidatedField.vue';
 import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 
-import type { Account, Transfer } from '../types/finance';
+import type { Account } from '@/domain/Account/types/account';
+import type { Transfer } from '@/domain/Transfer/types/transfer';
 import { transferSchema } from '../validations/transfer-schema';
 
 const props = defineProps<{

@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import type { CreditCard } from '../types/finance';
+import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
 
 export const useCreditCardStore = defineStore('finance-credit-cards', () => {
 	const isModalOpen = ref(false);

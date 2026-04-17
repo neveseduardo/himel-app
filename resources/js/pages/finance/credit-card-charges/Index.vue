@@ -14,7 +14,9 @@ import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilte
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { formatCurrency } from '@/modules/finance/services/finance.services';
 import { useCreditCardChargeStore } from '@/modules/finance/stores/useCreditCardChargeStore';
-import type { CreditCard, CreditCardCharge, PaginationMeta } from '@/modules/finance/types/finance';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
+import type { CreditCardCharge } from '@/domain/CreditCardCharge/types/credit-card-charge';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

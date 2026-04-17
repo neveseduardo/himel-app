@@ -18,7 +18,10 @@ import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilte
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { formatCurrency, formatDate } from '@/modules/finance/services/finance.services';
 import { useTransactionStore } from '@/modules/finance/stores/useTransactionStore';
-import type { Account, Category, PaginationMeta, Transaction } from '@/modules/finance/types/finance';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import type { Account } from '@/domain/Account/types/account';
+import type { Category } from '@/domain/Category/types/category';
+import type { Transaction } from '@/domain/Transaction/types/transaction';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

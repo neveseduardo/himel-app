@@ -17,7 +17,9 @@ import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilte
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { formatCurrency } from '@/modules/finance/services/finance.services';
 import { useFixedExpenseStore } from '@/modules/finance/stores/useFixedExpenseStore';
-import type { Category, FixedExpense, PaginationMeta } from '@/modules/finance/types/finance';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import type { Category } from '@/domain/Category/types/category';
+import type { FixedExpense } from '@/domain/FixedExpense/types/fixed-expense';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

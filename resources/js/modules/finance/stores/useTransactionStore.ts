@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import type { Transaction } from '../types/finance';
+import type { Transaction } from '@/domain/Transaction/types/transaction';
 
 export const useTransactionStore = defineStore('finance-transactions', () => {
 	const isModalOpen = ref(false);

@@ -14,7 +14,8 @@ import DataTable from '@/modules/finance/components/DataTable.vue';
 import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
-import type { PaginationMeta, Period } from '@/modules/finance/types/finance';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import type { Period } from '@/domain/Period/types/period';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

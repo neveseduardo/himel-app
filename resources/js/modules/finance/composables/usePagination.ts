@@ -1,6 +1,6 @@
 import { router } from '@inertiajs/vue3';
 
-import type { PaginationMeta } from '../types/finance';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
 
 export function usePagination() {
 	function goToPage(routeName: string, page: number, currentFilters: Record<string, unknown> = {}) {

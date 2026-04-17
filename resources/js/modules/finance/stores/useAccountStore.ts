@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import type { Account } from '../types/finance';
+import type { Account } from '@/domain/Account/types/account';
 
 export const useAccountStore = defineStore('finance-accounts', () => {
 	const isModalOpen = ref(false);

@@ -8,7 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import ValidatedField from '@/components/ValidatedField.vue';
 import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 
-import type { CreditCard, CreditCardCharge } from '../types/finance';
+import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
+import type { CreditCardCharge } from '@/domain/CreditCardCharge/types/credit-card-charge';
 import { creditCardChargeSchema } from '../validations/credit-card-charge-schema';
 
 const props = defineProps<{
