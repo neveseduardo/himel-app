@@ -1,13 +1,13 @@
 {
 	"enabled": true,
 	"name": "Consolidar Spec no Summary",
-	"description": "Acionado manualmente após concluir uma spec. Consolida requirements, design e tasks no summary.md e remove a pasta da spec.",
-	"version": "1.0.0",
+	"description": "Após concluir a última task de uma spec, consolida automaticamente requirements, design e tasks no summary.md e remove a pasta da spec.",
+	"version": "2.0.0",
 	"when": {
-		"type": "userTriggered"
+		"type": "postTaskExecution"
 	},
 	"then": {
 		"type": "askAgent",
-		"prompt": "O usuário quer consolidar uma spec concluída. Siga estas etapas:\n\n## 1. Identificar a Spec\n\nListe as pastas em `.kiro/specs/` (excluindo `summary.md`) e pergunte ao usuário qual spec deseja consolidar. Se houver apenas uma pasta de spec, use essa.\n\n## 2. Ler os Arquivos da Spec\n\nLeia todos os arquivos da spec (requirements.md, design.md, tasks.md). Se algum não existir, pule.\n\n## 3. Gerar Resumo\n\nCrie um resumo consolidado da spec contendo:\n- Nome e descrição da spec\n- Resumo dos requisitos (lista curta, não o documento inteiro)\n- Decisões de design principais\n- Status das tasks (quais foram concluídas, quais ficaram pendentes)\n- Domínios/Models/Controllers criados ou alterados\n- Testes adicionados\n\n## 4. Confirmar com o Usuário\n\nMostre o resumo gerado e pergunte: 'Esse resumo está OK para adicionar ao summary.md? Posso ajustar se precisar.'\n\n## 5. Após Confirmação\n\n- Adicione o resumo ao final de `.kiro/specs/summary.md` usando `strReplace` ou `fsAppend`\n- Remova a pasta da spec (todos os arquivos dentro dela)\n- Informe: 'Spec consolidada no summary.md e pasta removida.'\n\nIMPORTANTE: NÃO remova a pasta sem confirmação do usuário."
+		"prompt": "Uma task de spec acabou de ser concluída. Verifique se TODAS as tasks da spec estão concluídas (status `done` ou `[x]`). Se ainda houver tasks pendentes, NÃO faça nada e prossiga silenciosamente.\n\nSe TODAS as tasks estão concluídas, execute automaticamente:\n\n## 1. Identificar a Spec\n\nIdentifique a pasta da spec atual em `.kiro/specs/` (excluindo `summary.md`).\n\n## 2. Ler os Arquivos da Spec\n\nLeia todos os arquivos da spec (requirements.md, design.md, tasks.md). Se algum não existir, pule.\n\n## 3. Gerar Resumo\n\nCrie um resumo consolidado da spec contendo:\n- Nome e descrição da spec\n- Resumo dos requisitos (lista curta, não o documento inteiro)\n- Decisões de design principais\n- Tasks concluídas\n- Domínios/Models/Controllers criados ou alterados\n- Testes adicionados\n\n## 4. Consolidar\n\n- Adicione o resumo ao final de `.kiro/specs/summary.md` usando `fsAppend`\n- Remova todos os arquivos dentro da pasta da spec usando `deleteFile`\n- Após remover os arquivos, remova a pasta vazia da spec usando o comando bash `rmdir .kiro/specs/<nome-da-spec>`\n- Informe brevemente: 'Spec consolidada no summary.md e pasta removida.'"
 	}
 }

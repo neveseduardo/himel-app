@@ -11,6 +11,7 @@ inclusion: always
 - Vee-Validate + Zod / Laravel Fortify (auth)
 - Laravel Sanctum (API tokens) / Laravel Wayfinder (typed routes)
 - PHPUnit 12 / ESLint 9 / Prettier 3
+- Playwright (E2E testing, headless Chromium)
 - reka-ui, lucide-vue-next, vue-sonner, @tanstack/vue-table
 
 ## Estrutura de Diretórios
