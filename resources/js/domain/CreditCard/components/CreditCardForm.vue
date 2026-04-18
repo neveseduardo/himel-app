@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-
 import { store, update } from '@/actions/App/Domain/CreditCard/Controllers/CreditCardPageController';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import ValidatedField from '@/components/ValidatedField.vue';
-import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
 import { creditCardSchema } from '@/domain/CreditCard/validations/credit-card-schema';
 

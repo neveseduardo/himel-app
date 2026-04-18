@@ -2,20 +2,6 @@
 import { Link, usePage } from '@inertiajs/vue3';
 import { ChevronsUpDown } from 'lucide-vue-next';
 
-import {
-	Breadcrumb,
-	BreadcrumbItem,
-	BreadcrumbLink,
-	BreadcrumbList,
-	BreadcrumbPage,
-	BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import UserMenuContent from '@/domain/Settings/components/UserMenuContent.vue';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
 defineProps<{

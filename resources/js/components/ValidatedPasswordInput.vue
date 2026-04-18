@@ -38,5 +38,4 @@ const props = defineProps<{
 </template>
 
 <script lang="ts">
-import { Label } from '@/components/ui/label';
 </script>

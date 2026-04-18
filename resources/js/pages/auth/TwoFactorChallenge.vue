@@ -86,11 +86,6 @@
 <script setup lang="ts">
 import { Form, Head } from '@inertiajs/vue3';
 
-import {
-	InputOTP,
-	InputOTPGroup,
-	InputOTPSlot,
-} from '@/components/ui/input-otp';
 import { store } from '@/routes/two-factor/login';
 import type { TwoFactorConfigContent } from '@/types';
 

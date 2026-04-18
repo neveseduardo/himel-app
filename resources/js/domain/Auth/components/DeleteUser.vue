@@ -2,18 +2,6 @@
 import { Form } from '@inertiajs/vue3';
 
 import ProfileController from '@/actions/App/Domain/Settings/Controllers/ProfileController';
-import { Button } from '@/components/ui/button';
-import {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
 
 const passwordInput = useTemplateRef('passwordInput');
 </script>

@@ -1,13 +1,6 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-
 import { storeTransaction } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
 import { store, update } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import ValidatedField from '@/components/ValidatedField.vue';
-import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 import type { Account } from '@/domain/Account/types/account';
 import type { Category } from '@/domain/Category/types/category';
 import type { Transaction } from '@/domain/Transaction/types/transaction';

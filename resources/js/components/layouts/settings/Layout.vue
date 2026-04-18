@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
-import Heading from '@/domain/Settings/components/Heading.vue';
 import { toUrl } from '@/lib/utils';
 import { edit as editAppearance } from '@/routes/appearance';
 import { edit as editProfile } from '@/routes/profile';

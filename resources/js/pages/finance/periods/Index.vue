@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { Eye, Plus, Trash2 } from 'lucide-vue-next';
-import { ref } from 'vue';
 
 import { destroy, index, show, store } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
-import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
-import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Period } from '@/domain/Period/types/period';
 import DataTable from '@/domain/Shared/components/DataTable.vue';
 import { useCrudToast } from '@/domain/Shared/composables/useCrudToast';

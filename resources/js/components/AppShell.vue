@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { SidebarProvider } from '@/components/ui/sidebar';
-
 defineProps<{
 	variant?: 'header' | 'sidebar';
 }>();

@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import { router } from '@inertiajs/vue3';
 import { Eye, Plus, Trash2 } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
 
 import { destroy, index } from '@/actions/App/Domain/Transfer/Controllers/TransferPageController';
-import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
-import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import type { Account } from '@/domain/Account/types/account';
 import DataTable from '@/domain/Shared/components/DataTable.vue';

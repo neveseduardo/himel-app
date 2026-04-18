@@ -1,10 +1,7 @@
 <script setup lang="ts">
 import { Eye, Plus } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
 
 import { index } from '@/actions/App/Domain/CreditCardCharge/Controllers/CreditCardChargePageController';
-import PageHeader from '@/components/PageHeader.vue';
-import { Button } from '@/components/ui/button';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
 import CreditCardChargeForm from '@/domain/CreditCardCharge/components/CreditCardChargeForm.vue';

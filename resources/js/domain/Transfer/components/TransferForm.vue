@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-
 import { store } from '@/actions/App/Domain/Transfer/Controllers/TransferPageController';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import ValidatedField from '@/components/ValidatedField.vue';
-import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 import type { Account } from '@/domain/Account/types/account';
 import type { Transfer } from '@/domain/Transfer/types/transfer';
 import { transferSchema } from '@/domain/Transfer/validations/transfer-schema';

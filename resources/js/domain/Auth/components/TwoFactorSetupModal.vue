@@ -2,20 +2,6 @@
 import { Form } from '@inertiajs/vue3';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
 
-import { Button } from '@/components/ui/button';
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-} from '@/components/ui/dialog';
-import {
-	InputOTP,
-	InputOTPGroup,
-	InputOTPSlot,
-} from '@/components/ui/input-otp';
-import { Spinner } from '@/components/ui/spinner';
 import { useAppearance } from '@/composables/useAppearance';
 import { useTwoFactorAuth } from '@/domain/Auth/composables/useTwoFactorAuth';
 import { confirm } from '@/routes/two-factor';

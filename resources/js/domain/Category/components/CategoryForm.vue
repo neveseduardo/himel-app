@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-
 import { store, update } from '@/actions/App/Domain/Category/Controllers/CategoryPageController';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import ValidatedField from '@/components/ValidatedField.vue';
-import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 import type { Category } from '@/domain/Category/types/category';
 import { categorySchema } from '@/domain/Category/validations/category-schema';
 

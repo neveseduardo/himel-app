@@ -1,26 +1,11 @@
 <script setup lang="ts">
 import { router, usePage } from '@inertiajs/vue3';
 import { ArrowLeft, CheckCircle, Play, Plus, Trash2, X } from 'lucide-vue-next';
-import { computed, ref, watch } from 'vue';
 import { toast } from 'vue-sonner';
 
 import { detachTransactions, index, initialize, show } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
 import { update as updateTransaction } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
-import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
-	AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Account } from '@/domain/Account/types/account';
 import type { Category } from '@/domain/Category/types/category';
 import type { Period, PeriodSummary } from '@/domain/Period/types/period';
