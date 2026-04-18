@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ValidatedField from '@/components/ValidatedField.vue';
 import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
-
 import type { Account } from '@/domain/Account/types/account';
 import { accountSchema } from '@/domain/Account/validations/account-schema';
 

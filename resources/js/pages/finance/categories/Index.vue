@@ -8,6 +8,8 @@ import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
+import type { Category } from '@/domain/Category/types/category';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
 import CategoryForm from '@/modules/finance/components/CategoryForm.vue';
 import DataTable from '@/modules/finance/components/DataTable.vue';
 import DirectionBadge from '@/modules/finance/components/DirectionBadge.vue';
@@ -15,9 +17,7 @@ import FilterBar from '@/modules/finance/components/FilterBar.vue';
 import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
-import { useCategoryStore } from '@/modules/finance/stores/useCategoryStore';
-import type { PaginationMeta } from '@/domain/Shared/types/pagination';
-import type { Category } from '@/domain/Category/types/category';
+import { useCategoryStore } from '@/domain/Category/stores/useCategoryStore';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import type { FixedExpense } from '@/domain/FixedExpense/types/fixed-expense';
+import type { Transfer } from '../types/transfer';
 
-export const useFixedExpenseStore = defineStore('finance-fixed-expenses', () => {
+export const useTransferStore = defineStore('finance-transfers', () => {
 	const isModalOpen = ref(false);
 	const modalMode = ref<'create' | 'edit' | 'view'>('create');
-	const currentItem = ref<FixedExpense | null>(null);
+	const currentItem = ref<Transfer | null>(null);
 	const deletingUid = ref<string | null>(null);
 
 	function openCreateModal() {
@@ -15,13 +15,13 @@ export const useFixedExpenseStore = defineStore('finance-fixed-expenses', () => 
 		isModalOpen.value = true;
 	}
 
-	function openEditModal(item: FixedExpense) {
+	function openEditModal(item: Transfer) {
 		currentItem.value = item;
 		modalMode.value = 'edit';
 		isModalOpen.value = true;
 	}
 
-	function openViewModal(item: FixedExpense) {
+	function openViewModal(item: Transfer) {
 		currentItem.value = item;
 		modalMode.value = 'view';
 		isModalOpen.value = true;

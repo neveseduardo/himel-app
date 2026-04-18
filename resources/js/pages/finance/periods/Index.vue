@@ -10,12 +10,12 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { Period } from '@/domain/Period/types/period';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
 import DataTable from '@/modules/finance/components/DataTable.vue';
 import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
-import type { PaginationMeta } from '@/domain/Shared/types/pagination';
-import type { Period } from '@/domain/Period/types/period';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

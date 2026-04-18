@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import type { Transaction } from '@/domain/Transaction/types/transaction';
+import type { Account } from '../types/account';
 
-export const useTransactionStore = defineStore('finance-transactions', () => {
+export const useAccountStore = defineStore('finance-accounts', () => {
 	const isModalOpen = ref(false);
 	const modalMode = ref<'create' | 'edit' | 'view'>('create');
-	const currentItem = ref<Transaction | null>(null);
+	const currentItem = ref<Account | null>(null);
 	const deletingUid = ref<string | null>(null);
 
 	function openCreateModal() {
@@ -15,13 +15,13 @@ export const useTransactionStore = defineStore('finance-transactions', () => {
 		isModalOpen.value = true;
 	}
 
-	function openEditModal(item: Transaction) {
+	function openEditModal(item: Account) {
 		currentItem.value = item;
 		modalMode.value = 'edit';
 		isModalOpen.value = true;
 	}
 
-	function openViewModal(item: Transaction) {
+	function openViewModal(item: Account) {
 		currentItem.value = item;
 		modalMode.value = 'view';
 		isModalOpen.value = true;

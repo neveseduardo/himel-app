@@ -6,6 +6,9 @@ import { index } from '@/actions/App/Domain/CreditCardCharge/Controllers/CreditC
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
+import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
+import type { CreditCardCharge } from '@/domain/CreditCardCharge/types/credit-card-charge';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
 import CreditCardChargeForm from '@/modules/finance/components/CreditCardChargeForm.vue';
 import DataTable from '@/modules/finance/components/DataTable.vue';
 import FilterBar from '@/modules/finance/components/FilterBar.vue';
@@ -13,10 +16,7 @@ import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { formatCurrency } from '@/modules/finance/services/finance.services';
-import { useCreditCardChargeStore } from '@/modules/finance/stores/useCreditCardChargeStore';
-import type { PaginationMeta } from '@/domain/Shared/types/pagination';
-import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
-import type { CreditCardCharge } from '@/domain/CreditCardCharge/types/credit-card-charge';
+import { useCreditCardChargeStore } from '@/domain/CreditCardCharge/stores/useCreditCardChargeStore';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

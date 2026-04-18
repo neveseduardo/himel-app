@@ -9,7 +9,6 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ValidatedField from '@/components/ValidatedField.vue';
 import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
-
 import type { Category } from '@/domain/Category/types/category';
 import type { FixedExpense } from '@/domain/FixedExpense/types/fixed-expense';
 import { fixedExpenseSchema } from '@/domain/FixedExpense/validations/fixed-expense-schema';

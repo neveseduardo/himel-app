@@ -7,7 +7,6 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import ValidatedField from '@/components/ValidatedField.vue';
 import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
-
 import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
 import type { CreditCardCharge } from '@/domain/CreditCardCharge/types/credit-card-charge';
 import { creditCardChargeSchema } from '@/domain/CreditCardCharge/validations/credit-card-charge-schema';

@@ -2,7 +2,6 @@
 import { computed } from 'vue';
 
 import { Badge } from '@/components/ui/badge';
-
 import type { Direction } from '@/domain/Shared/types/common';
 
 const props = defineProps<{

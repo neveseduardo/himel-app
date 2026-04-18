@@ -21,6 +21,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { Account } from '@/domain/Account/types/account';
+import type { Category } from '@/domain/Category/types/category';
+import type { Period, PeriodSummary } from '@/domain/Period/types/period';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import type { Transaction } from '@/domain/Transaction/types/transaction';
 import DataTable from '@/modules/finance/components/DataTable.vue';
 import DirectionBadge from '@/modules/finance/components/DirectionBadge.vue';
 import StatusBadge from '@/modules/finance/components/StatusBadge.vue';
@@ -28,11 +33,6 @@ import TransactionForm from '@/modules/finance/components/TransactionForm.vue';
 import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
 import { usePagination } from '@/modules/finance/composables/usePagination';
 import { formatCurrency, formatDate } from '@/modules/finance/services/finance.services';
-import type { PaginationMeta } from '@/domain/Shared/types/pagination';
-import type { Account } from '@/domain/Account/types/account';
-import type { Category } from '@/domain/Category/types/category';
-import type { Period, PeriodSummary } from '@/domain/Period/types/period';
-import type { Transaction } from '@/domain/Transaction/types/transaction';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

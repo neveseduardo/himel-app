@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 
-import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
+import type { Category } from '../types/category';
 
-export const useCreditCardStore = defineStore('finance-credit-cards', () => {
+export const useCategoryStore = defineStore('finance-categories', () => {
 	const isModalOpen = ref(false);
 	const modalMode = ref<'create' | 'edit' | 'view'>('create');
-	const currentItem = ref<CreditCard | null>(null);
+	const currentItem = ref<Category | null>(null);
 	const deletingUid = ref<string | null>(null);
 
 	function openCreateModal() {
@@ -15,13 +15,13 @@ export const useCreditCardStore = defineStore('finance-credit-cards', () => {
 		isModalOpen.value = true;
 	}
 
-	function openEditModal(item: CreditCard) {
+	function openEditModal(item: Category) {
 		currentItem.value = item;
 		modalMode.value = 'edit';
 		isModalOpen.value = true;
 	}
 
-	function openViewModal(item: CreditCard) {
+	function openViewModal(item: Category) {
 		currentItem.value = item;
 		modalMode.value = 'view';
 		isModalOpen.value = true;
