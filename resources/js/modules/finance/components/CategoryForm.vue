@@ -9,7 +9,7 @@ import ValidatedField from '@/components/ValidatedField.vue';
 import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 
 import type { Category } from '@/domain/Category/types/category';
-import { categorySchema } from '../validations/category-schema';
+import { categorySchema } from '@/domain/Category/validations/category-schema';
 
 const props = defineProps<{
 	item?: Category;

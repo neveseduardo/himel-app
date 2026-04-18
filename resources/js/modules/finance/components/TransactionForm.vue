@@ -12,7 +12,7 @@ import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 import type { Account } from '@/domain/Account/types/account';
 import type { Category } from '@/domain/Category/types/category';
 import type { Transaction } from '@/domain/Transaction/types/transaction';
-import { transactionSchema } from '../validations/transaction-schema';
+import { transactionSchema } from '@/domain/Transaction/validations/transaction-schema';
 
 const props = defineProps<{
 	item?: Transaction;

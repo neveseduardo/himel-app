@@ -12,7 +12,7 @@ import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 
 import type { Category } from '@/domain/Category/types/category';
 import type { FixedExpense } from '@/domain/FixedExpense/types/fixed-expense';
-import { fixedExpenseSchema } from '../validations/fixed-expense-schema';
+import { fixedExpenseSchema } from '@/domain/FixedExpense/validations/fixed-expense-schema';
 
 const props = defineProps<{
 	item?: FixedExpense;

@@ -10,7 +10,7 @@ import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 
 import type { Account } from '@/domain/Account/types/account';
 import type { Transfer } from '@/domain/Transfer/types/transfer';
-import { transferSchema } from '../validations/transfer-schema';
+import { transferSchema } from '@/domain/Transfer/validations/transfer-schema';
 
 const props = defineProps<{
 	item?: Transfer;

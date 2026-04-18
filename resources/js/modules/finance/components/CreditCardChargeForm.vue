@@ -10,7 +10,7 @@ import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 
 import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
 import type { CreditCardCharge } from '@/domain/CreditCardCharge/types/credit-card-charge';
-import { creditCardChargeSchema } from '../validations/credit-card-charge-schema';
+import { creditCardChargeSchema } from '@/domain/CreditCardCharge/validations/credit-card-charge-schema';
 
 const props = defineProps<{
 	item?: CreditCardCharge;

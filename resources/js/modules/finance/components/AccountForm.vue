@@ -9,7 +9,7 @@ import ValidatedField from '@/components/ValidatedField.vue';
 import ValidatedInertiaForm from '@/components/ValidatedInertiaForm.vue';
 
 import type { Account } from '@/domain/Account/types/account';
-import { accountSchema } from '../validations/account-schema';
+import { accountSchema } from '@/domain/Account/validations/account-schema';
 
 const props = defineProps<{
 	item?: Account;
