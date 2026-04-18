@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FinancialCreditCardFactory extends Factory
 {
+    protected $model = CreditCard::class;
+
     public function definition(): array
     {
         return [

@@ -8,7 +8,7 @@ export default defineConfig({
   retries: 1,
   reporter: 'list',
   use: {
-    baseURL: process.env.APP_URL || 'http://localhost',
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || process.env.APP_URL || 'http://127.0.0.1:8000',
     storageState: 'e2e/.auth/user.json',
     actionTimeout: 15000,
     trace: 'on-first-retry',
@@ -16,7 +16,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'], headless: true },
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
 });

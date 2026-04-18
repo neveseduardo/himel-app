@@ -6,7 +6,7 @@ const { title = '', description = '' } = defineProps<{
 </script>
 
 <template>
-	<AuthLayout :title="title" :description="description">
+	<AuthSimpleLayout :title="title" :description="description">
 		<slot />
-	</AuthLayout>
+	</AuthSimpleLayout>
 </template>
