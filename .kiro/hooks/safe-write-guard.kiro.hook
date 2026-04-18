@@ -1,0 +1,16 @@
+{
+	"enabled": true,
+	"name": "Guarda de Escrita Segura",
+	"description": "Antes de qualquer escrita, valida padrões proibidos do projeto Laravel, protege arquivos .vue contra fsAppend, e força strReplace em arquivos grandes.",
+	"version": "1.0.0",
+	"when": {
+		"type": "preToolUse",
+		"toolTypes": [
+			"write"
+		]
+	},
+	"then": {
+		"type": "askAgent",
+		"prompt": "Antes de prosseguir com a escrita, verifique TODAS estas regras. Se o arquivo está dentro de `.kiro/`, IGNORE este hook e prossiga.\n\n## 1. Padrões Proibidos (PHP)\n\nO código PHP NÃO pode conter:\n- Queries direto no controller (usar Service)\n- Lógica de negócio no controller (usar Service)\n- `dd()` ou `dump()` em código final\n- Rotas fora dos arquivos de rotas do domínio\n- Models sem return types explícitos\n\n## 2. Padrões Proibidos (Frontend)\n\nO código Vue/TS NÃO pode conter:\n- Options API ou `defineComponent()`\n- `axios` ou `fetch` nativo (usar Inertia router ou Wayfinder)\n- `console.log` em produção\n- `var` (usar `const` ou `let`)\n- `any` sem justificativa\n- Estilos inline (`style=\"...\"`)\n\n## 3. Proteção de Arquivos .vue\n\n- Se a operação é `fsAppend` em arquivo `.vue`: PARE. Use `strReplace` em vez disso. `fsAppend` corrompe templates Vue.\n- Se a operação é `fsWrite` em arquivo `.vue` que já existe e tem mais de 50 linhas: PREFIRA `strReplace` para alterações pontuais.\n- Antes de alterar qualquer `.vue`, confirme que leu o arquivo COMPLETO.\n\n## 4. Convenções de Código\n\n- Componentes no template: PascalCase (`<AccountForm />`)\n- Props: camelCase (`:accountId`)\n- Eventos: kebab-case (`@account-created`)\n- Stores: setup syntax com `defineStore('name', () => { ... })`\n- PHP: constructor property promotion, return types explícitos"
+	}
+}

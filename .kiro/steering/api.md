@@ -1,90 +1,62 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "app/Domain/**/Controllers/*.php,app/Domain/**/Routes/*.php"
-priority: 50
+fileMatchPattern: "app/Domain/**/*.php,routes/**/*.php"
 ---
 
-# Padrões de API e Endpoints — Himel App
+# Backend Laravel (API + Domain)
 
-> Padrões para endpoints, respostas e comunicação backend ↔ frontend via Inertia.js.
+## Arquitetura DDD
 
-## Comunicação: Inertia.js (Exclusiva)
+Cada domínio segue o padrão:
+- Controller → Service → Model
+- Form Requests para validação
+- Policies para autorização
+- API Resources para serialização
 
-O frontend se comunica com o backend exclusivamente via Inertia.js. NÃO existe API REST separada.
-
-### Padrão de Respostas Inertia
-
-- Listagens: `Inertia::render('page', ['items' => Resource::collection($data), 'meta' => $meta, 'filters' => $filters])`
-- Operações de escrita: `redirect()->back()->with('success', 'Mensagem')` ou `->with('error', 'Mensagem')`
-- Erros de validação: retornados automaticamente pelo FormRequest (422)
-
-### Padrão de Controllers
+## Padrão de Controller
 
 ```php
-// PageController — renderiza páginas
-class EntityPageController
+class AccountController extends Controller
 {
-    public function index(Request $request): Response
-    public function show(Request $request, string $uid): Response
+    public function __construct(
+        private AccountServiceInterface $accountService
+    ) {}
+
+    public function index(Request $request): JsonResponse
+    {
+        $accounts = $this->accountService->list($request->user());
+        return AccountResource::collection($accounts)->response();
+    }
+
+    public function store(StoreAccountRequest $request): JsonResponse
+    {
+        $account = $this->accountService->create($request->validated());
+        return (new AccountResource($account))->response()->setStatusCode(201);
+    }
 }
-
-// Controller — operações CRUD
-class EntityController
-{
-    public function store(StoreEntityRequest $request): RedirectResponse
-    public function update(UpdateEntityRequest $request, string $uid): RedirectResponse
-    public function destroy(Request $request, string $uid): RedirectResponse
-}
 ```
 
-## Padrão de Rotas
+## Regras
 
-```php
-// app/Domain/{Entity}/Routes/web.php
-Route::prefix('finance')->middleware(['auth'])->group(function () {
-    Route::get('{entities}', [EntityPageController::class, 'index'])->name('finance.entities.index');
-    Route::get('{entities}/{uid}', [EntityPageController::class, 'show'])->name('finance.entities.show');
-    Route::post('{entities}', [EntityController::class, 'store'])->name('finance.entities.store');
-    Route::put('{entities}/{uid}', [EntityController::class, 'update'])->name('finance.entities.update');
-    Route::delete('{entities}/{uid}', [EntityController::class, 'destroy'])->name('finance.entities.destroy');
-});
-```
+- MUST usar Form Requests para validação (Store/Update)
+- MUST usar Policies para autorização
+- MUST usar API Resources para respostas
+- MUST usar Service classes para lógica de negócio
+- MUST usar Contracts (interfaces) para services
+- MUST registrar bindings no AppServiceProvider
+- MUST usar constructor property promotion (PHP 8.4)
+- MUST usar return types explícitos em todos os métodos
+- MUST rodar `vendor/bin/pint --dirty --format agent` após alterações PHP
 
-## Padrão de Respostas Paginadas
+## Testes
 
-```php
-return Inertia::render('finance/entities/Index', [
-    'items' => EntityResource::collection($paginated),
-    'meta' => [
-        'current_page' => $paginated->currentPage(),
-        'per_page' => $paginated->perPage(),
-        'total' => $paginated->total(),
-        'last_page' => $paginated->lastPage(),
-    ],
-    'filters' => $request->only(['search', 'status', 'direction']),
-]);
-```
+- MUST usar PHPUnit (não Pest)
+- MUST usar factories para criar models em testes
+- MUST testar happy paths, failure paths e edge cases
+- Rodar: `php artisan test --compact --filter=NomeDoTeste`
 
-## Padrão de Erros
+## Rotas
 
-| Código | Cenário | Resposta |
-|--------|---------|----------|
-| 422 | Validação falhou | Erros por campo (automático via FormRequest) |
-| 409 | Conflito (ex: período duplicado) | `redirect()->back()->with('error', $message)` |
-| 403 | Não autorizado | Tratado via Policy |
-| 404 | Recurso não encontrado | Página 404 padrão do Laravel |
-| 500 | Erro interno | `redirect()->back()->with('error', 'Erro genérico')` + `Log::error()` |
-
-## Wayfinder (Frontend)
-
-Rotas DEVEM ser consumidas no frontend exclusivamente via Wayfinder:
-
-```typescript
-import { store, update, destroy } from '@/actions/App/Domain/Entity/Controllers/EntityController'
-
-store.url()              // POST /finance/entities
-update.url({ uid })      // PUT /finance/entities/{uid}
-destroy.url({ uid })     // DELETE /finance/entities/{uid}
-```
-
-URLs em string pura são PROIBIDAS no frontend.
+- Definidas em `app/Domain/<Domínio>/Routes/` ou `routes/`
+- Usar named routes: `Route::name('accounts.index')`
+- Wayfinder gera typed functions automaticamente para o frontend

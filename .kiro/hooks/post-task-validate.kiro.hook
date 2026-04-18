@@ -1,0 +1,13 @@
+{
+	"enabled": true,
+	"name": "Validação Pós-Tarefa",
+	"description": "Após concluir uma tarefa de spec, roda Pint, ESLint, type-check, testes e getDiagnostics nos arquivos alterados.",
+	"version": "1.0.0",
+	"when": {
+		"type": "postTaskExecution"
+	},
+	"then": {
+		"type": "askAgent",
+		"prompt": "A tarefa foi marcada como concluída. ANTES de prosseguir para a próxima tarefa ou commitar, execute estas validações na ordem:\n\n## 1. getDiagnostics\n\nIdentifique TODOS os arquivos `.vue`, `.ts` e `.php` que foram criados ou alterados nesta tarefa e rode `getDiagnostics` neles. Se houver erros, corrija-os antes de continuar.\n\n## 2. Laravel Pint (PHP)\n\nSe houve alterações em arquivos PHP, execute `vendor/bin/pint --dirty --format agent` para corrigir formatação.\n\n## 3. ESLint (Frontend)\n\nSe houve alterações em arquivos Vue/TS, execute `npm run lint 2>&1 | tail -30` para verificar erros de lint. Se houver erros, corrija-os.\n\n## 4. Type-check (TypeScript)\n\nSe houve alterações em arquivos Vue/TS, execute `npm run types:check 2>&1 | tail -30` para verificar erros de tipo. Se houver erros, corrija-os.\n\n## 5. Testes (PHPUnit)\n\nSe houve alterações em arquivos PHP, execute `php artisan test --compact` com filtro nos testes relacionados. Se houver falhas, corrija-as.\n\n## 6. Verificação de Templates Vue\n\nPara cada arquivo `.vue` alterado, verifique que:\n- Os blocos `<template>` e `<script>` estão completos e bem estruturados\n- Tags HTML estão corretamente abertas e fechadas\n- Componentes usam PascalCase no template\n\nSe TODOS os checks passarem, informe: 'Tarefa validada — Pint, lint, type-check, testes e diagnostics OK.'\nSe algum falhar, corrija os erros e rode novamente até passar."
+	}
+}

@@ -1,0 +1,13 @@
+{
+	"enabled": true,
+	"name": "Setup de Spec (Branch + Contexto)",
+	"description": "Antes de iniciar qualquer tarefa de spec, verifica branch, carrega contexto do projeto e skills relevantes.",
+	"version": "1.0.0",
+	"when": {
+		"type": "preTaskExecution"
+	},
+	"then": {
+		"type": "askAgent",
+		"prompt": "ANTES de iniciar a implementação da tarefa, siga estas etapas OBRIGATÓRIAS na ordem:\n\n## 1. Branch\n\na. Execute `git branch --show-current` para verificar a branch atual.\nb. Se a branch NÃO é `develop` e já é uma feature branch: prossiga para o passo 2.\nc. Se está em `develop`: pergunte ao usuário o nome da branch (ex: `feat/account-crud`), depois crie com `git checkout -b <nome> develop`.\n\n## 2. Carregar Contexto do Projeto\n\nSEMPRE execute estas ações antes de começar a codar:\n\na. Leia o arquivo `.kiro/specs/summary.md` para entender o que já foi implementado no projeto.\nb. Leia os steerings relevantes baseado no tipo de tarefa:\n   - Backend PHP: `.kiro/steering/api.md`\n   - Frontend Vue: `.kiro/steering/frontend.md`\n   - Ambos: ler os dois\nc. Leia `AGENTS.md` para entender as skills do Laravel Boost disponíveis.\n\n## 3. Verificar Componentes Existentes\n\nAntes de implementar qualquer componente:\n- Verifique se já existe um componente similar no projeto (busque em `resources/js/components/`)\n- Verifique se existe um componente equivalente no reka-ui ou lucide-vue-next\n- Para backend, verifique se já existe Service/Controller similar em `app/Domain/`\n- Se precisar criar algo novo, siga os padrões dos steerings\n\nIMPORTANTE: Este hook NÃO se aplica se a branch já foi configurada anteriormente nesta sessão de spec."
+	}
+}

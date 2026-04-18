@@ -1,0 +1,13 @@
+{
+	"enabled": true,
+	"name": "Sincronizar Steering com Regras de Negócio",
+	"description": "Após concluir todas as tasks de uma spec, verifica se houve alteração nas regras de negócio do projeto e atualiza os arquivos de steering correspondentes.",
+	"version": "1.0.0",
+	"when": {
+		"type": "postTaskExecution"
+	},
+	"then": {
+		"type": "askAgent",
+		"prompt": "Após concluir esta tarefa, verifique se as mudanças implementadas introduziram ou alteraram regras de negócio do projeto. Siga estas etapas:\n\n## 1. Analisar Mudanças\n\nExecute `git diff --stat` e `git diff --name-only` para identificar os arquivos alterados nesta tarefa.\n\n## 2. Identificar Impacto nas Regras de Negócio\n\nVerifique se as mudanças incluem:\n- Novos domínios em `app/Domain/` (novo Model, Controller, Service, etc.)\n- Novas rotas ou endpoints\n- Novos componentes Vue reutilizáveis em `resources/js/components/`\n- Novos composables ou stores\n- Alterações em padrões arquiteturais (nova convenção, novo padrão de código)\n- Novas dependências ou ferramentas\n- Novos tipos/interfaces TypeScript\n\n## 3. Atualizar Steerings se Necessário\n\nSe houve mudanças relevantes, atualize o steering correspondente usando `strReplace`:\n\n- **Novo domínio DDD**: Adicionar na lista de domínios em `.kiro/steering/conventions.md`\n- **Novo endpoint/rota**: Adicionar em `.kiro/steering/api.md`\n- **Novo componente/composable/store**: Adicionar em `.kiro/steering/frontend.md`\n- **Nova convenção ou padrão**: Adicionar no steering mais relevante\n- **Mudança na stack**: Atualizar `.kiro/steering/conventions.md`\n\n## 4. Atualizar Summary\n\nSe a spec está completa (todas as tasks concluídas), NÃO atualize o summary agora — isso será feito pelo hook 'Consolidar Spec no Summary' quando o usuário acionar manualmente.\n\n## 5. Reportar\n\nSe atualizou algum steering, informe brevemente: 'Steering atualizado: [arquivo] — [o que mudou]'.\nSe não houve mudança relevante nas regras de negócio, não diga nada e prossiga."
+	}
+}

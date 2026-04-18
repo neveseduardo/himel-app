@@ -1,95 +1,87 @@
 ---
 inclusion: fileMatch
-fileMatchPattern: "resources/js/**/*.{ts,vue}"
-priority: 60
+fileMatchPattern: "resources/js/**/*.vue,resources/js/**/*.ts"
 ---
 
-# Regras de Frontend — Himel App
-
-> Regras obrigatórias para todo código Vue/TypeScript do projeto.
-> O frontend é camada de APRESENTAÇÃO. Lógica de negócio financeira é PROIBIDA aqui.
-
-## Regra de Ouro: Sem Lógica de Negócio
-
-- O frontend NUNCA DEVE calcular saldos, parcelas, projeções ou qualquer valor financeiro.
-- O frontend DEVE apenas exibir dados calculados pelo backend.
-- Validação frontend (Zod) é para UX. A fonte de verdade é o backend (FormRequest).
-
-## Validação Frontend Obrigatória
-
-Antes de finalizar qualquer alteração em arquivos `.ts` ou `.vue`, o agente DEVE executar:
-
-```bash
-npx vue-tsc --noEmit 2>&1 && npm run lint
-```
-
-Este passo é OBRIGATÓRIO e NÃO PODE ser pulado.
+# Frontend (Inertia + Vue + Pinia)
 
 ## Componentes Vue
 
-- Todo componente DEVE usar `<script setup lang="ts">`.
-- É PROIBIDO usar `any` em TypeScript. Todo código DEVE ser tipado.
-- Props DEVEM usar `defineProps<T>()` com interface tipada.
-- Emits DEVEM usar `defineEmits<T>()` com interface tipada.
+### Estrutura de Blocos
 
-## Shadcn/Vue
+```vue
+<script setup lang="ts">
+<!-- lógica -->
+</script>
 
-- USAR EXCLUSIVAMENTE componentes Shadcn/Vue existentes no projeto.
-- NÃO criar componentes de UI básicos se houver equivalente no Shadcn.
-- Caso não exista, adicionar via: `npx shadcn-vue@latest add <componente>`.
-- Componentes customizados de UI ficam em `resources/js/components/ui/`.
+<template>
+<!-- markup -->
+</template>
+```
 
-## Arquitetura Modular
+### Ordem no `<script setup>`
 
-Toda lógica de frontend DEVE seguir a estrutura em `resources/js/modules/finance/`:
+1. Imports (bibliotecas externas → componentes locais → tipos)
+2. Props e Emits (`defineProps<T>()`, `defineEmits<T>()`)
+3. Estado reativo (`ref`, `reactive`)
+4. Computed properties
+5. Watchers
+6. Funções/handlers
+7. Lifecycle hooks (`onMounted`, etc.)
 
-| Pasta | Conteúdo |
-|-------|----------|
-| `stores/` | Pinia stores por entidade |
-| `components/` | Componentes específicos do módulo (Forms, DataTable, FilterBar) |
-| `services/` | Serviços utilitários (formatação, helpers) |
-| `composables/` | Hooks reutilizáveis (`useFinanceFilters`, `usePagination`, `useCrudToast`) |
-| `types/` | TypeScript types (`finance.ts`) |
-| `validations/` | Zod schemas por entidade |
+## Inertia.js v3
 
-## Pinia Stores
+- Páginas em `resources/js/pages/`
+- Usar `router` do Inertia para navegação (não `window.location`)
+- Usar `useForm` para formulários
+- Usar Wayfinder para URLs tipadas (`@/actions/`, `@/routes/`)
+- Deferred props: adicionar skeleton/loading state
+- `Inertia::optional()` em vez de `Inertia::lazy()`
 
-- Cada módulo DEVE ter um Pinia store dedicado.
-- Padrão: `isModalOpen`, `modalMode` ('create' | 'edit' | 'view'), `currentItem`, `deletingUid`.
-- Ações: `openCreateModal()`, `openEditModal(item)`, `openViewModal(item)`, `closeModal()`.
-- `closeModal()` DEVE ter delay de 200ms antes de resetar `currentItem` (animação do Dialog).
-- Stores NUNCA DEVEM conter cálculos financeiros — apenas estado de UI.
+## Stores (Pinia)
 
-## Roteamento
+### Padrão de Store
 
-- USAR EXCLUSIVAMENTE Wayfinder para chamadas de rotas. URLs em string pura são PROIBIDAS.
-- Importar de `@/actions/App/Domain/{Entity}/Controllers/{Controller}`.
-- Usar `.url()` para gerar URLs dinâmicas com parâmetros.
-- Navegação entre páginas via componente `<Link>` do Inertia.
+```ts
+export const useAccountsStore = defineStore('accounts', () => {
+    const items = ref<Account[]>([])
+    const loading = ref(false)
 
-## Formulários
+    async function fetchItems() {
+        loading.value = true
+        try {
+            // usar Inertia router ou Wayfinder
+        } finally {
+            loading.value = false
+        }
+    }
 
-- Formulários DEVEM usar `ValidatedInertiaForm` + `ValidatedField`.
-- Cada módulo DEVE ter um Zod schema em `modules/finance/validations/`.
-- Submissão via Inertia router (`router.post`, `router.put`, `router.delete`).
-- Formulários DEVEM ser reutilizáveis para create, edit e view (via props `item?` e `readonly?`).
+    return { items, loading, fetchItems }
+})
+```
 
-## Notificações
+### Regras de Store
 
-- Toasts DEVEM usar `vue-sonner` via composable `useCrudToast`.
-- Mensagens padronizadas em pt-BR: "{entidade} criado(a)/atualizado(a)/excluído(a) com sucesso!"
-- Erros do backend DEVEM ser exibidos via toast com mensagem retornada ou fallback genérico.
+- MUST usar setup syntax (`defineStore('name', () => { ... })`)
+- MUST usar try/catch/finally em toda operação async
+- MUST retornar explicitamente todas as propriedades e métodos públicos
 
-## Padrão CRUD (Modal-Based)
+## Validação de Formulários
 
-- Todas as operações CRUD são centralizadas na página Index via modais.
-- Criação/edição: `ModalDialog` com formulário reutilizável do módulo.
-- Exclusão: `DeleteConfirmPopover` inline na tabela com confirmação.
-- NÃO existem páginas Create/Edit separadas.
+- Schemas em `resources/js/` usando Zod
+- Integrar via `toTypedSchema()` do `@vee-validate/zod`
 
-## Páginas Inertia
+## UI Components
 
-- Páginas ficam em `resources/js/pages/finance/{entity}/`.
-- Cada página Index DEVE ter: `PageHeader`, `DataTable`, `FilterBar`, `ModalDialog`, formulário do módulo.
-- Props DEVEM ser tipadas com `defineProps<T>()`.
-- Breadcrumbs DEVEM ser definidos em cada página.
+- reka-ui para componentes headless
+- lucide-vue-next para ícones
+- vue-sonner para toasts/notificações
+- @tanstack/vue-table para tabelas
+- class-variance-authority + tailwind-merge para variantes de estilo
+
+## Regras de Template
+
+- Componentes: PascalCase (`<AccountForm />`)
+- Props: camelCase (`:accountId`)
+- Eventos: kebab-case (`@account-created`)
+- `v-model` ao invés de prop + emit manual quando possível
