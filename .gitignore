@@ -26,3 +26,7 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# E2E Testing
+e2e/results/
+e2e/.auth/
