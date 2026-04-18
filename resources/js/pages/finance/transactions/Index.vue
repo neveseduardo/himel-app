@@ -10,18 +10,18 @@ import { Button } from '@/components/ui/button';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import type { Account } from '@/domain/Account/types/account';
 import type { Category } from '@/domain/Category/types/category';
+import DataTable from '@/domain/Shared/components/DataTable.vue';
+import DirectionBadge from '@/domain/Shared/components/DirectionBadge.vue';
+import FilterBar from '@/domain/Shared/components/FilterBar.vue';
+import StatusBadge from '@/domain/Shared/components/StatusBadge.vue';
+import { useCrudToast } from '@/domain/Shared/composables/useCrudToast';
+import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
+import { usePagination } from '@/domain/Shared/composables/usePagination';
+import { formatCurrency, formatDate } from '@/domain/Shared/services/format';
 import type { PaginationMeta } from '@/domain/Shared/types/pagination';
-import type { Transaction } from '@/domain/Transaction/types/transaction';
-import DataTable from '@/modules/finance/components/DataTable.vue';
-import DirectionBadge from '@/modules/finance/components/DirectionBadge.vue';
-import FilterBar from '@/modules/finance/components/FilterBar.vue';
-import StatusBadge from '@/modules/finance/components/StatusBadge.vue';
-import TransactionForm from '@/modules/finance/components/TransactionForm.vue';
-import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
-import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
-import { usePagination } from '@/modules/finance/composables/usePagination';
-import { formatCurrency, formatDate } from '@/modules/finance/services/finance.services';
+import TransactionForm from '@/domain/Transaction/components/TransactionForm.vue';
 import { useTransactionStore } from '@/domain/Transaction/stores/useTransactionStore';
+import type { Transaction } from '@/domain/Transaction/types/transaction';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

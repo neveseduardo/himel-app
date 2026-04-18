@@ -10,16 +10,16 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import type { Category } from '@/domain/Category/types/category';
-import type { FixedExpense } from '@/domain/FixedExpense/types/fixed-expense';
-import type { PaginationMeta } from '@/domain/Shared/types/pagination';
-import DataTable from '@/modules/finance/components/DataTable.vue';
-import FilterBar from '@/modules/finance/components/FilterBar.vue';
-import FixedExpenseForm from '@/modules/finance/components/FixedExpenseForm.vue';
-import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
-import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
-import { usePagination } from '@/modules/finance/composables/usePagination';
-import { formatCurrency } from '@/modules/finance/services/finance.services';
+import FixedExpenseForm from '@/domain/FixedExpense/components/FixedExpenseForm.vue';
 import { useFixedExpenseStore } from '@/domain/FixedExpense/stores/useFixedExpenseStore';
+import type { FixedExpense } from '@/domain/FixedExpense/types/fixed-expense';
+import DataTable from '@/domain/Shared/components/DataTable.vue';
+import FilterBar from '@/domain/Shared/components/FilterBar.vue';
+import { useCrudToast } from '@/domain/Shared/composables/useCrudToast';
+import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
+import { usePagination } from '@/domain/Shared/composables/usePagination';
+import { formatCurrency } from '@/domain/Shared/services/format';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

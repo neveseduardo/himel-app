@@ -3,7 +3,7 @@ import { Form, Head } from '@inertiajs/vue3';
 import { ShieldCheck } from 'lucide-vue-next';
 
 import SecurityController from '@/actions/App/Domain/Settings/Controllers/SecurityController';
-import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
+import { useTwoFactorAuth } from '@/domain/Auth/composables/useTwoFactorAuth';
 
 withDefaults(
 	defineProps<{

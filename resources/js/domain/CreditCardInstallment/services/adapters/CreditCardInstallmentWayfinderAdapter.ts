@@ -20,7 +20,7 @@ export class CreditCardInstallmentWayfinderAdapter implements CreditCardInstallm
 	}
 
 	async create(data: Record<string, unknown>): Promise<void> {
-		router.post(store.url(), data);
+		router.post(store.url(), data as Record<string, string>);
 	}
 
 	async show(uid: string): Promise<void> {
@@ -28,7 +28,7 @@ export class CreditCardInstallmentWayfinderAdapter implements CreditCardInstallm
 	}
 
 	async update(uid: string, data: Record<string, unknown>): Promise<void> {
-		router.put(update.url(uid), data);
+		router.put(update.url(uid), data as Record<string, string>);
 	}
 
 	async destroy(uid: string): Promise<void> {

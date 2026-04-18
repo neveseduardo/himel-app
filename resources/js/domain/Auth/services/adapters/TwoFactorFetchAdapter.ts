@@ -4,7 +4,7 @@ import type { TwoFactorServicePort } from '../TwoFactorServicePort';
 
 function getCsrfToken(): string {
 	return decodeURIComponent(
-		document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] ?? '',
+		document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] ?? ''
 	);
 }
 

@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
-import UserMenuContent from '@/modules/settings/components/UserMenuContent.vue';
+import UserMenuContent from '@/domain/Settings/components/UserMenuContent.vue';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
 defineProps<{

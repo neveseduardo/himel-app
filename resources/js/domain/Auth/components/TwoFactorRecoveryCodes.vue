@@ -10,7 +10,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from '@/components/ui/card';
-import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
+import { useTwoFactorAuth } from '@/domain/Auth/composables/useTwoFactorAuth';
 import { regenerateRecoveryCodes } from '@/routes/two-factor';
 
 const { recoveryCodesList, fetchRecoveryCodes, errors } = useTwoFactorAuth();

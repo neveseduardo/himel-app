@@ -8,16 +8,16 @@ import DeleteConfirmPopover from '@/components/DeleteConfirmPopover.vue';
 import PageHeader from '@/components/PageHeader.vue';
 import { Button } from '@/components/ui/button';
 import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
-import type { Account } from '@/domain/Account/types/account';
-import type { PaginationMeta } from '@/domain/Shared/types/pagination';
-import AccountForm from '@/modules/finance/components/AccountForm.vue';
-import DataTable from '@/modules/finance/components/DataTable.vue';
-import FilterBar from '@/modules/finance/components/FilterBar.vue';
-import { useCrudToast } from '@/modules/finance/composables/useCrudToast';
-import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
-import { usePagination } from '@/modules/finance/composables/usePagination';
-import { formatCurrency } from '@/modules/finance/services/finance.services';
+import AccountForm from '@/domain/Account/components/AccountForm.vue';
 import { useAccountStore } from '@/domain/Account/stores/useAccountStore';
+import type { Account } from '@/domain/Account/types/account';
+import DataTable from '@/domain/Shared/components/DataTable.vue';
+import FilterBar from '@/domain/Shared/components/FilterBar.vue';
+import { useCrudToast } from '@/domain/Shared/composables/useCrudToast';
+import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
+import { usePagination } from '@/domain/Shared/composables/usePagination';
+import { formatCurrency } from '@/domain/Shared/services/format';
+import type { PaginationMeta } from '@/domain/Shared/types/pagination';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

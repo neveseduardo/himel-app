@@ -24,15 +24,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { Account } from '@/domain/Account/types/account';
 import type { Category } from '@/domain/Category/types/category';
 import type { Period, PeriodSummary } from '@/domain/Period/types/period';
+import DataTable from '@/domain/Shared/components/DataTable.vue';
+import DirectionBadge from '@/domain/Shared/components/DirectionBadge.vue';
+import StatusBadge from '@/domain/Shared/components/StatusBadge.vue';
+import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
+import { usePagination } from '@/domain/Shared/composables/usePagination';
+import { formatCurrency, formatDate } from '@/domain/Shared/services/format';
 import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import TransactionForm from '@/domain/Transaction/components/TransactionForm.vue';
 import type { Transaction } from '@/domain/Transaction/types/transaction';
-import DataTable from '@/modules/finance/components/DataTable.vue';
-import DirectionBadge from '@/modules/finance/components/DirectionBadge.vue';
-import StatusBadge from '@/modules/finance/components/StatusBadge.vue';
-import TransactionForm from '@/modules/finance/components/TransactionForm.vue';
-import { useFinanceFilters } from '@/modules/finance/composables/useFinanceFilters';
-import { usePagination } from '@/modules/finance/composables/usePagination';
-import { formatCurrency, formatDate } from '@/modules/finance/services/finance.services';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{

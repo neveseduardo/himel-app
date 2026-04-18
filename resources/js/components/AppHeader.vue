@@ -15,7 +15,7 @@ import {
 	DropdownMenuContent,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import UserMenuContent from '@/modules/settings/components/UserMenuContent.vue';
+import UserMenuContent from '@/domain/Settings/components/UserMenuContent.vue';
 import type { BreadcrumbItem as BreadcrumbItemType } from '@/types';
 
 defineProps<{
