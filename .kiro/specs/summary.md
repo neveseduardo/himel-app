@@ -85,10 +85,32 @@ Infraestrutura de testes E2E com Playwright para o módulo CreditCard, primeiro 
 14. Checkpoint final
 
 ### Artefatos Criados
-- `playwright.config.ts` — configuração Playwright
+- `playwright.config.ts` — configuração Playwright com `webServer` auto-start (build + serve)
 - `e2e/setup/global-setup.ts` — auth + DB seeding
 - `e2e/pages/CreditCardPage.ts` — Page Object
 - `e2e/tests/credit-card.spec.ts` — 26 testes E2E
-- `database/seeders/E2eTestSeeder.php` — seeder dedicado
+- `e2e/start-server.sh` — script para CI/CD (build + serve)
+- `database/seeders/E2eTestSeeder.php` — seeder dedicado com reset de dados
+- `database/migrations/..._add_closing_day_and_last_four_digits_to_financial_credit_cards_table.php` — migration para campos faltantes
 - `.gitignore` atualizado com `e2e/results/` e `e2e/.auth/`
 - `package.json` atualizado com Playwright e scripts E2E
+
+### Bugs Encontrados e Corrigidos
+
+#### Frontend
+- `AppLayout.vue` e `AuthLayout.vue` referenciavam a si mesmos no template — recursão infinita que impedia qualquer página de renderizar. Corrigido para usar `AppSidebarLayout` e `AuthSimpleLayout` respectivamente
+- `<Sonner />` (toasts) não estava renderizado em nenhum layout — chamadas `toast()` nunca mostravam nada. Adicionado ao `AppSidebarLayout.vue`
+- `Input.vue` não sincronizava o `value` prop do vee-validate — formulários de edição abriam com campos vazios. Adicionado suporte ao prop `value` com watcher
+- `app.blade.php` referenciava cada página Vue individualmente no `@vite()` — funcionava com Vite dev server mas quebrava com `npm run build`. Removida referência redundante (páginas já estão bundled no `app.ts` via `import.meta.glob`)
+
+#### Backend
+- Colunas `closing_day` e `last_four_digits` não existiam no banco — o formulário tinha os campos mas o backend não persistia. Adicionada migration, atualizado Model (fillable/casts), Resource, Store/Update FormRequests e Service
+- `FinancialCreditCardFactory` não tinha `protected $model` definido — Laravel tentava resolver `App\FinancialCreditCard` que não existe
+
+#### Infraestrutura E2E
+- Labels do login em português ("Endereço de e-mail", "Senha", "Entrar") — testes iniciais usavam labels em inglês
+- Campo de senha (`InputPassword`) é um wrapper `<div>` com `<input>` dentro — `#password` resolvia pro div, não pro input
+- Inputs do formulário de cartão não tinham `id` (labels tinham `for="name"` mas inputs tinham `id=""`) — `getByLabel()` não funcionava, corrigido para usar `locator('[name="..."]')`
+- `waitForLoadState('networkidle')` travava por causa do websocket do Vite HMR — substituído por waits explícitos
+- Arquivo `public/hot` do Vite fazia Laravel achar que dev server estava rodando em build mode — removido no script de start
+- Seeder original não limpava dados anteriores — cada execução acumulava cartões, mudando paginação. Corrigido com reset antes de seed
