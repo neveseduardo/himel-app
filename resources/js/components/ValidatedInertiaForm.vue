@@ -31,6 +31,7 @@ const onSubmit = handleSubmit((validatedValues) => {
 	router.visit(props.action, {
 		method: method as 'get' | 'post' | 'put' | 'patch' | 'delete',
 		data: validatedValues,
+		preserveState: true,
 		onSuccess: (page) => {
 			const resetOnSuccess = props.resetOnSuccess;
 			if (resetOnSuccess === true || Array.isArray(resetOnSuccess)) {

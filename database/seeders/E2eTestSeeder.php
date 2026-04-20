@@ -21,8 +21,14 @@ class E2eTestSeeder extends Seeder
             ],
         );
 
+        $this->resetCreditCards($user);
         $this->seedNamedCreditCards($user);
         $this->seedFactoryCreditCards($user);
+    }
+
+    private function resetCreditCards(User $user): void
+    {
+        CreditCard::where('user_uid', $user->uid)->delete();
     }
 
     private function seedNamedCreditCards(User $user): void
@@ -32,42 +38,34 @@ class E2eTestSeeder extends Seeder
                 'name' => 'Nubank',
                 'card_type' => CreditCard::CARD_TYPE_PHYSICAL,
                 'due_day' => 15,
+                'closing_day' => 5,
+                'last_four_digits' => '1234',
             ],
             [
                 'name' => 'Inter',
                 'card_type' => CreditCard::CARD_TYPE_VIRTUAL,
                 'due_day' => 20,
+                'closing_day' => 10,
+                'last_four_digits' => '5678',
             ],
             [
                 'name' => 'C6 Bank',
                 'card_type' => CreditCard::CARD_TYPE_PHYSICAL,
                 'due_day' => 10,
+                'closing_day' => 1,
+                'last_four_digits' => '9012',
             ],
         ];
 
         foreach ($cards as $card) {
-            CreditCard::updateOrCreate(
-                [
-                    'user_uid' => $user->uid,
-                    'name' => $card['name'],
-                ],
-                $card,
-            );
+            CreditCard::create(array_merge($card, ['user_uid' => $user->uid]));
         }
     }
 
     private function seedFactoryCreditCards(User $user): void
     {
-        $existingCount = CreditCard::where('user_uid', $user->uid)
-            ->whereNotIn('name', ['Nubank', 'Inter', 'C6 Bank'])
-            ->count();
-
-        $remaining = 20 - $existingCount;
-
-        if ($remaining > 0) {
-            FinancialCreditCardFactory::new()
-                ->count($remaining)
-                ->create(['user_uid' => $user->uid]);
-        }
+        FinancialCreditCardFactory::new()
+            ->count(20)
+            ->create(['user_uid' => $user->uid]);
     }
 }

@@ -9,249 +9,234 @@ export interface CreditCardFormData {
 }
 
 export class CreditCardPage {
-  readonly page: Page;
+	readonly page: Page;
 
-  constructor(page: Page) {
-    this.page = page;
-  }
+	constructor(page: Page) {
+		this.page = page;
+	}
 
-  // ---------------------------------------------------------------------------
-  // Navigation
-  // ---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
+	// Navigation
+	// ---------------------------------------------------------------------------
 
-  async goto(): Promise<void> {
-    await this.page.goto('/finance/credit-cards');
-    await this.page.waitForLoadState('networkidle');
-  }
+	async goto(): Promise<void> {
+		await this.page.goto('/finance/credit-cards');
+		await this.page.waitForTimeout(1000);
+	}
 
-  // ---------------------------------------------------------------------------
-  // Page assertions
-  // ---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
+	// Page assertions
+	// ---------------------------------------------------------------------------
 
-  async getPageTitle(): Promise<string> {
-    const heading = this.page.getByRole('heading', {
-      name: 'Cartões de Crédito',
-    });
-    return heading.innerText();
-  }
+	async getPageTitle(): Promise<string> {
+		const heading = this.page.getByRole('heading', {
+			name: 'Cartões de Crédito',
+		});
+		return heading.innerText();
+	}
 
-  // ---------------------------------------------------------------------------
-  // DataTable
-  // ---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
+	// DataTable
+	// ---------------------------------------------------------------------------
 
-  async getTableRows(): Promise<Locator[]> {
-    const rows = this.page.locator('table tbody tr').filter({
-      hasNot: this.page.locator('td[colspan]'),
-    });
-    const count = await rows.count();
-    const result: Locator[] = [];
-    for (let i = 0; i < count; i++) {
-      result.push(rows.nth(i));
-    }
-    return result;
-  }
+	async getTableRows(): Promise<Locator[]> {
+		const rows = this.page.locator('table tbody tr').filter({
+			hasNot: this.page.locator('td[colspan]'),
+		});
+		const count = await rows.count();
+		const result: Locator[] = [];
+		for (let i = 0; i < count; i++) {
+			result.push(rows.nth(i));
+		}
+		return result;
+	}
 
-  async getRowByName(name: string): Promise<Locator> {
-    return this.page.locator('table tbody tr').filter({
-      has: this.page.getByText(name, { exact: true }),
-    });
-  }
+	async getRowByName(name: string): Promise<Locator> {
+		return this.page.locator('table tbody tr').filter({
+			has: this.page.getByText(name, { exact: true }),
+		});
+	}
 
-  async getEmptyState(): Promise<Locator> {
-    return this.page.getByText('Nenhum registro encontrado.');
-  }
+	async getEmptyState(): Promise<Locator> {
+		return this.page.getByText('Nenhum registro encontrado.');
+	}
 
-  // ---------------------------------------------------------------------------
-  // Search & Filter
-  // ---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
+	// Search & Filter
+	// ---------------------------------------------------------------------------
 
-  async search(term: string): Promise<void> {
-    const input = this.page.getByPlaceholder('Buscar...');
-    await input.fill(term);
-    await this.page.getByRole('button', { name: 'Buscar' }).click();
-    await this.page.waitForLoadState('networkidle');
-  }
+	async search(term: string): Promise<void> {
+		const input = this.page.getByPlaceholder('Buscar');
+		await input.fill(term);
+		await this.page.getByRole('button', { name: 'Buscar' }).click();
+		await this.page.waitForTimeout(1000);
+	}
 
-  async clearSearch(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Limpar' }).click();
-    await this.page.waitForLoadState('networkidle');
-  }
+	async clearSearch(): Promise<void> {
+		await this.page.getByRole('button', { name: 'Limpar' }).click();
+		await this.page.waitForTimeout(1000);
+	}
 
-  // ---------------------------------------------------------------------------
-  // Pagination
-  // ---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
+	// Pagination
+	// ---------------------------------------------------------------------------
 
-  getNextButton(): Locator {
-    return this.page.getByRole('button', { name: 'Próxima' });
-  }
+	getNextButton(): Locator {
+		return this.page.getByRole('button', { name: 'Próxima' });
+	}
 
-  getPreviousButton(): Locator {
-    return this.page.getByRole('button', { name: 'Anterior' });
-  }
+	getPreviousButton(): Locator {
+		return this.page.getByRole('button', { name: 'Anterior' });
+	}
 
-  async goToNextPage(): Promise<void> {
-    await this.getNextButton().click();
-    await this.page.waitForLoadState('networkidle');
-  }
+	async goToNextPage(): Promise<void> {
+		await this.getNextButton().click();
+		await this.page.waitForTimeout(1000);
+	}
 
-  async goToPreviousPage(): Promise<void> {
-    await this.getPreviousButton().click();
-    await this.page.waitForLoadState('networkidle');
-  }
+	async goToPreviousPage(): Promise<void> {
+		await this.getPreviousButton().click();
+		await this.page.waitForTimeout(1000);
+	}
 
-  // ---------------------------------------------------------------------------
-  // CRUD Modal interactions
-  // ---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
+	// CRUD Modal interactions
+	// ---------------------------------------------------------------------------
 
-  async clickCreateButton(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Criar' }).click();
-  }
+	async clickCreateButton(): Promise<void> {
+		await this.page.getByRole('button', { name: 'Criar' }).click();
+		await this.page.getByRole('dialog').waitFor({ state: 'visible' });
+	}
 
-  async clickEditButton(cardName: string): Promise<void> {
-    const row = await this.getRowByName(cardName);
-    // Row action buttons order: [0] Eye (view), [1] Pencil (edit), [2] Trash (delete)
-    await row.getByRole('button').nth(1).click();
-  }
+	async clickEditButton(cardName: string): Promise<void> {
+		const row = await this.getRowByName(cardName);
+		// Row action buttons order: [0] Eye (view), [1] Pencil (edit), [2] Trash (delete)
+		await row.getByRole('button').nth(1).click();
+		await this.page.getByRole('dialog').waitFor({ state: 'visible' });
+	}
 
-  async clickViewButton(cardName: string): Promise<void> {
-    const row = await this.getRowByName(cardName);
-    await row.getByRole('button').nth(0).click();
-  }
+	async clickViewButton(cardName: string): Promise<void> {
+		const row = await this.getRowByName(cardName);
+		await row.getByRole('button').nth(0).click();
+		await this.page.getByRole('dialog').waitFor({ state: 'visible' });
+	}
 
-  async clickDeleteButton(cardName: string): Promise<void> {
-    const row = await this.getRowByName(cardName);
-    await row.getByRole('button').nth(2).click();
-  }
+	async clickDeleteButton(cardName: string): Promise<void> {
+		const row = await this.getRowByName(cardName);
+		await row.getByRole('button').nth(2).click();
+	}
 
-  // ---------------------------------------------------------------------------
-  // Modal assertions
-  // ---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
+	// Modal assertions
+	// ---------------------------------------------------------------------------
 
-  async getModalTitle(): Promise<string> {
-    const title = this.page.getByRole('dialog').getByRole('heading');
-    await title.waitFor({ state: 'visible' });
-    return title.innerText();
-  }
+	async getModalTitle(): Promise<string> {
+		const title = this.page.getByRole('dialog').getByRole('heading');
+		await title.waitFor({ state: 'visible' });
+		return title.innerText();
+	}
 
-  async isModalOpen(): Promise<boolean> {
-    return this.page.getByRole('dialog').isVisible();
-  }
+	async isModalOpen(): Promise<boolean> {
+		return this.page.getByRole('dialog').isVisible();
+	}
 
-  // ---------------------------------------------------------------------------
-  // Form interactions
-  // ---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
+	// Form interactions
+	// ---------------------------------------------------------------------------
 
-  async fillForm(data: CreditCardFormData): Promise<void> {
-    const dialog = this.page.getByRole('dialog');
+	async fillForm(data: CreditCardFormData): Promise<void> {
+		const dialog = this.page.getByRole('dialog');
 
-    await dialog.getByLabel('Nome').fill(data.name);
-    await dialog.getByLabel('Dia Fechamento').fill(String(data.closing_day));
-    await dialog.getByLabel('Dia Vencimento').fill(String(data.due_day));
+		await dialog.locator('[name="name"]').fill(data.name);
+		await dialog.locator('[name="closing_day"]').fill(String(data.closing_day));
+		await dialog.locator('[name="due_day"]').fill(String(data.due_day));
 
-    // Card type select
-    await dialog.getByRole('combobox').click();
-    const optionLabel = data.card_type === 'PHYSICAL' ? 'Físico' : 'Virtual';
-    await this.page.getByRole('option', { name: optionLabel }).click();
+		// Card type select
+		await dialog.getByRole('combobox').click();
+		const optionLabel = data.card_type === 'PHYSICAL' ? 'Físico' : 'Virtual';
+		await this.page.getByRole('option', { name: optionLabel }).click();
 
-    await dialog.getByLabel('Últimos 4 dígitos').fill(data.last_four_digits);
-  }
+		await dialog.locator('[name="last_four_digits"]').fill(data.last_four_digits);
+	}
 
-  async submitForm(): Promise<void> {
-    const dialog = this.page.getByRole('dialog');
-    const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
-    await submitBtn.click();
-  }
+	async submitForm(): Promise<void> {
+		const dialog = this.page.getByRole('dialog');
+		const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
+		await submitBtn.click();
+	}
 
-  async cancelForm(): Promise<void> {
-    const dialog = this.page.getByRole('dialog');
-    await dialog.getByRole('button', { name: 'Cancelar' }).click();
-  }
+	async cancelForm(): Promise<void> {
+		const dialog = this.page.getByRole('dialog');
+		await dialog.getByRole('button', { name: 'Cancelar' }).click();
+	}
 
-  async getFormFieldValue(field: string): Promise<string> {
-    const labelMap: Record<string, string> = {
-      name: 'Nome',
-      closing_day: 'Dia Fechamento',
-      due_day: 'Dia Vencimento',
-      last_four_digits: 'Últimos 4 dígitos',
-    };
+	async getFormFieldValue(field: string): Promise<string> {
+		const dialog = this.page.getByRole('dialog');
 
-    const dialog = this.page.getByRole('dialog');
+		if (field === 'card_type') {
+			return dialog.getByRole('combobox').innerText();
+		}
 
-    if (field === 'card_type') {
-      return dialog.getByRole('combobox').innerText();
-    }
+		return dialog.locator(`[name="${field}"]`).inputValue();
+	}
 
-    const label = labelMap[field];
-    if (!label) throw new Error(`Unknown field: ${field}`);
-    return dialog.getByLabel(label).inputValue();
-  }
+	async isFieldDisabled(field: string): Promise<boolean> {
+		const dialog = this.page.getByRole('dialog');
 
-  async isFieldDisabled(field: string): Promise<boolean> {
-    const labelMap: Record<string, string> = {
-      name: 'Nome',
-      closing_day: 'Dia Fechamento',
-      due_day: 'Dia Vencimento',
-      last_four_digits: 'Últimos 4 dígitos',
-    };
+		if (field === 'card_type') {
+			return dialog.getByRole('combobox').isDisabled();
+		}
 
-    const dialog = this.page.getByRole('dialog');
+		return dialog.locator(`[name="${field}"]`).isDisabled();
+	}
 
-    if (field === 'card_type') {
-      return dialog.getByRole('combobox').isDisabled();
-    }
+	async isSubmitButtonVisible(): Promise<boolean> {
+		const dialog = this.page.getByRole('dialog');
+		const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
+		return submitBtn.isVisible();
+	}
 
-    const label = labelMap[field];
-    if (!label) throw new Error(`Unknown field: ${field}`);
-    return dialog.getByLabel(label).isDisabled();
-  }
+	// ---------------------------------------------------------------------------
+	// Delete confirmation
+	// ---------------------------------------------------------------------------
 
-  async isSubmitButtonVisible(): Promise<boolean> {
-    const dialog = this.page.getByRole('dialog');
-    const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
-    return submitBtn.isVisible();
-  }
+	async confirmDelete(): Promise<void> {
+		await this.page.getByRole('button', { name: 'Excluir' }).click();
+	}
 
-  // ---------------------------------------------------------------------------
-  // Delete confirmation
-  // ---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
+	// Toast assertions
+	// ---------------------------------------------------------------------------
 
-  async confirmDelete(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Excluir' }).click();
-  }
+	async waitForToast(message: string): Promise<void> {
+		await this.page
+			.getByText(message)
+			.waitFor({ state: 'visible', timeout: 5_000 });
+	}
 
-  // ---------------------------------------------------------------------------
-  // Toast assertions
-  // ---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
+	// Validation errors
+	// ---------------------------------------------------------------------------
 
-  async waitForToast(message: string): Promise<void> {
-    await this.page
-      .getByText(message)
-      .waitFor({ state: 'visible', timeout: 10_000 });
-  }
+	async getValidationError(field: string): Promise<string> {
+		const labelMap: Record<string, string> = {
+			name: 'Nome',
+			closing_day: 'Dia Fechamento',
+			due_day: 'Dia Vencimento',
+			card_type: 'Tipo',
+			last_four_digits: 'Últimos 4 dígitos',
+		};
 
-  // ---------------------------------------------------------------------------
-  // Validation errors
-  // ---------------------------------------------------------------------------
+		const label = labelMap[field];
+		if (!label) throw new Error(`Unknown field: ${field}`);
 
-  async getValidationError(field: string): Promise<string> {
-    const labelMap: Record<string, string> = {
-      name: 'Nome',
-      closing_day: 'Dia Fechamento',
-      due_day: 'Dia Vencimento',
-      card_type: 'Tipo',
-      last_four_digits: 'Últimos 4 dígitos',
-    };
-
-    const label = labelMap[field];
-    if (!label) throw new Error(`Unknown field: ${field}`);
-
-    // ValidatedField renders: <label> then <input/select> then <span class="text-destructive">
-    const fieldContainer = this.page
-      .getByRole('dialog')
-      .locator(`label:has-text("${label}")`)
-      .locator('..');
-    const errorSpan = fieldContainer.locator('.text-destructive');
-    await errorSpan.waitFor({ state: 'visible', timeout: 5_000 });
-    return errorSpan.innerText();
-  }
+		// ValidatedField renders: <label> then <input/select> then <span class="text-destructive">
+		const fieldContainer = this.page
+			.getByRole('dialog')
+			.locator(`label:has-text("${label}")`)
+			.locator('..');
+		const errorSpan = fieldContainer.locator('.text-destructive');
+		await errorSpan.waitFor({ state: 'visible', timeout: 5_000 });
+		return errorSpan.innerText();
+	}
 }

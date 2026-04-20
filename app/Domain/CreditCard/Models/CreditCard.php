@@ -30,10 +30,13 @@ class CreditCard extends Model
         'name',
         'card_type',
         'due_day',
+        'closing_day',
+        'last_four_digits',
     ];
 
     protected $casts = [
         'due_day' => 'integer',
+        'closing_day' => 'integer',
     ];
 
     public const CARD_TYPE_PHYSICAL = 'PHYSICAL';

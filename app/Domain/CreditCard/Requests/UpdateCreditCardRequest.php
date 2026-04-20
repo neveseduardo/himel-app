@@ -18,6 +18,8 @@ class UpdateCreditCardRequest extends FormRequest
             'name' => ['sometimes', 'string', 'max:255'],
             'card_type' => ['sometimes', 'string', 'in:'.implode(',', CreditCard::getCardTypes())],
             'due_day' => ['sometimes', 'integer', 'min:1', 'max:31'],
+            'closing_day' => ['sometimes', 'integer', 'min:1', 'max:31'],
+            'last_four_digits' => ['sometimes', 'string', 'size:4'],
         ];
     }
 
@@ -30,6 +32,10 @@ class UpdateCreditCardRequest extends FormRequest
             'due_day.integer' => 'O dia de vencimento deve ser um número inteiro.',
             'due_day.min' => 'O dia de vencimento deve ser entre 1 e 31.',
             'due_day.max' => 'O dia de vencimento deve ser entre 1 e 31.',
+            'closing_day.integer' => 'O dia de fechamento deve ser um número inteiro.',
+            'closing_day.min' => 'O dia de fechamento deve ser entre 1 e 31.',
+            'closing_day.max' => 'O dia de fechamento deve ser entre 1 e 31.',
+            'last_four_digits.size' => 'Deve ter exatamente 4 dígitos.',
         ];
     }
 }

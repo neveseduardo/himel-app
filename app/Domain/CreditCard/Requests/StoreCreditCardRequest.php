@@ -18,6 +18,8 @@ class StoreCreditCardRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'card_type' => ['required', 'string', 'in:'.implode(',', CreditCard::getCardTypes())],
             'due_day' => ['required', 'integer', 'min:1', 'max:31'],
+            'closing_day' => ['required', 'integer', 'min:1', 'max:31'],
+            'last_four_digits' => ['required', 'string', 'size:4'],
         ];
     }
 
@@ -33,6 +35,12 @@ class StoreCreditCardRequest extends FormRequest
             'due_day.integer' => 'O dia de vencimento deve ser um número inteiro.',
             'due_day.min' => 'O dia de vencimento deve ser entre 1 e 31.',
             'due_day.max' => 'O dia de vencimento deve ser entre 1 e 31.',
+            'closing_day.required' => 'O dia de fechamento é obrigatório.',
+            'closing_day.integer' => 'O dia de fechamento deve ser um número inteiro.',
+            'closing_day.min' => 'O dia de fechamento deve ser entre 1 e 31.',
+            'closing_day.max' => 'O dia de fechamento deve ser entre 1 e 31.',
+            'last_four_digits.required' => 'Os últimos 4 dígitos são obrigatórios.',
+            'last_four_digits.size' => 'Deve ter exatamente 4 dígitos.',
         ];
     }
 }

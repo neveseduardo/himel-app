@@ -20,6 +20,8 @@ class FinancialCreditCardFactory extends Factory
             'name' => fake()->word(),
             'card_type' => fake()->randomElement(CreditCard::getCardTypes()),
             'due_day' => fake()->numberBetween(1, 28),
+            'closing_day' => fake()->numberBetween(1, 28),
+            'last_four_digits' => fake()->numerify('####'),
         ];
     }
 }

@@ -60,6 +60,8 @@ class CreditCardService implements CreditCardServiceInterface
                     'name' => $data['name'],
                     'card_type' => $data['card_type'],
                     'due_day' => $data['due_day'],
+                    'closing_day' => $data['closing_day'],
+                    'last_four_digits' => $data['last_four_digits'],
                 ]);
 
                 Log::info('CreditCard created', [

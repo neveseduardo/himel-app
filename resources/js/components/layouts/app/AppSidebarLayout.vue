@@ -18,5 +18,6 @@ withDefaults(defineProps<Props>(), {
 			<AppSidebarHeader :breadcrumbs="breadcrumbs" />
 			<slot />
 		</AppContent>
+		<Sonner />
 	</AppShell>
 </template>

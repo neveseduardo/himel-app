@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 const props = defineProps<{
     defaultValue?: string | number;
     modelValue?: string | number;
+    value?: string | number;
     class?: HTMLAttributes['class'];
 }>();
 
@@ -16,8 +17,17 @@ const emits = defineEmits<{
 
 const modelValue = useVModel(props, 'modelValue', emits, {
 	passive: true,
-	defaultValue: props.defaultValue,
+	defaultValue: props.value ?? props.defaultValue,
 });
+
+watch(
+	() => props.value,
+	(newVal) => {
+		if (newVal !== undefined && props.modelValue === undefined) {
+			modelValue.value = newVal;
+		}
+	}
+);
 </script>
 
 <template>

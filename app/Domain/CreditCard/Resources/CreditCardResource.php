@@ -17,6 +17,8 @@ class CreditCardResource extends JsonResource
             'name' => $this->name,
             'card_type' => $this->card_type,
             'due_day' => $this->due_day,
+            'closing_day' => $this->closing_day,
+            'last_four_digits' => $this->last_four_digits,
         ];
     }
 }
