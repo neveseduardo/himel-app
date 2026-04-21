@@ -17,9 +17,8 @@ export class CreditCardChargeWayfinderAdapter implements CreditCardChargeService
 
 	async create(data: {
 		description: string;
-		total_amount: number;
-		installments: number;
-		purchase_date: string;
+		amount: number;
+		total_installments: number;
 		credit_card_uid: string;
 	}): Promise<void> {
 		router.post(store.url(), data);

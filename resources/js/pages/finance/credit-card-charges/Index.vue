@@ -20,7 +20,7 @@ const props = defineProps<{
 	charges: CreditCardCharge[];
 	meta: PaginationMeta;
 	filters: Record<string, string>;
-	creditCards?: CreditCard[];
+	creditCards: CreditCard[];
 }>();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -31,8 +31,8 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const columns = [
 	{ key: 'description', label: 'Descrição' },
-	{ key: 'total_amount', label: 'Valor Total' },
-	{ key: 'installments', label: 'Parcelas' },
+	{ key: 'amount', label: 'Valor Total' },
+	{ key: 'total_installments', label: 'Parcelas' },
 	{ key: 'credit_card', label: 'Cartão' },
 	{ key: 'actions', label: '' },
 ];
@@ -67,11 +67,11 @@ function handleFormSuccess() {
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 
 		<DataTable :columns="columns" :data="charges as unknown as Record<string, unknown>[]">
-			<template #cell-total_amount="{ row }">
-				{{ formatCurrency((row as unknown as CreditCardCharge).total_amount) }}
+			<template #cell-amount="{ row }">
+				{{ formatCurrency((row as unknown as CreditCardCharge).amount) }}
 			</template>
-			<template #cell-installments="{ row }">
-				{{ (row as unknown as CreditCardCharge).installments }}x
+			<template #cell-total_installments="{ row }">
+				{{ (row as unknown as CreditCardCharge).total_installments }}x
 			</template>
 			<template #cell-credit_card="{ row }">
 				{{ (row as unknown as CreditCardCharge).credit_card?.name ?? '—' }}
@@ -99,7 +99,7 @@ function handleFormSuccess() {
 			<CreditCardChargeForm
 				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 				:readonly="store.modalMode === 'view'"
-				:credit-cards="creditCards ?? []"
+				:credit-cards="creditCards"
 				@success="handleFormSuccess"
 				@cancel="store.closeModal()"
 			/>

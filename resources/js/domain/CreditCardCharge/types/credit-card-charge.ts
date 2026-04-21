@@ -1,8 +1,7 @@
 export interface CreditCardCharge {
 	uid: string;
 	description: string;
-	total_amount: number;
-	installments: number;
-	purchase_date: string;
+	amount: number;
+	total_installments: number;
 	credit_card?: { uid: string; name: string };
 }

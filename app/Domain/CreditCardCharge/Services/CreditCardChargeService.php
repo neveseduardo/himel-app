@@ -106,7 +106,7 @@ class CreditCardChargeService implements CreditCardChargeServiceInterface
                             'direction' => Transaction::DIRECTION_OUTFLOW,
                             'status' => Transaction::STATUS_PENDING,
                             'source' => Transaction::SOURCE_CREDIT_CARD,
-                            'description' => $charge->description . " ({$i}/{$data['total_installments']})",
+                            'description' => $charge->description." ({$i}/{$data['total_installments']})",
                             'occurred_at' => $dueDate,
                             'due_date' => $dueDate,
                             'reference_id' => $charge->uid,
@@ -117,7 +117,7 @@ class CreditCardChargeService implements CreditCardChargeServiceInterface
 
                     CreditCardInstallment::create([
                         'credit_card_charge_uid' => $charge->uid,
-                        'transaction_uid' => $transactionUid,
+                        'financial_transaction_uid' => $transactionUid,
                         'installment_number' => $i,
                         'due_date' => $dueDate,
                         'amount' => $installmentAmount,

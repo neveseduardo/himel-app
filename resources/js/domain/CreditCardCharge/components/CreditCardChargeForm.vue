@@ -21,8 +21,8 @@ const method = computed(() => 'post' as const);
 const initialValues = computed(() => ({
 	credit_card_uid: props.item?.credit_card?.uid ?? '',
 	description: props.item?.description ?? '',
-	amount: props.item?.total_amount ?? 0,
-	total_installments: props.item?.installments ?? 1,
+	amount: props.item?.amount ?? 0,
+	total_installments: props.item?.total_installments ?? 1,
 }));
 </script>
 

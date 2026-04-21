@@ -166,9 +166,9 @@ export class CreditCardChargePage {
 	async fillForm(data: CreditCardChargeFormData): Promise<void> {
 		const dialog = this.page.getByRole('dialog');
 
-		// Credit card select (combobox with dynamic options)
+		// Credit card select (reka-ui Select with dynamic options like "Nubank (•••• 1234)")
 		await dialog.getByRole('combobox').click();
-		await this.page.getByRole('option', { name: data.credit_card_uid }).click();
+		await this.page.getByRole('option', { name: new RegExp(data.credit_card_uid) }).click();
 
 		await dialog.locator('[name="description"]').fill(data.description);
 		await dialog.locator('[name="amount"]').fill(String(data.amount));
@@ -245,10 +245,10 @@ export class CreditCardChargePage {
 		const label = labelMap[field];
 		if (!label) throw new Error(`Unknown field: ${field}`);
 
-		// ValidatedField renders: <label> then <input/select> then <span class="text-destructive">
+		// ValidatedField renders: div.grid.gap-2 > label[for=name] + slot + span.text-destructive
 		const fieldContainer = this.page
 			.getByRole('dialog')
-			.locator(`label:has-text("${label}")`)
+			.locator(`label[for="${field}"]`)
 			.locator('..');
 		const errorSpan = fieldContainer.locator('.text-destructive');
 		await errorSpan.waitFor({ state: 'visible', timeout: 5_000 });

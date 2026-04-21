@@ -26,7 +26,7 @@ class CreditCardInstallment extends Model
     protected $fillable = [
         'uid',
         'credit_card_charge_uid',
-        'transaction_uid',
+        'financial_transaction_uid',
         'installment_number',
         'due_date',
         'amount',
@@ -47,6 +47,6 @@ class CreditCardInstallment extends Model
 
     public function transaction(): BelongsTo
     {
-        return $this->belongsTo(Transaction::class, 'transaction_uid', 'uid');
+        return $this->belongsTo(Transaction::class, 'financial_transaction_uid', 'uid');
     }
 }

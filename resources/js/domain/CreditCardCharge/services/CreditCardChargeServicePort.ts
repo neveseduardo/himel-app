@@ -5,9 +5,8 @@ export interface CreditCardChargeServicePort {
 	/** Cria uma nova cobrança de cartão */
 	create(data: {
 		description: string;
-		total_amount: number;
-		installments: number;
-		purchase_date: string;
+		amount: number;
+		total_installments: number;
 		credit_card_uid: string;
 	}): Promise<void>;
 }

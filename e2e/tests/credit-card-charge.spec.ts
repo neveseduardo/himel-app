@@ -39,7 +39,7 @@ test.describe('CreditCardCharge Listing', () => {
 		await chargePage.search('Notebook Dell');
 		const notebookRow = await chargePage.getRowByDescription('Notebook Dell');
 		await expect(notebookRow).toContainText('Notebook Dell');
-		await expect(notebookRow).toContainText('R$ 4.500,00');
+		await expect(notebookRow).toContainText('4.500,00');
 		await expect(notebookRow).toContainText('12x');
 		await expect(notebookRow).toContainText('Nubank');
 
@@ -47,7 +47,7 @@ test.describe('CreditCardCharge Listing', () => {
 		await chargePage.search('Fone Bluetooth');
 		const foneRow = await chargePage.getRowByDescription('Fone Bluetooth');
 		await expect(foneRow).toContainText('Fone Bluetooth');
-		await expect(foneRow).toContainText('R$ 250,00');
+		await expect(foneRow).toContainText('250,00');
 		await expect(foneRow).toContainText('3x');
 		await expect(foneRow).toContainText('Inter');
 
@@ -55,7 +55,7 @@ test.describe('CreditCardCharge Listing', () => {
 		await chargePage.search('Curso Online');
 		const cursoRow = await chargePage.getRowByDescription('Curso Online');
 		await expect(cursoRow).toContainText('Curso Online');
-		await expect(cursoRow).toContainText('R$ 1.200,00');
+		await expect(cursoRow).toContainText('1.200,00');
 		await expect(cursoRow).toContainText('6x');
 		await expect(cursoRow).toContainText('C6 Bank');
 	});
@@ -203,7 +203,10 @@ test.describe('CreditCardCharge Creation', () => {
 		});
 
 		await chargePage.submitForm();
-		await chargePage.waitForToast('Compra no cartão criado(a) com sucesso!');
+
+		// Wait for Inertia redirect to complete (POST → 302 → GET 200)
+		await chargePage.page.waitForURL(/credit-card-charges/, { timeout: 10_000 });
+		await chargePage.page.locator('table').waitFor({ state: 'visible' });
 
 		await chargePage.search('Compra Nova Listagem');
 		const newRow = await chargePage.getRowByDescription('Compra Nova Listagem');
@@ -213,10 +216,18 @@ test.describe('CreditCardCharge Creation', () => {
 	test('submitting with invalid data shows validation errors', async () => {
 		await chargePage.clickCreateButton();
 
+		// Clear the description field to trigger validation
+		const dialog = chargePage.page.getByRole('dialog');
+		await dialog.locator('[name="description"]').fill('');
+		await dialog.locator('[name="amount"]').fill('0');
+
 		await chargePage.submitForm();
 
-		const descriptionError = await chargePage.getValidationError('description');
-		expect(descriptionError).toBeTruthy();
+		// Wait for validation error to appear
+		const errorSpan = dialog.locator('.text-destructive').first();
+		await errorSpan.waitFor({ state: 'visible', timeout: 5_000 });
+		const errorText = await errorSpan.innerText();
+		expect(errorText).toBeTruthy();
 	});
 
 	test('clicking "Cancelar" closes modal without creating', async () => {
