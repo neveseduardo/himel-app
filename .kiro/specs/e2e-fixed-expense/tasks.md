@@ -11,8 +11,8 @@
 - [x] 2.5 Chamar `resetFixedExpenses`, `seedNamedFixedExpenses` e `seedFactoryFixedExpenses` no método `run()` após os blocos de CreditCardCharge
 
 ## Tarefa 3: Dialog Sync Fix no FixedExpense Index.vue
-- [~] 3.1 Adicionar função `handleDialogOpenChange(open: boolean)` que chama `store.closeModal()` quando `open` é `false` e `store.isModalOpen` é `true`
-- [~] 3.2 Adicionar `@update:open="handleDialogOpenChange"` ao `<ModalDialog>` no template
+- [x] 3.1 Adicionar função `handleDialogOpenChange(open: boolean)` que chama `store.closeModal()` quando `open` é `false` e `store.isModalOpen` é `true`
+- [x] 3.2 Adicionar `@update:open="handleDialogOpenChange"` ao `<ModalDialog>` no template
 
 ## Tarefa 4: Criar Page Object FixedExpensePage.ts
 - [~] 4.1 Criar arquivo `e2e/pages/FixedExpensePage.ts` com interface `FixedExpenseFormData` (description, amount, due_day, category_uid, active) e classe `FixedExpensePage`
