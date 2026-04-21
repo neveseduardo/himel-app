@@ -29,8 +29,8 @@ class FinancialTransactionSeeder extends Seeder
                 $category = $inflowCategories->random();
                 Transaction::create([
                     'user_uid' => $user->uid,
-                    'financial_account_uid' => $account->uid,
-                    'financial_category_uid' => $category->uid,
+                    'account_uid' => $account->uid,
+                    'category_uid' => $category->uid,
                     'amount' => rand(1000, 10000),
                     'direction' => Transaction::DIRECTION_INFLOW,
                     'status' => Transaction::STATUS_PAID,
@@ -46,8 +46,8 @@ class FinancialTransactionSeeder extends Seeder
 
                 Transaction::create([
                     'user_uid' => $user->uid,
-                    'financial_account_uid' => $account->uid,
-                    'financial_category_uid' => $category->uid,
+                    'account_uid' => $account->uid,
+                    'category_uid' => $category->uid,
                     'amount' => rand(50, 500),
                     'direction' => Transaction::DIRECTION_OUTFLOW,
                     'status' => $status,
