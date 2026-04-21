@@ -14,9 +14,6 @@ export default defineConfig({
 			'@/types': '/home/eduardo/projetos/himel-app/resources/js/domain/Shared/types',
 		},
 	},
-	optimizeDeps: {
-		include: ['cn', 'toUrl'],
-	},
 	plugins: [
 		laravel({
 			input: ['resources/css/app.css', 'resources/js/app.ts'],
@@ -37,13 +34,7 @@ export default defineConfig({
 		}),
 		AutoImport({
 			dts: './resources/js/domain/Shared/types/imports.d.ts',
-			imports: [
-				'vue',
-				'@vueuse/core',
-				'pinia',
-				'vee-validate',
-				{ './resources/js/domain/Shared/lib/utils': ['cn'] },
-			],
+			imports: ['vue', '@vueuse/core', 'pinia', 'vee-validate'],
 		}),
 		Components({
 			dts: './resources/js/domain/Shared/types/components.d.ts',

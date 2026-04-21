@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from '@/domain/Shared/lib/utils';
 import { Loader2Icon } from 'lucide-vue-next';
 import type { HTMLAttributes } from 'vue';
 

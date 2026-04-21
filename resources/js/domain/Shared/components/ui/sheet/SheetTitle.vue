@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from '@/domain/Shared/lib/utils';
 import { reactiveOmit } from '@vueuse/core';
 import type { DialogTitleProps } from 'reka-ui';
 import { DialogTitle } from 'reka-ui';

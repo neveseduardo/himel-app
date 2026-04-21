@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from '@/domain/Shared/lib/utils';
 import type { SelectLabelProps } from 'reka-ui';
 import { SelectLabel } from 'reka-ui';
 import type { HTMLAttributes } from 'vue';

@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { cn } from '@/domain/Shared/lib/utils';
 import { ChevronRight } from 'lucide-vue-next';
 import type { HTMLAttributes } from 'vue';
 

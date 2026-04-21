@@ -9,6 +9,8 @@ import { TooltipProvider } from 'reka-ui';
 import type { HTMLAttributes, Ref } from 'vue';
 import { computed, ref } from 'vue';
 
+import { cn } from '@/domain/Shared/lib/utils';
+
 import {
 	provideSidebarContext,
 	SIDEBAR_COOKIE_MAX_AGE,

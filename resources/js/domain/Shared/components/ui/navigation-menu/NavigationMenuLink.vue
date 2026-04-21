@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { cn } from '@/domain/Shared/lib/utils';
 import { reactiveOmit } from '@vueuse/core';
 import type { NavigationMenuLinkEmits, NavigationMenuLinkProps } from 'reka-ui';
 import { NavigationMenuLink, useForwardPropsEmits } from 'reka-ui';
