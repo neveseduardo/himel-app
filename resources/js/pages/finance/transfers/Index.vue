@@ -120,7 +120,7 @@ function handleDelete(uid: string) {
 			</Button>
 		</div>
 
-		<ModalDialog ref="modalRef" :title="modalTitle">
+		<ModalDialog ref="modalRef" :title="modalTitle" @update:open="(open: boolean) => { if (!open) store.closeModal(); }">
 			<TransferForm
 				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 				:readonly="store.modalMode === 'view'"

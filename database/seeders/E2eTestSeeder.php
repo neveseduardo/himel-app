@@ -2,15 +2,21 @@
 
 namespace Database\Seeders;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\Category\Models\Category;
 use App\Domain\CreditCard\Models\CreditCard;
 use App\Domain\CreditCardCharge\Models\CreditCardCharge;
 use App\Domain\CreditCardInstallment\Models\CreditCardInstallment;
 use App\Domain\FixedExpense\Models\FixedExpense;
+use App\Domain\Transaction\Models\Transaction;
+use App\Domain\Transfer\Models\Transfer;
 use App\Domain\User\Models\User;
+use Database\Factories\FinancialAccountFactory;
 use Database\Factories\FinancialCreditCardChargeFactory;
 use Database\Factories\FinancialCreditCardFactory;
 use Database\Factories\FinancialFixedExpenseFactory;
+use Database\Factories\FinancialTransactionFactory;
+use Database\Factories\FinancialTransferFactory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -28,6 +34,19 @@ class E2eTestSeeder extends Seeder
         );
 
         $this->ensureDefaultCategories($user);
+
+        // Reset in reverse FK order: Transactions → Transfers → Accounts
+        $this->resetTransactions($user);
+        $this->resetTransfers($user);
+        $this->resetAccounts($user);
+
+        // Seed in FK order: Accounts → Transfers → Transactions
+        $this->seedNamedAccounts($user);
+        $this->seedFactoryAccounts($user);
+        $this->seedNamedTransfers($user);
+        $this->seedFactoryTransfers($user);
+        $this->seedNamedTransactions($user);
+        $this->seedFactoryTransactions($user);
 
         $this->resetCreditCards($user);
         $this->seedNamedCreditCards($user);
@@ -65,6 +84,130 @@ class E2eTestSeeder extends Seeder
 
         foreach ($categories as $category) {
             Category::create(array_merge($category, ['user_uid' => $user->uid]));
+        }
+    }
+
+    private function resetAccounts(User $user): void
+    {
+        Account::where('user_uid', $user->uid)->delete();
+    }
+
+    private function seedNamedAccounts(User $user): void
+    {
+        $accounts = [
+            ['name' => 'Conta Corrente BB', 'type' => Account::TYPE_CHECKING, 'balance' => 5000.00],
+            ['name' => 'Poupança Nubank', 'type' => Account::TYPE_SAVINGS, 'balance' => 12000.00],
+            ['name' => 'Carteira', 'type' => Account::TYPE_CASH, 'balance' => 350.50],
+        ];
+
+        foreach ($accounts as $account) {
+            Account::create(array_merge($account, ['user_uid' => $user->uid]));
+        }
+    }
+
+    private function seedFactoryAccounts(User $user): void
+    {
+        FinancialAccountFactory::new()->count(20)->create(['user_uid' => $user->uid]);
+    }
+
+    private function resetTransfers(User $user): void
+    {
+        Transfer::where('user_uid', $user->uid)->delete();
+    }
+
+    private function seedNamedTransfers(User $user): void
+    {
+        $bb = Account::where('user_uid', $user->uid)->where('name', 'Conta Corrente BB')->first();
+        $nubank = Account::where('user_uid', $user->uid)->where('name', 'Poupança Nubank')->first();
+        $carteira = Account::where('user_uid', $user->uid)->where('name', 'Carteira')->first();
+
+        $transfers = [
+            ['from_account_uid' => $bb->uid, 'to_account_uid' => $nubank->uid, 'amount' => 1000.00],
+            ['from_account_uid' => $nubank->uid, 'to_account_uid' => $carteira->uid, 'amount' => 200.00],
+            ['from_account_uid' => $carteira->uid, 'to_account_uid' => $bb->uid, 'amount' => 50.00],
+        ];
+
+        foreach ($transfers as $transfer) {
+            Transfer::create(array_merge($transfer, ['user_uid' => $user->uid]));
+        }
+    }
+
+    private function seedFactoryTransfers(User $user): void
+    {
+        $accountUids = Account::where('user_uid', $user->uid)->pluck('uid')->toArray();
+
+        foreach (range(1, 13) as $i) {
+            FinancialTransferFactory::new()->create([
+                'user_uid' => $user->uid,
+                'from_account_uid' => $accountUids[$i % count($accountUids)],
+                'to_account_uid' => $accountUids[($i + 1) % count($accountUids)],
+            ]);
+        }
+    }
+
+    private function resetTransactions(User $user): void
+    {
+        Transaction::where('user_uid', $user->uid)->delete();
+    }
+
+    private function seedNamedTransactions(User $user): void
+    {
+        $bb = Account::where('user_uid', $user->uid)->where('name', 'Conta Corrente BB')->first();
+        $nubank = Account::where('user_uid', $user->uid)->where('name', 'Poupança Nubank')->first();
+
+        $salario = Category::where('user_uid', $user->uid)->where('name', 'Salário')->first();
+        $alimentacao = Category::where('user_uid', $user->uid)->where('name', 'Alimentação')->first();
+        $moradia = Category::where('user_uid', $user->uid)->where('name', 'Moradia')->first();
+
+        $transactions = [
+            [
+                'account_uid' => $bb->uid,
+                'category_uid' => $salario->uid,
+                'amount' => 8500.00,
+                'direction' => Transaction::DIRECTION_INFLOW,
+                'status' => Transaction::STATUS_PAID,
+                'source' => Transaction::SOURCE_MANUAL,
+                'description' => 'Salário Mensal',
+                'occurred_at' => now(),
+            ],
+            [
+                'account_uid' => $bb->uid,
+                'category_uid' => $alimentacao->uid,
+                'amount' => 450.00,
+                'direction' => Transaction::DIRECTION_OUTFLOW,
+                'status' => Transaction::STATUS_PAID,
+                'source' => Transaction::SOURCE_MANUAL,
+                'description' => 'Supermercado',
+                'occurred_at' => now(),
+            ],
+            [
+                'account_uid' => $nubank->uid,
+                'category_uid' => $moradia->uid,
+                'amount' => 180.00,
+                'direction' => Transaction::DIRECTION_OUTFLOW,
+                'status' => Transaction::STATUS_PENDING,
+                'source' => Transaction::SOURCE_MANUAL,
+                'description' => 'Conta de Luz',
+                'occurred_at' => now(),
+            ],
+        ];
+
+        foreach ($transactions as $transaction) {
+            Transaction::create(array_merge($transaction, ['user_uid' => $user->uid]));
+        }
+    }
+
+    private function seedFactoryTransactions(User $user): void
+    {
+        $accountUids = Account::where('user_uid', $user->uid)->pluck('uid')->toArray();
+        $categoryUids = Category::where('user_uid', $user->uid)->pluck('uid')->toArray();
+
+        foreach (range(1, 20) as $i) {
+            FinancialTransactionFactory::new()->create([
+                'user_uid' => $user->uid,
+                'account_uid' => $accountUids[$i % count($accountUids)],
+                'category_uid' => $categoryUids[$i % count($categoryUids)],
+            ]);
         }
     }
 

@@ -2,12 +2,12 @@
 
 ## Fase 1: Infraestrutura Compartilhada
 
-- [-] 1. Corrigir factories dos módulos Account, Transfer e Transaction
+- [x] 1. Corrigir factories dos módulos Account, Transfer e Transaction
   - [x] 1.1 Adicionar `protected $model = Account::class` e import em `FinancialAccountFactory.php`
   - [x] 1.2 Adicionar `protected $model = Transfer::class` em `FinancialTransferFactory.php`
   - [x] 1.3 Adicionar `protected $model = Transaction::class` em `FinancialTransactionFactory.php`
 - [-] 2. Atualizar E2eTestSeeder com dados para Account, Transfer e Transaction
-  - [~] 2.1 Adicionar imports dos models Account, Transfer, Transaction e factories
+  - [x] 2.1 Adicionar imports dos models Account, Transfer, Transaction e factories
   - [~] 2.2 Adicionar métodos `resetAccounts`, `resetTransfers`, `resetTransactions` (ordem inversa de FK)
   - [~] 2.3 Adicionar método `seedNamedAccounts` (3 contas: "Conta Corrente BB", "Poupança Nubank", "Carteira")
   - [~] 2.4 Adicionar método `seedFactoryAccounts` (20 registros via factory)
