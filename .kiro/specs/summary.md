@@ -144,3 +144,34 @@ Correção do bug onde o dialog de criação/edição do módulo CreditCard para
 - `resources/js/pages/finance/credit-cards/Index.vue` — handler `@update:open`
 - `e2e/pages/CreditCardPage.ts` — métodos `closeDialogByEsc()`, `closeDialogByOverlay()`
 - `e2e/tests/credit-card.spec.ts` — 2 testes E2E novos para validar reopen
+
+
+---
+
+## Spec: E2E Testing CreditCardCharge
+
+Testes E2E com Playwright para o módulo CreditCardCharge (Compras de Cartão), seguindo os mesmos padrões do módulo CreditCard.
+
+### Requisitos
+- Page Object `CreditCardChargePage` com interface `CreditCardChargeFormData`
+- Seeder com 3 compras nomeadas (Notebook Dell, Fone Bluetooth, Curso Online) + 13 via factory (total 16 > 15 per_page)
+- Testes CRUD: listagem, busca/filtro, paginação, criação, visualização
+- Edição e exclusão como `test.describe.skip` (UI não implementada)
+- Testes read-only antes de mutação
+
+### Decisões de Design
+- Reutiliza padrão do CreditCardPage para consistência
+- `credit_card_uid` no FormData é o nome do cartão (não UUID) para simplificar seleção na UI
+- Select de cartão usa combobox/option (reka-ui) com lista dinâmica
+- Reset de installments antes de charges (FK constraint)
+- Toast messages: `useCrudToast('Compra no cartão')`
+
+### Tasks Concluídas (3 tarefas, 21 subtasks)
+1. Atualizar Seeder — imports, reset, seed nomeados, seed factory, chamada no run()
+2. Criar Page Object — interface, navegação, DataTable, busca, paginação, modal, formulário, auxiliares
+3. Criar spec — imports, Listing (3), Search (3), Pagination (5), Creation (5), Viewing (3), Editing/skip (4), Deletion/skip (3)
+
+### Artefatos Criados/Alterados
+- `database/seeders/E2eTestSeeder.php` — métodos `resetCreditCardCharges`, `seedNamedCreditCardCharges`, `seedFactoryCreditCardCharges`
+- `e2e/pages/CreditCardChargePage.ts` — Page Object com 20+ métodos
+- `e2e/tests/credit-card-charge.spec.ts` — 26 testes E2E (19 ativos + 7 skipped)
