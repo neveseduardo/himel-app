@@ -6,20 +6,20 @@
   - [x] 1.1 Adicionar `protected $model = Account::class` e import em `FinancialAccountFactory.php`
   - [x] 1.2 Adicionar `protected $model = Transfer::class` em `FinancialTransferFactory.php`
   - [x] 1.3 Adicionar `protected $model = Transaction::class` em `FinancialTransactionFactory.php`
-- [-] 2. Atualizar E2eTestSeeder com dados para Account, Transfer e Transaction
+- [x] 2. Atualizar E2eTestSeeder com dados para Account, Transfer e Transaction
   - [x] 2.1 Adicionar imports dos models Account, Transfer, Transaction e factories
-  - [~] 2.2 Adicionar métodos `resetAccounts`, `resetTransfers`, `resetTransactions` (ordem inversa de FK)
-  - [~] 2.3 Adicionar método `seedNamedAccounts` (3 contas: "Conta Corrente BB", "Poupança Nubank", "Carteira")
-  - [~] 2.4 Adicionar método `seedFactoryAccounts` (20 registros via factory)
-  - [~] 2.5 Adicionar método `seedNamedTransfers` (3 transferências entre contas nomeadas)
-  - [~] 2.6 Adicionar método `seedFactoryTransfers` (13 registros via factory, usando contas do usuário)
-  - [ ] 2.7 Adicionar método `seedNamedTransactions` (3 transações: "Salário Mensal", "Supermercado", "Conta de Luz")
-  - [ ] 2.8 Adicionar método `seedFactoryTransactions` (20 registros via factory, usando contas e categorias do usuário)
-  - [ ] 2.9 Atualizar método `run()` com chamadas na ordem correta (reset: Transactions→Transfers→Accounts, seed: Accounts→Transfers→Transactions)
-- [ ] 3. Corrigir dialog sync nos 3 Index.vue (Account, Transfer, Transaction)
-  - [ ] 3.1 Adicionar `@update:open` handler no ModalDialog de `accounts/Index.vue`
-  - [ ] 3.2 Adicionar `@update:open` handler no ModalDialog de `transfers/Index.vue`
-  - [ ] 3.3 Adicionar `@update:open` handler no ModalDialog de `transactions/Index.vue`
+  - [x] 2.2 Adicionar métodos `resetAccounts`, `resetTransfers`, `resetTransactions` (ordem inversa de FK)
+  - [x] 2.3 Adicionar método `seedNamedAccounts` (3 contas: "Conta Corrente BB", "Poupança Nubank", "Carteira")
+  - [x] 2.4 Adicionar método `seedFactoryAccounts` (20 registros via factory)
+  - [x] 2.5 Adicionar método `seedNamedTransfers` (3 transferências entre contas nomeadas)
+  - [x] 2.6 Adicionar método `seedFactoryTransfers` (13 registros via factory, usando contas do usuário)
+  - [x] 2.7 Adicionar método `seedNamedTransactions` (3 transações: "Salário Mensal", "Supermercado", "Conta de Luz")
+  - [x] 2.8 Adicionar método `seedFactoryTransactions` (20 registros via factory, usando contas e categorias do usuário)
+  - [x] 2.9 Atualizar método `run()` com chamadas na ordem correta (reset: Transactions→Transfers→Accounts, seed: Accounts→Transfers→Transactions)
+- [x] 3. Corrigir dialog sync nos 3 Index.vue (Account, Transfer, Transaction)
+  - [x] 3.1 Adicionar `@update:open` handler no ModalDialog de `accounts/Index.vue`
+  - [x] 3.2 Adicionar `@update:open` handler no ModalDialog de `transfers/Index.vue`
+  - [x] 3.3 Adicionar `@update:open` handler no ModalDialog de `transactions/Index.vue`
 
 ## Fase 2: Account E2E
 
