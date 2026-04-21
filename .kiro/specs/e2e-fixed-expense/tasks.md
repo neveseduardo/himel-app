@@ -15,17 +15,17 @@
 - [x] 3.2 Adicionar `@update:open="handleDialogOpenChange"` ao `<ModalDialog>` no template
 
 ## Tarefa 4: Criar Page Object FixedExpensePage.ts
-- [~] 4.1 Criar arquivo `e2e/pages/FixedExpensePage.ts` com interface `FixedExpenseFormData` (description, amount, due_day, category_uid, active) e classe `FixedExpensePage`
-- [~] 4.2 Implementar métodos de navegação: `goto()` (URL `/finance/fixed-expenses`), `getPageTitle()` (heading "Despesas Fixas")
-- [~] 4.3 Implementar métodos de DataTable: `getTableRows()`, `getRowByDescription(desc)`, `getEmptyState()`
-- [~] 4.4 Implementar métodos de busca: `search(term)`, `clearSearch()` — com `waitForResponse` usando URL pattern `fixed-expenses`
-- [~] 4.5 Implementar métodos de paginação: `getNextButton()`, `getPreviousButton()`, `goToNextPage()`, `goToPreviousPage()`
-- [~] 4.6 Implementar métodos de CRUD modal: `clickCreateButton()`, `clickEditButton(desc)`, `clickViewButton(desc)`, `clickDeleteButton(desc)`
-- [~] 4.7 Implementar métodos de modal: `getModalTitle()`, `isModalOpen()`, `submitForm()`, `cancelForm()`
-- [~] 4.8 Implementar `fillForm(data)` com tratamento especial para: category_uid (combobox Select) e active (checkbox com lógica condicional)
-- [~] 4.9 Implementar `getFormFieldValue(field)` e `isFieldDisabled(field)` com tratamento para category_uid (combobox) e active (checkbox)
-- [~] 4.10 Implementar métodos de diálogo: `closeDialogByEsc()`, `closeDialogByOverlay()`
-- [~] 4.11 Implementar `confirmDelete()`, `waitForToast(message)`, `getValidationError(field)` com mapeamento de labels
+- [x] 4.1 Criar arquivo `e2e/pages/FixedExpensePage.ts` com interface `FixedExpenseFormData` (description, amount, due_day, category_uid, active) e classe `FixedExpensePage`
+- [x] 4.2 Implementar métodos de navegação: `goto()` (URL `/finance/fixed-expenses`), `getPageTitle()` (heading "Despesas Fixas")
+- [x] 4.3 Implementar métodos de DataTable: `getTableRows()`, `getRowByDescription(desc)`, `getEmptyState()`
+- [x] 4.4 Implementar métodos de busca: `search(term)`, `clearSearch()` — com `waitForResponse` usando URL pattern `fixed-expenses`
+- [x] 4.5 Implementar métodos de paginação: `getNextButton()`, `getPreviousButton()`, `goToNextPage()`, `goToPreviousPage()`
+- [x] 4.6 Implementar métodos de CRUD modal: `clickCreateButton()`, `clickEditButton(desc)`, `clickViewButton(desc)`, `clickDeleteButton(desc)`
+- [x] 4.7 Implementar métodos de modal: `getModalTitle()`, `isModalOpen()`, `submitForm()`, `cancelForm()`
+- [x] 4.8 Implementar `fillForm(data)` com tratamento especial para: category_uid (combobox Select) e active (checkbox com lógica condicional)
+- [x] 4.9 Implementar `getFormFieldValue(field)` e `isFieldDisabled(field)` com tratamento para category_uid (combobox) e active (checkbox)
+- [x] 4.10 Implementar métodos de diálogo: `closeDialogByEsc()`, `closeDialogByOverlay()`
+- [x] 4.11 Implementar `confirmDelete()`, `waitForToast(message)`, `getValidationError(field)` com mapeamento de labels
 
 ## Tarefa 5: Criar spec de testes fixed-expense.spec.ts
 - [~] 5.1 Criar arquivo `e2e/tests/fixed-expense.spec.ts` com bloco "FixedExpense Listing" (3 testes: título da página, registros semeados visíveis, conteúdo das linhas com valor formatado e Badge de status)
