@@ -1,0 +1,273 @@
+import type { Locator, Page } from '@playwright/test';
+
+export interface AccountFormData {
+	name: string;
+	type: 'CHECKING' | 'SAVINGS' | 'CASH' | 'OTHER';
+	balance: number;
+}
+
+export class AccountPage {
+	readonly page: Page;
+
+	constructor(page: Page) {
+		this.page = page;
+	}
+
+	// ---------------------------------------------------------------------------
+	// Navigation
+	// ---------------------------------------------------------------------------
+
+	async goto(): Promise<void> {
+		await this.page.goto('/finance/accounts', {
+			waitUntil: 'domcontentloaded',
+		});
+		await this.page.locator('table').waitFor({ state: 'visible' });
+	}
+
+	// ---------------------------------------------------------------------------
+	// Page assertions
+	// ---------------------------------------------------------------------------
+
+	async getPageTitle(): Promise<string> {
+		const heading = this.page.getByRole('heading', {
+			name: 'Contas',
+		});
+		return heading.innerText();
+	}
+
+	// ---------------------------------------------------------------------------
+	// DataTable
+	// ---------------------------------------------------------------------------
+
+	async getTableRows(): Promise<Locator[]> {
+		const rows = this.page.locator('table tbody tr').filter({
+			hasNot: this.page.locator('td[colspan]'),
+		});
+		const count = await rows.count();
+		const result: Locator[] = [];
+		for (let i = 0; i < count; i++) {
+			result.push(rows.nth(i));
+		}
+		return result;
+	}
+
+	async getRowByName(name: string): Promise<Locator> {
+		return this.page.locator('table tbody tr').filter({
+			has: this.page.getByText(name, { exact: true }),
+		});
+	}
+
+	async getEmptyState(): Promise<Locator> {
+		return this.page.getByText('Nenhum registro encontrado.');
+	}
+
+	// ---------------------------------------------------------------------------
+	// Search & Filter
+	// ---------------------------------------------------------------------------
+
+	async search(term: string): Promise<void> {
+		const input = this.page.getByPlaceholder('Buscar');
+		await input.fill(term);
+		const responsePromise = this.page.waitForResponse(
+			(resp) => resp.url().includes('accounts') && resp.status() === 200
+		);
+		await this.page.getByRole('button', { name: 'Buscar' }).click();
+		await responsePromise;
+		await this.page.locator('table').waitFor({ state: 'visible' });
+	}
+
+	async clearSearch(): Promise<void> {
+		const responsePromise = this.page.waitForResponse(
+			(resp) => resp.url().includes('accounts') && resp.status() === 200
+		);
+		await this.page.getByRole('button', { name: 'Limpar' }).click();
+		await responsePromise;
+		await this.page.locator('table').waitFor({ state: 'visible' });
+	}
+
+	// ---------------------------------------------------------------------------
+	// Pagination
+	// ---------------------------------------------------------------------------
+
+	getNextButton(): Locator {
+		return this.page.getByRole('button', { name: 'Próxima' });
+	}
+
+	getPreviousButton(): Locator {
+		return this.page.getByRole('button', { name: 'Anterior' });
+	}
+
+	async goToNextPage(): Promise<void> {
+		const responsePromise = this.page.waitForResponse(
+			(resp) => resp.url().includes('accounts') && resp.status() === 200
+		);
+		await this.getNextButton().click();
+		await responsePromise;
+		await this.page.locator('table').waitFor({ state: 'visible' });
+	}
+
+	async goToPreviousPage(): Promise<void> {
+		const responsePromise = this.page.waitForResponse(
+			(resp) => resp.url().includes('accounts') && resp.status() === 200
+		);
+		await this.getPreviousButton().click();
+		await responsePromise;
+		await this.page.locator('table').waitFor({ state: 'visible' });
+	}
+
+	// ---------------------------------------------------------------------------
+	// CRUD Modal interactions
+	// ---------------------------------------------------------------------------
+
+	async clickCreateButton(): Promise<void> {
+		await this.page.getByRole('button', { name: 'Criar' }).click();
+		await this.page.getByRole('dialog').waitFor({ state: 'visible' });
+	}
+
+	async clickEditButton(name: string): Promise<void> {
+		const row = await this.getRowByName(name);
+		// Row action buttons order: [0] Eye (view), [1] Pencil (edit), [2] Trash (delete)
+		await row.getByRole('button').nth(1).click();
+		await this.page.getByRole('dialog').waitFor({ state: 'visible' });
+	}
+
+	async clickViewButton(name: string): Promise<void> {
+		const row = await this.getRowByName(name);
+		await row.getByRole('button').nth(0).click();
+		await this.page.getByRole('dialog').waitFor({ state: 'visible' });
+	}
+
+	async clickDeleteButton(name: string): Promise<void> {
+		const row = await this.getRowByName(name);
+		await row.getByRole('button').nth(2).click();
+	}
+
+	// ---------------------------------------------------------------------------
+	// Modal assertions
+	// ---------------------------------------------------------------------------
+
+	async getModalTitle(): Promise<string> {
+		const title = this.page.getByRole('dialog').getByRole('heading');
+		await title.waitFor({ state: 'visible' });
+		return title.innerText();
+	}
+
+	async isModalOpen(): Promise<boolean> {
+		return this.page.getByRole('dialog').isVisible();
+	}
+
+	// ---------------------------------------------------------------------------
+	// Form interactions
+	// ---------------------------------------------------------------------------
+
+	async fillForm(data: AccountFormData): Promise<void> {
+		const dialog = this.page.getByRole('dialog');
+
+		await dialog.locator('[name="name"]').fill(data.name);
+
+		// Type select (reka-ui Select)
+		const typeMap: Record<string, string> = {
+			CHECKING: 'Conta Corrente',
+			SAVINGS: 'Poupança',
+			CASH: 'Dinheiro',
+			OTHER: 'Outro',
+		};
+		await dialog.getByRole('combobox').click();
+		await this.page.getByRole('option', { name: typeMap[data.type] }).click();
+
+		await dialog.locator('[name="balance"]').fill(String(data.balance));
+	}
+
+	async submitForm(): Promise<void> {
+		const dialog = this.page.getByRole('dialog');
+		const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
+		await submitBtn.click();
+	}
+
+	async cancelForm(): Promise<void> {
+		const dialog = this.page.getByRole('dialog');
+		await dialog.getByRole('button', { name: 'Cancelar' }).click();
+	}
+
+	async getFormFieldValue(field: string): Promise<string> {
+		const dialog = this.page.getByRole('dialog');
+
+		if (field === 'type') {
+			return dialog.getByRole('combobox').innerText();
+		}
+
+		return dialog.locator(`[name="${field}"]`).inputValue();
+	}
+
+	async isFieldDisabled(field: string): Promise<boolean> {
+		const dialog = this.page.getByRole('dialog');
+
+		if (field === 'type') {
+			return dialog.getByRole('combobox').isDisabled();
+		}
+
+		return dialog.locator(`[name="${field}"]`).isDisabled();
+	}
+
+	async isSubmitButtonVisible(): Promise<boolean> {
+		const dialog = this.page.getByRole('dialog');
+		const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
+		return submitBtn.isVisible();
+	}
+
+	// ---------------------------------------------------------------------------
+	// Dialog close helpers
+	// ---------------------------------------------------------------------------
+
+	async closeDialogByEsc(): Promise<void> {
+		await this.page.keyboard.press('Escape');
+		await this.page.getByRole('dialog').waitFor({ state: 'hidden' });
+	}
+
+	async closeDialogByOverlay(): Promise<void> {
+		const overlay = this.page.locator('[data-slot="dialog-overlay"]');
+		await overlay.click({ position: { x: 10, y: 10 } });
+		await this.page.getByRole('dialog').waitFor({ state: 'hidden' });
+	}
+
+	// ---------------------------------------------------------------------------
+	// Delete confirmation
+	// ---------------------------------------------------------------------------
+
+	async confirmDelete(): Promise<void> {
+		await this.page.getByRole('button', { name: 'Excluir' }).click();
+	}
+
+	// ---------------------------------------------------------------------------
+	// Toast assertions
+	// ---------------------------------------------------------------------------
+
+	async waitForToast(message: string): Promise<void> {
+		await this.page
+			.getByText(message)
+			.waitFor({ state: 'visible', timeout: 5_000 });
+	}
+
+	// ---------------------------------------------------------------------------
+	// Validation errors
+	// ---------------------------------------------------------------------------
+
+	async getValidationError(field: string): Promise<string> {
+		const labelMap: Record<string, string> = {
+			name: 'Nome',
+			type: 'Tipo',
+			balance: 'Saldo',
+		};
+
+		const label = labelMap[field];
+		if (!label) throw new Error(`Unknown field: ${field}`);
+
+		const fieldContainer = this.page
+			.getByRole('dialog')
+			.locator(`label:has-text("${label}")`)
+			.locator('..');
+		const errorSpan = fieldContainer.locator('.text-destructive');
+		await errorSpan.waitFor({ state: 'visible', timeout: 5_000 });
+		return errorSpan.innerText();
+	}
+}
