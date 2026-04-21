@@ -19,10 +19,10 @@
 
 ## Tarefa 3: Criar spec de testes `credit-card-charge.spec.ts`
 - [x] 3.1 Criar arquivo `e2e/tests/credit-card-charge.spec.ts` com imports do Playwright e do `CreditCardChargePage`
-- [~] 3.2 Implementar bloco `CreditCardCharge Listing` (3 testes): título da página, registros semeados visíveis, colunas da tabela (descrição, valor formatado, parcelas, cartão)
-- [~] 3.3 Implementar bloco `CreditCardCharge Search and Filtering` (3 testes): filtro por descrição, limpar busca, busca sem resultados
-- [~] 3.4 Implementar bloco `CreditCardCharge Pagination` (5 testes): controles visíveis, próxima página, página anterior, "Anterior" desabilitado na primeira, "Próxima" desabilitado na última
-- [~] 3.5 Implementar bloco `CreditCardCharge Creation` (5 testes): modal abre com título "Nova Compra", submit com sucesso + toast, novo registro na tabela, validação de campos vazios, cancelar fecha modal
-- [~] 3.6 Implementar bloco `CreditCardCharge Viewing` (3 testes): modal abre com título "Detalhes da Compra", campos desabilitados, sem botão submit
-- [~] 3.7 Implementar bloco `CreditCardCharge Editing` com `test.describe.skip` (4 testes): modal abre com título "Editar Compra", campos pré-preenchidos, submit com sucesso + toast, tabela atualizada
-- [~] 3.8 Implementar bloco `CreditCardCharge Deletion` com `test.describe.skip` (3 testes): popover "Tem certeza?", toast de sucesso, registro removido da tabela
+- [x] 3.2 Implementar bloco `CreditCardCharge Listing` (3 testes): título da página, registros semeados visíveis, colunas da tabela (descrição, valor formatado, parcelas, cartão)
+- [x] 3.3 Implementar bloco `CreditCardCharge Search and Filtering` (3 testes): filtro por descrição, limpar busca, busca sem resultados
+- [x] 3.4 Implementar bloco `CreditCardCharge Pagination` (5 testes): controles visíveis, próxima página, página anterior, "Anterior" desabilitado na primeira, "Próxima" desabilitado na última
+- [x] 3.5 Implementar bloco `CreditCardCharge Creation` (5 testes): modal abre com título "Nova Compra", submit com sucesso + toast, novo registro na tabela, validação de campos vazios, cancelar fecha modal
+- [x] 3.6 Implementar bloco `CreditCardCharge Viewing` (3 testes): modal abre com título "Detalhes da Compra", campos desabilitados, sem botão submit
+- [x] 3.7 Implementar bloco `CreditCardCharge Editing` com `test.describe.skip` (4 testes): modal abre com título "Editar Compra", campos pré-preenchidos, submit com sucesso + toast, tabela atualizada
+- [x] 3.8 Implementar bloco `CreditCardCharge Deletion` com `test.describe.skip` (3 testes): popover "Tem certeza?", toast de sucesso, registro removido da tabela
