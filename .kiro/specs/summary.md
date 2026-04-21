@@ -114,3 +114,41 @@ Infraestrutura de testes E2E com Playwright para o módulo CreditCard, primeiro 
 - `waitForLoadState('networkidle')` travava por causa do websocket do Vite HMR — substituído por waits explícitos
 - Arquivo `public/hot` do Vite fazia Laravel achar que dev server estava rodando em build mode — removido no script de start
 - Seeder original não limpava dados anteriores — cada execução acumulava cartões, mudando paginação. Corrigido com reset antes de seed
+
+
+---
+
+## Spec: E2E Testing FixedExpense
+
+Testes E2E com Playwright para o módulo FixedExpense (Despesas Fixas), terceiro módulo da estratégia módulo-a-módulo.
+
+### Requisitos
+- Correção da factory `FinancialFixedExpenseFactory` (adicionar `$model`)
+- Seed de dados FixedExpense no `E2eTestSeeder` (3 nomeados + 20 factory)
+- Dialog sync fix no `FixedExpense Index.vue` (`@update:open`)
+- Page Object `FixedExpensePage.ts` com suporte a combobox Select e checkbox
+- 28 testes E2E cobrindo CRUD completo: Listing, Search, Pagination, Dialog Reopen, Creation, Editing, Viewing, Deletion
+
+### Decisões de Design
+- Mesmo padrão de CreditCard/CreditCardCharge: Page Object + `waitForResponse` (sem `waitForTimeout`)
+- Campo `active` tratado como checkbox com lógica condicional no `fillForm`
+- Campo `category_uid` tratado como reka-ui Select combobox (mesmo padrão de CreditCardCharge)
+- Categoria selecionada dinamicamente nos testes de criação (primeira opção OUTFLOW)
+
+### Tasks Concluídas (5/5)
+1. Fix da factory `FinancialFixedExpenseFactory`
+2. Atualização do `E2eTestSeeder` com dados FixedExpense
+3. Dialog sync fix no `Index.vue`
+4. Page Object `FixedExpensePage.ts`
+5. Spec de testes `fixed-expense.spec.ts` (28 testes)
+
+### Artefatos Criados/Alterados
+- `e2e/pages/FixedExpensePage.ts` — Page Object
+- `e2e/tests/fixed-expense.spec.ts` — 28 testes E2E
+- `database/factories/FinancialFixedExpenseFactory.php` — adicionado `$model`
+- `database/seeders/E2eTestSeeder.php` — adicionados métodos FixedExpense
+- `resources/js/pages/finance/fixed-expenses/Index.vue` — dialog sync fix
+
+### Bugs Encontrados e Corrigidos
+- `FinancialFixedExpenseFactory` sem `protected $model` (mesmo bug do CreditCard)
+- `FixedExpense Index.vue` sem `@update:open` no ModalDialog (modal não reabria após ESC/overlay)
