@@ -39,6 +39,7 @@ test.describe('CreditCardCharge Listing', () => {
 		await chargePage.search('Notebook Dell');
 		const notebookRow = await chargePage.getRowByDescription('Notebook Dell');
 		await expect(notebookRow).toContainText('Notebook Dell');
+		await expect(notebookRow).toContainText('15/03/2024');
 		await expect(notebookRow).toContainText('4.500,00');
 		await expect(notebookRow).toContainText('12x');
 		await expect(notebookRow).toContainText('Nubank');
@@ -47,6 +48,7 @@ test.describe('CreditCardCharge Listing', () => {
 		await chargePage.search('Fone Bluetooth');
 		const foneRow = await chargePage.getRowByDescription('Fone Bluetooth');
 		await expect(foneRow).toContainText('Fone Bluetooth');
+		await expect(foneRow).toContainText('20/02/2024');
 		await expect(foneRow).toContainText('250,00');
 		await expect(foneRow).toContainText('3x');
 		await expect(foneRow).toContainText('Inter');
@@ -55,6 +57,7 @@ test.describe('CreditCardCharge Listing', () => {
 		await chargePage.search('Curso Online');
 		const cursoRow = await chargePage.getRowByDescription('Curso Online');
 		await expect(cursoRow).toContainText('Curso Online');
+		await expect(cursoRow).toContainText('10/01/2024');
 		await expect(cursoRow).toContainText('1.200,00');
 		await expect(cursoRow).toContainText('6x');
 		await expect(cursoRow).toContainText('C6 Bank');
@@ -160,6 +163,47 @@ test.describe('CreditCardCharge Pagination', () => {
 });
 
 // ---------------------------------------------------------------------------
+// 3.5. CreditCardCharge Dialog Reopen
+// ---------------------------------------------------------------------------
+
+test.describe('CreditCardCharge Dialog Reopen', () => {
+	let chargePage: CreditCardChargePage;
+
+	test.beforeEach(async ({ page }) => {
+		chargePage = new CreditCardChargePage(page);
+		await chargePage.goto();
+	});
+
+	test('dialog reopens after closing via ESC', async () => {
+		await chargePage.clickCreateButton();
+		expect(await chargePage.isModalOpen()).toBe(true);
+
+		await chargePage.closeDialogByEsc();
+		expect(await chargePage.isModalOpen()).toBe(false);
+
+		await chargePage.clickCreateButton();
+		expect(await chargePage.isModalOpen()).toBe(true);
+
+		const modalTitle = await chargePage.getModalTitle();
+		expect(modalTitle).toBe('Nova Compra');
+	});
+
+	test('dialog reopens after closing via overlay click', async () => {
+		await chargePage.clickCreateButton();
+		expect(await chargePage.isModalOpen()).toBe(true);
+
+		await chargePage.closeDialogByOverlay();
+		expect(await chargePage.isModalOpen()).toBe(false);
+
+		await chargePage.clickCreateButton();
+		expect(await chargePage.isModalOpen()).toBe(true);
+
+		const modalTitle = await chargePage.getModalTitle();
+		expect(modalTitle).toBe('Nova Compra');
+	});
+});
+
+// ---------------------------------------------------------------------------
 // 4. CreditCardCharge Creation
 // ---------------------------------------------------------------------------
 
@@ -186,6 +230,7 @@ test.describe('CreditCardCharge Creation', () => {
 			description: 'Compra Teste E2E',
 			amount: 199.90,
 			total_installments: 3,
+			purchase_date: '2024-06-15',
 		});
 
 		await chargePage.submitForm();
@@ -200,6 +245,7 @@ test.describe('CreditCardCharge Creation', () => {
 			description: 'Compra Nova Listagem',
 			amount: 350.00,
 			total_installments: 2,
+			purchase_date: '2024-07-20',
 		});
 
 		await chargePage.submitForm();
@@ -270,6 +316,7 @@ test.describe('CreditCardCharge Viewing', () => {
 
 		expect(await chargePage.isFieldDisabled('credit_card_uid')).toBe(true);
 		expect(await chargePage.isFieldDisabled('description')).toBe(true);
+		expect(await chargePage.isFieldDisabled('purchase_date')).toBe(true);
 		expect(await chargePage.isFieldDisabled('amount')).toBe(true);
 		expect(await chargePage.isFieldDisabled('total_installments')).toBe(true);
 	});

@@ -7,6 +7,7 @@ use App\Domain\CreditCardCharge\Contracts\CreditCardChargeServiceInterface;
 use App\Domain\CreditCardCharge\Models\CreditCardCharge;
 use App\Domain\CreditCardInstallment\Models\CreditCardInstallment;
 use App\Domain\Transaction\Models\Transaction;
+use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -82,6 +83,7 @@ class CreditCardChargeService implements CreditCardChargeServiceInterface
                     'amount' => $data['amount'],
                     'description' => $data['description'],
                     'total_installments' => $data['total_installments'],
+                    'purchase_date' => $data['purchase_date'],
                 ]);
 
                 $totalCents = (int) round($data['amount'] * 100);
@@ -90,10 +92,12 @@ class CreditCardChargeService implements CreditCardChargeServiceInterface
 
                 $canCreateTransactions = ! empty($data['account_uid']) && ! empty($data['category_uid']);
 
+                $purchaseDate = Carbon::parse($data['purchase_date']);
+
                 for ($i = 1; $i <= $data['total_installments']; $i++) {
                     $installmentCents = $baseCents + ($i === $data['total_installments'] ? $remainder : 0);
                     $installmentAmount = $installmentCents / 100;
-                    $dueDate = now()->addMonths($i)->day($card->due_day);
+                    $dueDate = $purchaseDate->copy()->addMonths($i)->day($card->due_day);
 
                     $transactionUid = null;
 

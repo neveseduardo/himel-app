@@ -19,6 +19,7 @@ class CreditCardChargeResource extends JsonResource
             'description' => $this->description,
             'amount' => $this->amount,
             'total_installments' => $this->total_installments,
+            'purchase_date' => $this->purchase_date?->format('Y-m-d'),
             'credit_card' => new CreditCardResource($this->whenLoaded('creditCard')),
             'installments' => CreditCardInstallmentResource::collection($this->whenLoaded('installments')),
         ];

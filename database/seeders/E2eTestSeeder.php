@@ -98,18 +98,21 @@ class E2eTestSeeder extends Seeder
                 'description' => 'Notebook Dell',
                 'amount' => 4500.00,
                 'total_installments' => 12,
+                'purchase_date' => '2024-03-15',
             ],
             [
                 'credit_card_uid' => $inter->uid,
                 'description' => 'Fone Bluetooth',
                 'amount' => 250.00,
                 'total_installments' => 3,
+                'purchase_date' => '2024-02-20',
             ],
             [
                 'credit_card_uid' => $c6Bank->uid,
                 'description' => 'Curso Online',
                 'amount' => 1200.00,
                 'total_installments' => 6,
+                'purchase_date' => '2024-01-10',
             ],
         ];
 

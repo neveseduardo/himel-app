@@ -30,11 +30,13 @@ class CreditCardCharge extends Model
         'amount',
         'description',
         'total_installments',
+        'purchase_date',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'total_installments' => 'integer',
+        'purchase_date' => 'date',
     ];
 
     public function creditCard(): BelongsTo

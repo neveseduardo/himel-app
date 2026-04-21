@@ -31,6 +31,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
 const columns = [
 	{ key: 'description', label: 'Descrição' },
+	{ key: 'purchase_date', label: 'Data da Compra' },
 	{ key: 'amount', label: 'Valor Total' },
 	{ key: 'total_installments', label: 'Parcelas' },
 	{ key: 'credit_card', label: 'Cartão' },
@@ -54,6 +55,12 @@ const modalTitle = computed(() => {
 	return 'Detalhes da Compra';
 });
 
+function handleDialogOpenChange(open: boolean) {
+	if (!open && store.isModalOpen) {
+		store.closeModal();
+	}
+}
+
 function handleFormSuccess() {
 	onSuccess('create');
 	store.closeModal();
@@ -67,6 +74,11 @@ function handleFormSuccess() {
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 
 		<DataTable :columns="columns" :data="charges as unknown as Record<string, unknown>[]">
+			<template #cell-purchase_date="{ row }">
+				{{ (row as unknown as CreditCardCharge).purchase_date
+					? (row as unknown as CreditCardCharge).purchase_date.substring(0, 10).split('-').reverse().join('/')
+					: '—' }}
+			</template>
 			<template #cell-amount="{ row }">
 				{{ formatCurrency((row as unknown as CreditCardCharge).amount) }}
 			</template>
@@ -95,7 +107,7 @@ function handleFormSuccess() {
 			</Button>
 		</div>
 
-		<ModalDialog ref="modalRef" :title="modalTitle">
+		<ModalDialog ref="modalRef" :title="modalTitle" @update:open="handleDialogOpenChange">
 			<CreditCardChargeForm
 				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 				:readonly="store.modalMode === 'view'"

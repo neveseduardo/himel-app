@@ -5,6 +5,7 @@ export interface CreditCardChargeFormData {
 	description: string;
 	amount: number;
 	total_installments: number;
+	purchase_date: string;
 }
 
 export class CreditCardChargePage {
@@ -171,6 +172,7 @@ export class CreditCardChargePage {
 		await this.page.getByRole('option', { name: new RegExp(data.credit_card_uid) }).click();
 
 		await dialog.locator('[name="description"]').fill(data.description);
+		await dialog.locator('[name="purchase_date"]').fill(data.purchase_date);
 		await dialog.locator('[name="amount"]').fill(String(data.amount));
 		await dialog.locator('[name="total_installments"]').fill(String(data.total_installments));
 	}
@@ -213,6 +215,21 @@ export class CreditCardChargePage {
 	}
 
 	// ---------------------------------------------------------------------------
+	// Dialog close helpers
+	// ---------------------------------------------------------------------------
+
+	async closeDialogByEsc(): Promise<void> {
+		await this.page.keyboard.press('Escape');
+		await this.page.getByRole('dialog').waitFor({ state: 'hidden' });
+	}
+
+	async closeDialogByOverlay(): Promise<void> {
+		const overlay = this.page.locator('[data-slot="dialog-overlay"]');
+		await overlay.click({ position: { x: 10, y: 10 } });
+		await this.page.getByRole('dialog').waitFor({ state: 'hidden' });
+	}
+
+	// ---------------------------------------------------------------------------
 	// Delete confirmation
 	// ---------------------------------------------------------------------------
 
@@ -238,6 +255,7 @@ export class CreditCardChargePage {
 		const labelMap: Record<string, string> = {
 			credit_card_uid: 'Cartão',
 			description: 'Descrição',
+			purchase_date: 'Data da Compra',
 			amount: 'Valor Total',
 			total_installments: 'Parcelas',
 		};

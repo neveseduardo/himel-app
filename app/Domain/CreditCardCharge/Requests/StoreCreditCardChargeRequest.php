@@ -18,6 +18,7 @@ class StoreCreditCardChargeRequest extends FormRequest
             'amount' => ['required', 'numeric', 'min:0.01'],
             'description' => ['required', 'string', 'max:255'],
             'total_installments' => ['required', 'integer', 'min:1', 'max:48'],
+            'purchase_date' => ['required', 'date'],
         ];
     }
 
@@ -36,6 +37,8 @@ class StoreCreditCardChargeRequest extends FormRequest
             'total_installments.integer' => 'O número de parcelas deve ser um número inteiro.',
             'total_installments.min' => 'O número de parcelas deve ser pelo menos 1.',
             'total_installments.max' => 'O número de parcelas não pode exceder 48.',
+            'purchase_date.required' => 'A data da compra é obrigatória.',
+            'purchase_date.date' => 'A data da compra deve ser uma data válida.',
         ];
     }
 }

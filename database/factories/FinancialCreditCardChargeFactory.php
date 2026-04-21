@@ -20,6 +20,7 @@ class FinancialCreditCardChargeFactory extends Factory
             'amount' => fake()->randomFloat(2, 50, 5000),
             'description' => fake()->sentence(),
             'total_installments' => fake()->numberBetween(1, 12),
+            'purchase_date' => fake()->dateTimeBetween('-3 months', 'now')->format('Y-m-d'),
         ];
     }
 }

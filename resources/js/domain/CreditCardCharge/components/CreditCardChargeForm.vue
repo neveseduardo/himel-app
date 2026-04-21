@@ -23,6 +23,7 @@ const initialValues = computed(() => ({
 	description: props.item?.description ?? '',
 	amount: props.item?.amount ?? 0,
 	total_installments: props.item?.total_installments ?? 1,
+	purchase_date: props.item?.purchase_date ? props.item.purchase_date.split('T')[0] : new Date().toISOString().split('T')[0],
 }));
 </script>
 
@@ -60,6 +61,16 @@ const initialValues = computed(() => ({
 						<Input
 							v-bind="field"
 							placeholder="Descrição da compra"
+							:disabled="props.readonly"
+						/>
+					</template>
+				</ValidatedField>
+
+				<ValidatedField name="purchase_date" label="Data da Compra">
+					<template #default="{ field }">
+						<Input
+							v-bind="field"
+							type="date"
 							:disabled="props.readonly"
 						/>
 					</template>
