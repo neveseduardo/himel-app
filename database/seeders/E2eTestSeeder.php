@@ -2,9 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Domain\Category\Models\Category;
 use App\Domain\CreditCard\Models\CreditCard;
+use App\Domain\FixedExpense\Models\FixedExpense;
 use App\Domain\User\Models\User;
 use Database\Factories\FinancialCreditCardFactory;
+use Database\Factories\FinancialFixedExpenseFactory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -24,6 +27,10 @@ class E2eTestSeeder extends Seeder
         $this->resetCreditCards($user);
         $this->seedNamedCreditCards($user);
         $this->seedFactoryCreditCards($user);
+
+        $this->resetFixedExpenses($user);
+        $this->seedNamedFixedExpenses($user);
+        $this->seedFactoryFixedExpenses($user);
     }
 
     private function resetCreditCards(User $user): void
@@ -67,5 +74,41 @@ class E2eTestSeeder extends Seeder
         FinancialCreditCardFactory::new()
             ->count(20)
             ->create(['user_uid' => $user->uid]);
+    }
+
+    private function resetFixedExpenses(User $user): void
+    {
+        FixedExpense::where('user_uid', $user->uid)->delete();
+    }
+
+    private function seedNamedFixedExpenses(User $user): void
+    {
+        $category = Category::where('user_uid', $user->uid)
+            ->where('direction', 'OUTFLOW')
+            ->first();
+
+        $expenses = [
+            ['name' => 'Aluguel', 'amount' => 1500.00, 'due_day' => 10, 'active' => true, 'category_uid' => $category->uid],
+            ['name' => 'Internet', 'amount' => 120.00, 'due_day' => 15, 'active' => true, 'category_uid' => $category->uid],
+            ['name' => 'Academia', 'amount' => 89.90, 'due_day' => 5, 'active' => false, 'category_uid' => $category->uid],
+        ];
+
+        foreach ($expenses as $expense) {
+            FixedExpense::create(array_merge($expense, ['user_uid' => $user->uid]));
+        }
+    }
+
+    private function seedFactoryFixedExpenses(User $user): void
+    {
+        $category = Category::where('user_uid', $user->uid)
+            ->where('direction', 'OUTFLOW')
+            ->first();
+
+        FinancialFixedExpenseFactory::new()
+            ->count(20)
+            ->create([
+                'user_uid' => $user->uid,
+                'category_uid' => $category->uid,
+            ]);
     }
 }
