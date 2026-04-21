@@ -108,7 +108,7 @@ import { Field, useForm } from 'vee-validate';
 import { watch } from 'vue';
 import { toast } from 'vue-sonner';
 
-import { loginSchema } from '@/lib/validations/auth-schemas';
+import { loginSchema } from '@/domain/Shared/lib/validations/auth-schemas';
 import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';

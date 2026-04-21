@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 
-import { Badge } from '@/components/ui/badge';
 import type { TransactionStatus } from '@/domain/Transaction/types/transaction';
 
 const props = defineProps<{

@@ -2,8 +2,8 @@
 import { Form } from '@inertiajs/vue3';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
 
-import { useAppearance } from '@/composables/useAppearance';
 import { useTwoFactorAuth } from '@/domain/Auth/composables/useTwoFactorAuth';
+import { useAppearance } from '@/domain/Shared/composables/useAppearance';
 import { confirm } from '@/routes/two-factor';
 import type { TwoFactorConfigContent } from '@/types';
 

@@ -3,9 +3,9 @@ import { router } from '@inertiajs/vue3';
 import { Eye, Plus, Trash2 } from 'lucide-vue-next';
 
 import { destroy, index, show, store } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
-import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import type { Period } from '@/domain/Period/types/period';
 import DataTable from '@/domain/Shared/components/DataTable.vue';
+import ModalDialog from '@/domain/Shared/components/ui/modal/ModalDialog.vue';
 import { useCrudToast } from '@/domain/Shared/composables/useCrudToast';
 import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
 import { usePagination } from '@/domain/Shared/composables/usePagination';

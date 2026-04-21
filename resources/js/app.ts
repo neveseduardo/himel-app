@@ -3,10 +3,10 @@ import { createPinia } from 'pinia';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 
-import AppLayout from '@/components/layouts/AppLayout.vue';
-import AuthLayout from '@/components/layouts/AuthLayout.vue';
-import SettingsLayout from '@/components/layouts/settings/Layout.vue';
-import { initializeTheme } from '@/composables/useAppearance';
+import AppLayout from '@/domain/Shared/components/layouts/AppLayout.vue';
+import AuthLayout from '@/domain/Shared/components/layouts/AuthLayout.vue';
+import SettingsLayout from '@/domain/Shared/components/layouts/settings/Layout.vue';
+import { initializeTheme } from '@/domain/Shared/composables/useAppearance';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 

@@ -7,6 +7,16 @@ import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
+	resolve: {
+		alias: {
+			'@/lib': '/home/eduardo/projetos/himel-app/resources/js/domain/Shared/lib',
+			'@/composables': '/home/eduardo/projetos/himel-app/resources/js/domain/Shared/composables',
+			'@/types': '/home/eduardo/projetos/himel-app/resources/js/domain/Shared/types',
+		},
+	},
+	optimizeDeps: {
+		include: ['cn', 'toUrl'],
+	},
 	plugins: [
 		laravel({
 			input: ['resources/css/app.css', 'resources/js/app.ts'],
@@ -26,16 +36,21 @@ export default defineConfig({
 			formVariants: true,
 		}),
 		AutoImport({
-			dts: './resources/js/types/auto-imports.d.ts',
-			imports: ['vue', '@vueuse/core', 'pinia', 'vee-validate'],
+			dts: './resources/js/domain/Shared/types/imports.d.ts',
+			imports: [
+				'vue',
+				'@vueuse/core',
+				'pinia',
+				'vee-validate',
+				{ './resources/js/domain/Shared/lib/utils': ['cn'] },
+			],
 		}),
 		Components({
-			dts: './resources/js/types/components.d.ts',
+			dts: './resources/js/domain/Shared/types/components.d.ts',
 			dirs: [
-				'./resources/js/components',
-				'./resources/js/components/ui',
-				'./resources/js/components/shared',
-				'./resources/js/components/layouts',
+				'./resources/js/domain/Shared/components/ui',
+				'./resources/js/domain/Shared/components',
+				'./resources/js/domain/Shared/components/layouts',
 				'./resources/js/domain/Auth/components',
 				'./resources/js/domain/Settings/components',
 			],

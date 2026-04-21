@@ -2,13 +2,13 @@
 import { Eye, Plus } from 'lucide-vue-next';
 
 import { index } from '@/actions/App/Domain/CreditCardCharge/Controllers/CreditCardChargePageController';
-import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
 import CreditCardChargeForm from '@/domain/CreditCardCharge/components/CreditCardChargeForm.vue';
 import { useCreditCardChargeStore } from '@/domain/CreditCardCharge/stores/useCreditCardChargeStore';
 import type { CreditCardCharge } from '@/domain/CreditCardCharge/types/credit-card-charge';
 import DataTable from '@/domain/Shared/components/DataTable.vue';
 import FilterBar from '@/domain/Shared/components/FilterBar.vue';
+import ModalDialog from '@/domain/Shared/components/ui/modal/ModalDialog.vue';
 import { useCrudToast } from '@/domain/Shared/composables/useCrudToast';
 import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
 import { usePagination } from '@/domain/Shared/composables/usePagination';

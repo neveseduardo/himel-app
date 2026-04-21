@@ -3,13 +3,13 @@ import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 
 import { destroy, index } from '@/actions/App/Domain/Category/Controllers/CategoryPageController';
-import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import CategoryForm from '@/domain/Category/components/CategoryForm.vue';
 import { useCategoryStore } from '@/domain/Category/stores/useCategoryStore';
 import type { Category } from '@/domain/Category/types/category';
 import DataTable from '@/domain/Shared/components/DataTable.vue';
 import DirectionBadge from '@/domain/Shared/components/DirectionBadge.vue';
 import FilterBar from '@/domain/Shared/components/FilterBar.vue';
+import ModalDialog from '@/domain/Shared/components/ui/modal/ModalDialog.vue';
 import { useCrudToast } from '@/domain/Shared/composables/useCrudToast';
 import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
 import { usePagination } from '@/domain/Shared/composables/usePagination';

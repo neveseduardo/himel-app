@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { Search, X } from 'lucide-vue-next';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-
 const model = defineModel<string>({ default: '' });
 
 defineEmits<{

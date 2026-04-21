@@ -1,13 +1,4 @@
 <script setup lang="ts">
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableEmpty,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from '@/components/ui/table';
 
 export interface Column {
 	key: string;

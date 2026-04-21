@@ -3,10 +3,10 @@ import { router } from '@inertiajs/vue3';
 import { Eye, Plus, Trash2 } from 'lucide-vue-next';
 
 import { destroy, index } from '@/actions/App/Domain/Transfer/Controllers/TransferPageController';
-import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import type { Account } from '@/domain/Account/types/account';
 import DataTable from '@/domain/Shared/components/DataTable.vue';
 import FilterBar from '@/domain/Shared/components/FilterBar.vue';
+import ModalDialog from '@/domain/Shared/components/ui/modal/ModalDialog.vue';
 import { useCrudToast } from '@/domain/Shared/composables/useCrudToast';
 import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
 import { usePagination } from '@/domain/Shared/composables/usePagination';

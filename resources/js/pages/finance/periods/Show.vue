@@ -5,13 +5,13 @@ import { toast } from 'vue-sonner';
 
 import { detachTransactions, index, initialize, show } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
 import { update as updateTransaction } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
-import ModalDialog from '@/components/ui/modal/ModalDialog.vue';
 import type { Account } from '@/domain/Account/types/account';
 import type { Category } from '@/domain/Category/types/category';
 import type { Period, PeriodSummary } from '@/domain/Period/types/period';
 import DataTable from '@/domain/Shared/components/DataTable.vue';
 import DirectionBadge from '@/domain/Shared/components/DirectionBadge.vue';
 import StatusBadge from '@/domain/Shared/components/StatusBadge.vue';
+import ModalDialog from '@/domain/Shared/components/ui/modal/ModalDialog.vue';
 import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
 import { usePagination } from '@/domain/Shared/composables/usePagination';
 import { formatCurrency, formatDate } from '@/domain/Shared/services/format';
