@@ -15,7 +15,7 @@ class UpdateFixedExpenseRequest extends FormRequest
     {
         return [
             'category_uid' => ['sometimes', 'uuid'],
-            'name' => ['sometimes', 'string', 'max:255'],
+            'description' => ['sometimes', 'string', 'max:255'],
             'amount' => ['sometimes', 'numeric', 'min:0.01'],
             'due_day' => ['sometimes', 'integer', 'min:1', 'max:31'],
             'active' => ['nullable', 'boolean'],
@@ -26,8 +26,8 @@ class UpdateFixedExpenseRequest extends FormRequest
     {
         return [
             'category_uid.uuid' => 'A categoria deve ser um UUID válido.',
-            'name.string' => 'O nome deve ser um texto.',
-            'name.max' => 'O nome não pode ter mais de 255 caracteres.',
+            'description.string' => 'A descrição deve ser um texto.',
+            'description.max' => 'A descrição não pode ter mais de 255 caracteres.',
             'amount.numeric' => 'O valor deve ser um número.',
             'amount.min' => 'O valor deve ser maior que zero.',
             'due_day.integer' => 'O dia de vencimento deve ser um número inteiro.',

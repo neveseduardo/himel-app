@@ -65,7 +65,7 @@ class FixedExpenseService implements FixedExpenseServiceInterface
                 $expense = FixedExpense::create([
                     'user_uid' => $userUid,
                     'category_uid' => $data['category_uid'],
-                    'name' => $data['name'],
+                    'name' => $data['description'],
                     'amount' => $data['amount'],
                     'due_day' => $data['due_day'],
                     'active' => $data['active'] ?? true,
@@ -98,7 +98,13 @@ class FixedExpenseService implements FixedExpenseServiceInterface
 
         try {
             return DB::transaction(function () use ($expense, $data) {
-                $expense->update(array_filter($data, fn ($value) => $value !== null));
+                $mapped = $data;
+                if (isset($mapped['description'])) {
+                    $mapped['name'] = $mapped['description'];
+                    unset($mapped['description']);
+                }
+
+                $expense->update(array_filter($mapped, fn ($value) => $value !== null));
 
                 Log::info('FixedExpense updated', ['uid' => $expense->uid]);
 

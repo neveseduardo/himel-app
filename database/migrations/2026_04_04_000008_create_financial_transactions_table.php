@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('financial_transactions', function (Blueprint $table) {
             $table->uuid('uid')->primary();
             $table->uuid('user_uid');
-            $table->uuid('financial_account_uid');
-            $table->uuid('financial_category_uid');
+            $table->uuid('account_uid');
+            $table->uuid('category_uid');
             $table->decimal('amount', 15, 2);
             $table->enum('direction', ['INFLOW', 'OUTFLOW']);
             $table->enum('status', ['PENDING', 'PAID', 'OVERDUE'])->default('PENDING');
@@ -24,10 +24,10 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
-            $table->foreign('financial_account_uid')->references('uid')->on('financial_accounts')->onDelete('cascade');
-            $table->foreign('financial_category_uid')->references('uid')->on('financial_categories')->onDelete('restrict');
+            $table->foreign('account_uid')->references('uid')->on('financial_accounts')->onDelete('cascade');
+            $table->foreign('category_uid')->references('uid')->on('financial_categories')->onDelete('restrict');
             $table->index('user_uid');
-            $table->index('financial_account_uid');
+            $table->index('account_uid');
             $table->index('reference_id');
         });
     }

@@ -249,7 +249,7 @@ class PeriodService implements PeriodServiceInterface
             Transaction::create([
                 'user_uid' => $userUid,
                 'account_uid' => $account->uid,
-                'category_uid' => $fixedExpense->financial_category_uid,
+                'category_uid' => $fixedExpense->category_uid,
                 'amount' => $fixedExpense->amount,
                 'direction' => Transaction::DIRECTION_OUTFLOW,
                 'status' => Transaction::STATUS_PENDING,

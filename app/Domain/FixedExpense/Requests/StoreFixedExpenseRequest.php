@@ -15,7 +15,7 @@ class StoreFixedExpenseRequest extends FormRequest
     {
         return [
             'category_uid' => ['required', 'uuid'],
-            'name' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'max:255'],
             'amount' => ['required', 'numeric', 'min:0.01'],
             'due_day' => ['required', 'integer', 'min:1', 'max:31'],
             'active' => ['nullable', 'boolean'],
@@ -27,9 +27,9 @@ class StoreFixedExpenseRequest extends FormRequest
         return [
             'category_uid.required' => 'A categoria é obrigatória.',
             'category_uid.uuid' => 'A categoria deve ser um UUID válido.',
-            'name.required' => 'O nome é obrigatório.',
-            'name.string' => 'O nome deve ser um texto.',
-            'name.max' => 'O nome não pode ter mais de 255 caracteres.',
+            'description.required' => 'A descrição é obrigatória.',
+            'description.string' => 'A descrição deve ser um texto.',
+            'description.max' => 'A descrição não pode ter mais de 255 caracteres.',
             'amount.required' => 'O valor é obrigatório.',
             'amount.numeric' => 'O valor deve ser um número.',
             'amount.min' => 'O valor deve ser maior que zero.',

@@ -6,6 +6,7 @@ use App\Domain\Category\Contracts\CategoryServiceInterface;
 use App\Domain\FixedExpense\Contracts\FixedExpenseServiceInterface;
 use App\Domain\FixedExpense\Requests\StoreFixedExpenseRequest;
 use App\Domain\FixedExpense\Requests\UpdateFixedExpenseRequest;
+use App\Domain\FixedExpense\Resources\FixedExpenseResource;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -26,10 +27,10 @@ class FixedExpensePageController
         $result = $this->fixedExpenseService->getAllWithFilters($userUid, $filters);
 
         return Inertia::render('finance/fixed-expenses/Index', [
-            'fixedExpenses' => $result['data'],
+            'fixedExpenses' => FixedExpenseResource::collection($result['data']),
             'meta' => $result['meta'],
             'filters' => $filters,
-            'categories' => Inertia::optional(fn () => $this->categoryService->getByDirection($userUid, 'OUTFLOW')),
+            'categories' => fn () => $this->categoryService->getByDirection($userUid, 'OUTFLOW'),
         ]);
     }
 
