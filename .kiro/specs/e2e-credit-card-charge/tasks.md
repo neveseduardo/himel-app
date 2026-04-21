@@ -8,14 +8,14 @@
 - [x] 1.5 Chamar os novos métodos no `run()` após o seeding de cartões: `resetCreditCardCharges`, `seedNamedCreditCardCharges`, `seedFactoryCreditCardCharges`
 
 ## Tarefa 2: Criar Page Object `CreditCardChargePage`
-- [~] 2.1 Criar arquivo `e2e/pages/CreditCardChargePage.ts` com a interface `CreditCardChargeFormData` (credit_card_uid, description, amount, total_installments)
-- [~] 2.2 Implementar métodos de navegação: `goto()` navega para `/finance/credit-card-charges` e aguarda tabela visível
-- [~] 2.3 Implementar métodos de DataTable: `getPageTitle()`, `getTableRows()`, `getRowByDescription(desc)`, `getEmptyState()`
-- [~] 2.4 Implementar métodos de busca: `search(term)` e `clearSearch()` com `waitForResponse` para `credit-card-charges`
-- [~] 2.5 Implementar métodos de paginação: `getNextButton()`, `getPreviousButton()`, `goToNextPage()`, `goToPreviousPage()`
-- [~] 2.6 Implementar métodos de modal: `clickCreateButton()`, `clickViewButton(desc)`, `clickEditButton(desc)`, `clickDeleteButton(desc)`, `getModalTitle()`, `isModalOpen()`
-- [~] 2.7 Implementar métodos de formulário: `fillForm(data)` (com tratamento especial do select de cartão via combobox/option), `submitForm()`, `cancelForm()`, `getFormFieldValue(field)`, `isFieldDisabled(field)`, `isSubmitButtonVisible()`
-- [~] 2.8 Implementar métodos auxiliares: `confirmDelete()`, `waitForToast(message)`, `getValidationError(field)` com labelMap para campos do CreditCardCharge
+- [x] 2.1 Criar arquivo `e2e/pages/CreditCardChargePage.ts` com a interface `CreditCardChargeFormData` (credit_card_uid, description, amount, total_installments)
+- [x] 2.2 Implementar métodos de navegação: `goto()` navega para `/finance/credit-card-charges` e aguarda tabela visível
+- [x] 2.3 Implementar métodos de DataTable: `getPageTitle()`, `getTableRows()`, `getRowByDescription(desc)`, `getEmptyState()`
+- [x] 2.4 Implementar métodos de busca: `search(term)` e `clearSearch()` com `waitForResponse` para `credit-card-charges`
+- [x] 2.5 Implementar métodos de paginação: `getNextButton()`, `getPreviousButton()`, `goToNextPage()`, `goToPreviousPage()`
+- [x] 2.6 Implementar métodos de modal: `clickCreateButton()`, `clickViewButton(desc)`, `clickEditButton(desc)`, `clickDeleteButton(desc)`, `getModalTitle()`, `isModalOpen()`
+- [x] 2.7 Implementar métodos de formulário: `fillForm(data)` (com tratamento especial do select de cartão via combobox/option), `submitForm()`, `cancelForm()`, `getFormFieldValue(field)`, `isFieldDisabled(field)`, `isSubmitButtonVisible()`
+- [x] 2.8 Implementar métodos auxiliares: `confirmDelete()`, `waitForToast(message)`, `getValidationError(field)` com labelMap para campos do CreditCardCharge
 
 ## Tarefa 3: Criar spec de testes `credit-card-charge.spec.ts`
 - [~] 3.1 Criar arquivo `e2e/tests/credit-card-charge.spec.ts` com imports do Playwright e do `CreditCardChargePage`
