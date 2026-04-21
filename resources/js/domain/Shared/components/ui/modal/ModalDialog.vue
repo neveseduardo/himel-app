@@ -5,9 +5,17 @@ const props = defineProps<{
 	subtitle?: string;
 }>();
 
+const emit = defineEmits<{
+	'update:open': [value: boolean];
+}>();
+
 const displaySubtitle = computed(() => props.subtitle ?? props.description);
 
 const showDialog = ref(false);
+
+watch(showDialog, (value) => {
+	emit('update:open', value);
+});
 
 function openDialog() {
 	showDialog.value = true;
