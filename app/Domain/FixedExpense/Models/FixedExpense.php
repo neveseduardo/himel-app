@@ -39,6 +39,13 @@ class FixedExpense extends Model
         'active' => 'boolean',
     ];
 
+    protected $appends = ['description'];
+
+    public function getDescriptionAttribute(): string
+    {
+        return $this->name;
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_uid', 'uid');

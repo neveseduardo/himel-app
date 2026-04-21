@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FinancialFixedExpenseFactory extends Factory
 {
+    protected $model = FixedExpense::class;
+
     public function definition(): array
     {
         return [

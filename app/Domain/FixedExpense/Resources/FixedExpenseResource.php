@@ -15,7 +15,7 @@ class FixedExpenseResource extends JsonResource
     {
         return [
             'uid' => $this->uid,
-            'name' => $this->name,
+            'description' => $this->name,
             'amount' => $this->amount,
             'due_day' => $this->due_day,
             'active' => $this->active,

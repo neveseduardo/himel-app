@@ -25,7 +25,7 @@ class FinancialFixedExpenseSeeder extends Seeder
             foreach ($expenseNames as $name) {
                 FixedExpense::create([
                     'user_uid' => $user->uid,
-                    'financial_category_uid' => $outflowCategories->random()->uid,
+                    'category_uid' => $outflowCategories->random()->uid,
                     'name' => $name,
                     'amount' => rand(50, 500),
                     'due_day' => rand(1, 28),

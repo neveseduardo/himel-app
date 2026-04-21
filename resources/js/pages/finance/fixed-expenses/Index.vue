@@ -74,6 +74,12 @@ function handleDelete(uid: string) {
 		},
 	});
 }
+
+function handleDialogOpenChange(open: boolean) {
+	if (!open && store.isModalOpen) {
+		store.closeModal();
+	}
+}
 </script>
 
 <template>
@@ -120,7 +126,7 @@ function handleDelete(uid: string) {
 			</Button>
 		</div>
 
-		<ModalDialog ref="modalRef" :title="modalTitle">
+		<ModalDialog ref="modalRef" :title="modalTitle" @update:open="handleDialogOpenChange">
 			<FixedExpenseForm
 				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 				:readonly="store.modalMode === 'view'"

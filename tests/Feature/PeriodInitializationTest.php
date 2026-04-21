@@ -60,7 +60,7 @@ class PeriodInitializationTest extends TestCase
         $data = array_merge([
             'uid' => $uid,
             'user_uid' => $this->user->uid,
-            'financial_category_uid' => $this->category->uid,
+            'category_uid' => $this->category->uid,
             'name' => 'Aluguel',
             'amount' => 1500.00,
             'due_day' => 10,

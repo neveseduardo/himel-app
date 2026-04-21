@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('financial_fixed_expenses', function (Blueprint $table) {
             $table->uuid('uid')->primary();
             $table->uuid('user_uid');
-            $table->uuid('financial_category_uid');
+            $table->uuid('category_uid');
             $table->string('name');
             $table->decimal('amount', 15, 2);
             $table->tinyInteger('due_day');
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
-            $table->foreign('financial_category_uid')->references('uid')->on('financial_categories')->onDelete('restrict');
+            $table->foreign('category_uid')->references('uid')->on('financial_categories')->onDelete('restrict');
             $table->index('user_uid');
         });
     }
