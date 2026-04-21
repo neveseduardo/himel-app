@@ -28,11 +28,11 @@
 - [x] 4.11 Implementar `confirmDelete()`, `waitForToast(message)`, `getValidationError(field)` com mapeamento de labels
 
 ## Tarefa 5: Criar spec de testes fixed-expense.spec.ts
-- [~] 5.1 Criar arquivo `e2e/tests/fixed-expense.spec.ts` com bloco "FixedExpense Listing" (3 testes: título da página, registros semeados visíveis, conteúdo das linhas com valor formatado e Badge de status)
-- [~] 5.2 Adicionar bloco "FixedExpense Search and Filtering" (3 testes: busca filtra, limpar retorna todos, busca sem resultado mostra empty state)
-- [~] 5.3 Adicionar bloco "FixedExpense Pagination" (5 testes: controles visíveis, próxima, anterior, anterior desabilitado, próxima desabilitado na última)
-- [~] 5.4 Adicionar bloco "FixedExpense Dialog Reopen" (2 testes: reabertura via ESC, reabertura via overlay)
-- [~] 5.5 Adicionar bloco "FixedExpense Creation" (5 testes: modal abre, submit com sucesso mostra toast, novo registro na DataTable, validação de erros, cancelar fecha modal)
-- [~] 5.6 Adicionar bloco "FixedExpense Editing" (4 testes: modal abre com título, campos pré-preenchidos, modificação mostra toast, DataTable reflete atualização)
-- [~] 5.7 Adicionar bloco "FixedExpense Viewing" (3 testes: modal abre com título, campos desabilitados incluindo active, sem botão submit)
-- [~] 5.8 Adicionar bloco "FixedExpense Deletion" (3 testes: popover de confirmação, confirmação mostra toast, registro removido da DataTable)
+- [x] 5.1 Criar arquivo `e2e/tests/fixed-expense.spec.ts` com bloco "FixedExpense Listing" (3 testes: título da página, registros semeados visíveis, conteúdo das linhas com valor formatado e Badge de status)
+- [x] 5.2 Adicionar bloco "FixedExpense Search and Filtering" (3 testes: busca filtra, limpar retorna todos, busca sem resultado mostra empty state)
+- [x] 5.3 Adicionar bloco "FixedExpense Pagination" (5 testes: controles visíveis, próxima, anterior, anterior desabilitado, próxima desabilitado na última)
+- [x] 5.4 Adicionar bloco "FixedExpense Dialog Reopen" (2 testes: reabertura via ESC, reabertura via overlay)
+- [x] 5.5 Adicionar bloco "FixedExpense Creation" (5 testes: modal abre, submit com sucesso mostra toast, novo registro na DataTable, validação de erros, cancelar fecha modal)
+- [x] 5.6 Adicionar bloco "FixedExpense Editing" (4 testes: modal abre com título, campos pré-preenchidos, modificação mostra toast, DataTable reflete atualização)
+- [x] 5.7 Adicionar bloco "FixedExpense Viewing" (3 testes: modal abre com título, campos desabilitados incluindo active, sem botão submit)
+- [x] 5.8 Adicionar bloco "FixedExpense Deletion" (3 testes: popover de confirmação, confirmação mostra toast, registro removido da DataTable)
