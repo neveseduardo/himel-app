@@ -18,7 +18,7 @@
 - [x] 2.8 Implementar métodos auxiliares: `confirmDelete()`, `waitForToast(message)`, `getValidationError(field)` com labelMap para campos do CreditCardCharge
 
 ## Tarefa 3: Criar spec de testes `credit-card-charge.spec.ts`
-- [~] 3.1 Criar arquivo `e2e/tests/credit-card-charge.spec.ts` com imports do Playwright e do `CreditCardChargePage`
+- [x] 3.1 Criar arquivo `e2e/tests/credit-card-charge.spec.ts` com imports do Playwright e do `CreditCardChargePage`
 - [~] 3.2 Implementar bloco `CreditCardCharge Listing` (3 testes): título da página, registros semeados visíveis, colunas da tabela (descrição, valor formatado, parcelas, cartão)
 - [~] 3.3 Implementar bloco `CreditCardCharge Search and Filtering` (3 testes): filtro por descrição, limpar busca, busca sem resultados
 - [~] 3.4 Implementar bloco `CreditCardCharge Pagination` (5 testes): controles visíveis, próxima página, página anterior, "Anterior" desabilitado na primeira, "Próxima" desabilitado na última
