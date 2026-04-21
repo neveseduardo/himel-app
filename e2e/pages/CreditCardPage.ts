@@ -20,8 +20,10 @@ export class CreditCardPage {
 	// ---------------------------------------------------------------------------
 
 	async goto(): Promise<void> {
-		await this.page.goto('/finance/credit-cards');
-		await this.page.waitForTimeout(1000);
+		await this.page.goto('/finance/credit-cards', {
+			waitUntil: 'domcontentloaded',
+		});
+		await this.page.locator('table').waitFor({ state: 'visible' });
 	}
 
 	// ---------------------------------------------------------------------------
@@ -68,13 +70,21 @@ export class CreditCardPage {
 	async search(term: string): Promise<void> {
 		const input = this.page.getByPlaceholder('Buscar');
 		await input.fill(term);
+		const responsePromise = this.page.waitForResponse(
+			(resp) => resp.url().includes('credit-cards') && resp.status() === 200
+		);
 		await this.page.getByRole('button', { name: 'Buscar' }).click();
-		await this.page.waitForTimeout(1000);
+		await responsePromise;
+		await this.page.locator('table').waitFor({ state: 'visible' });
 	}
 
 	async clearSearch(): Promise<void> {
+		const responsePromise = this.page.waitForResponse(
+			(resp) => resp.url().includes('credit-cards') && resp.status() === 200
+		);
 		await this.page.getByRole('button', { name: 'Limpar' }).click();
-		await this.page.waitForTimeout(1000);
+		await responsePromise;
+		await this.page.locator('table').waitFor({ state: 'visible' });
 	}
 
 	// ---------------------------------------------------------------------------
@@ -90,13 +100,21 @@ export class CreditCardPage {
 	}
 
 	async goToNextPage(): Promise<void> {
+		const responsePromise = this.page.waitForResponse(
+			(resp) => resp.url().includes('credit-cards') && resp.status() === 200
+		);
 		await this.getNextButton().click();
-		await this.page.waitForTimeout(1000);
+		await responsePromise;
+		await this.page.locator('table').waitFor({ state: 'visible' });
 	}
 
 	async goToPreviousPage(): Promise<void> {
+		const responsePromise = this.page.waitForResponse(
+			(resp) => resp.url().includes('credit-cards') && resp.status() === 200
+		);
 		await this.getPreviousButton().click();
-		await this.page.waitForTimeout(1000);
+		await responsePromise;
+		await this.page.locator('table').waitFor({ state: 'visible' });
 	}
 
 	// ---------------------------------------------------------------------------
@@ -194,6 +212,21 @@ export class CreditCardPage {
 		const dialog = this.page.getByRole('dialog');
 		const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
 		return submitBtn.isVisible();
+	}
+
+	// ---------------------------------------------------------------------------
+	// Dialog close helpers
+	// ---------------------------------------------------------------------------
+
+	async closeDialogByEsc(): Promise<void> {
+		await this.page.keyboard.press('Escape');
+		await this.page.getByRole('dialog').waitFor({ state: 'hidden' });
+	}
+
+	async closeDialogByOverlay(): Promise<void> {
+		const overlay = this.page.locator('[data-slot="dialog-overlay"]');
+		await overlay.click({ position: { x: 10, y: 10 } });
+		await this.page.getByRole('dialog').waitFor({ state: 'hidden' });
 	}
 
 	// ---------------------------------------------------------------------------

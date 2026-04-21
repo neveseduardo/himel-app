@@ -145,10 +145,56 @@ test.describe('CreditCard Pagination', () => {
 
 	test('"Próxima" disabled on last page', async () => {
 		// Navigate to the last page by clicking Next until disabled
-		while (await creditCardPage.getNextButton().isEnabled()) {
-			await creditCardPage.goToNextPage();
+		const nextBtn = creditCardPage.getNextButton();
+		while (await nextBtn.isEnabled()) {
+			const responsePromise = creditCardPage.page.waitForResponse(
+				(resp) => resp.url().includes('credit-cards') && resp.status() === 200
+			);
+			await nextBtn.click();
+			await responsePromise;
 		}
-		await expect(creditCardPage.getNextButton()).toBeDisabled();
+		await expect(nextBtn).toBeDisabled();
+	});
+});
+
+// ---------------------------------------------------------------------------
+// 3.5 CreditCard Dialog Reopen (Task 3.2 — bugfix validation)
+// ---------------------------------------------------------------------------
+
+test.describe('CreditCard Dialog Reopen', () => {
+	let creditCardPage: CreditCardPage;
+
+	test.beforeEach(async ({ page }) => {
+		creditCardPage = new CreditCardPage(page);
+		await creditCardPage.goto();
+	});
+
+	test('dialog reopens after closing via ESC', async () => {
+		await creditCardPage.clickCreateButton();
+		expect(await creditCardPage.isModalOpen()).toBe(true);
+
+		await creditCardPage.closeDialogByEsc();
+		expect(await creditCardPage.isModalOpen()).toBe(false);
+
+		await creditCardPage.clickCreateButton();
+		expect(await creditCardPage.isModalOpen()).toBe(true);
+
+		const modalTitle = await creditCardPage.getModalTitle();
+		expect(modalTitle).toBe('Novo Cartão');
+	});
+
+	test('dialog reopens after closing via overlay click', async () => {
+		await creditCardPage.clickCreateButton();
+		expect(await creditCardPage.isModalOpen()).toBe(true);
+
+		await creditCardPage.closeDialogByOverlay();
+		expect(await creditCardPage.isModalOpen()).toBe(false);
+
+		await creditCardPage.clickCreateButton();
+		expect(await creditCardPage.isModalOpen()).toBe(true);
+
+		const modalTitle = await creditCardPage.getModalTitle();
+		expect(modalTitle).toBe('Novo Cartão');
 	});
 });
 
@@ -230,7 +276,7 @@ test.describe('CreditCard Creation', () => {
 
 		await creditCardPage.cancelForm();
 
-		await creditCardPage.page.waitForTimeout(500);
+		await creditCardPage.page.getByRole('dialog').waitFor({ state: 'hidden' });
 		const isOpenAfter = await creditCardPage.isModalOpen();
 		expect(isOpenAfter).toBe(false);
 	});
@@ -260,7 +306,7 @@ test.describe('CreditCard Editing', () => {
 		await creditCardPage.search('Nubank');
 		await creditCardPage.clickEditButton('Nubank');
 
-		await creditCardPage.page.waitForTimeout(500);
+		await creditCardPage.page.getByRole('dialog').locator('[name="name"]').waitFor({ state: 'visible' });
 
 		const name = await creditCardPage.getFormFieldValue('name');
 		expect(name).toBe('Nubank');
@@ -374,7 +420,7 @@ test.describe('CreditCard Deletion', () => {
 		await creditCardPage.confirmDelete();
 		await creditCardPage.waitForToast('Cartão excluído(a) com sucesso!');
 
-		await creditCardPage.page.waitForTimeout(1000);
+		await creditCardPage.page.locator('table').waitFor({ state: 'visible' });
 		await creditCardPage.search('C6 Bank');
 
 		const emptyState = await creditCardPage.getEmptyState();
