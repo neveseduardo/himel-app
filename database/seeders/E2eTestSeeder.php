@@ -28,9 +28,37 @@ class E2eTestSeeder extends Seeder
         $this->seedNamedCreditCards($user);
         $this->seedFactoryCreditCards($user);
 
+        $this->ensureDefaultCategories($user);
+
         $this->resetFixedExpenses($user);
         $this->seedNamedFixedExpenses($user);
         $this->seedFactoryFixedExpenses($user);
+    }
+
+    private function ensureDefaultCategories(User $user): void
+    {
+        if (Category::where('user_uid', $user->uid)->exists()) {
+            return;
+        }
+
+        $categories = [
+            ['name' => 'Alimentação', 'direction' => 'OUTFLOW'],
+            ['name' => 'Moradia', 'direction' => 'OUTFLOW'],
+            ['name' => 'Transporte', 'direction' => 'OUTFLOW'],
+            ['name' => 'Saúde', 'direction' => 'OUTFLOW'],
+            ['name' => 'Educação', 'direction' => 'OUTFLOW'],
+            ['name' => 'Lazer', 'direction' => 'OUTFLOW'],
+            ['name' => 'Vestuário', 'direction' => 'OUTFLOW'],
+            ['name' => 'Outros Gastos', 'direction' => 'OUTFLOW'],
+            ['name' => 'Salário', 'direction' => 'INFLOW'],
+            ['name' => 'Freelance', 'direction' => 'INFLOW'],
+            ['name' => 'Investimentos', 'direction' => 'INFLOW'],
+            ['name' => 'Outros Recebimentos', 'direction' => 'INFLOW'],
+        ];
+
+        foreach ($categories as $category) {
+            Category::create(array_merge($category, ['user_uid' => $user->uid]));
+        }
     }
 
     private function resetCreditCards(User $user): void

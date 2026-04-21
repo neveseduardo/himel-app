@@ -364,16 +364,16 @@ test.describe('FixedExpense Viewing', () => {
 	});
 
 	test('clicking view icon opens modal with title "Detalhes da Despesa Fixa"', async () => {
-		await fixedExpensePage.search('Internet');
-		await fixedExpensePage.clickViewButton('Internet');
+		await fixedExpensePage.search('Despesa Nova Listagem');
+		await fixedExpensePage.clickViewButton('Despesa Nova Listagem');
 
 		const modalTitle = await fixedExpensePage.getModalTitle();
 		expect(modalTitle).toBe('Detalhes da Despesa Fixa');
 	});
 
 	test('all form fields are disabled (read-only)', async () => {
-		await fixedExpensePage.search('Internet');
-		await fixedExpensePage.clickViewButton('Internet');
+		await fixedExpensePage.search('Despesa Nova Listagem');
+		await fixedExpensePage.clickViewButton('Despesa Nova Listagem');
 
 		expect(await fixedExpensePage.isFieldDisabled('description')).toBe(true);
 		expect(await fixedExpensePage.isFieldDisabled('amount')).toBe(true);
@@ -383,8 +383,8 @@ test.describe('FixedExpense Viewing', () => {
 	});
 
 	test('no submit button visible', async () => {
-		await fixedExpensePage.search('Internet');
-		await fixedExpensePage.clickViewButton('Internet');
+		await fixedExpensePage.search('Despesa Nova Listagem');
+		await fixedExpensePage.clickViewButton('Despesa Nova Listagem');
 
 		const isVisible = await fixedExpensePage.isSubmitButtonVisible();
 		expect(isVisible).toBe(false);
