@@ -4,8 +4,6 @@
 
 Testes end-to-end (E2E) com Playwright para o módulo CreditCardCharge (Compras de Cartão), seguindo os mesmos padrões e boas práticas estabelecidos nos testes E2E do módulo CreditCard. O objetivo é garantir cobertura CRUD completa para o módulo, incluindo listagem, busca, paginação, criação, visualização, edição e exclusão.
 
-**Correção de bug pré-requisito:** Foi identificado um bug no componente compartilhado `ModalDialog.vue` que impede a reabertura do diálogo após ser fechado pelo reka-ui (botão X, ESC ou clique no overlay). O Requisito 0 aborda essa correção, que é pré-requisito para o funcionamento correto dos testes E2E de criação/edição/visualização tanto no módulo CreditCard quanto no CreditCardCharge.
-
 **Nota importante sobre o estado atual do frontend:** A análise do código revelou que a página `Index.vue` do CreditCardCharge atualmente implementa apenas Criação e Visualização (sem botões de Editar e Excluir na UI). O backend (API) suporta CRUD completo. Os requisitos abaixo cobrem o CRUD completo, sendo que os requisitos de Edição e Exclusão exigirão implementação prévia dos botões correspondentes na UI antes que os testes possam ser executados.
 
 ## Glossário
@@ -17,24 +15,8 @@ Testes end-to-end (E2E) com Playwright para o módulo CreditCardCharge (Compras 
 - **Modal**: Diálogo modal usado para criação, visualização e edição de compras de cartão
 - **FilterBar**: Componente de busca com campo de texto e botões Buscar/Limpar
 - **Compra**: Registro de compra no cartão de crédito com campos: cartão (select), descrição, valor total e número de parcelas
-- **ModalDialog**: Componente compartilhado (`domain/Shared/components/ui/modal/ModalDialog.vue`) que encapsula o Dialog do reka-ui, usado por todos os módulos para exibir formulários em modal
-- **Store_Modal**: Estado reativo da Pinia store que controla a abertura/fechamento do modal via `isModalOpen`, sincronizado com o `ModalDialog` por um `watch`
 
 ## Requisitos
-
-### Requisito 0: Correção do Bug de Reabertura do ModalDialog
-
-**User Story:** Como usuário, quero que o modal reabra corretamente após ser fechado pelo botão X, tecla ESC ou clique no overlay, para que eu possa criar/editar/visualizar registros múltiplas vezes sem recarregar a página.
-
-**Contexto do Bug:** Quando o reka-ui fecha o Dialog internamente (via `v-model:open`), o `showDialog` do `ModalDialog` muda para `false`, mas a store do módulo pai mantém `isModalOpen = true`. Na próxima tentativa de abrir o modal, a store tenta setar `isModalOpen = true` (que já é `true`), o `watch` não dispara, e o modal não reabre.
-
-#### Critérios de Aceitação
-
-1. WHEN o reka-ui fechar o Dialog internamente (botão X, ESC ou clique no overlay), THE ModalDialog SHALL emitir um evento `update:open` com o valor `false` para notificar o componente pai
-2. WHEN o componente pai receber o evento `update:open` com valor `false` do ModalDialog, THE Store_Modal SHALL atualizar `isModalOpen` para `false` via chamada a `closeModal()`
-3. WHEN o usuário clicar no botão "Criar" após ter fechado o modal anteriormente, THE Store_Modal SHALL disparar o `watch` corretamente porque `isModalOpen` transiciona de `false` para `true`
-4. THE ModalDialog SHALL manter compatibilidade retroativa com todos os módulos que o utilizam (CreditCard, CreditCardCharge e demais)
-5. THE correção SHALL ser aplicada no módulo CreditCard (`Index.vue`) como implementação de referência, servindo de padrão para o CreditCardCharge e demais módulos
 
 ### Requisito 1: Page Object para CreditCardCharge
 

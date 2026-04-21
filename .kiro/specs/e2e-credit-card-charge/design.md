@@ -4,11 +4,10 @@
 
 Este documento descreve o design técnico para implementação dos testes E2E do módulo CreditCardCharge (Compras de Cartão) usando Playwright. O design segue exatamente os mesmos padrões estabelecidos nos testes E2E do módulo CreditCard, que já está em produção com 26 testes funcionais.
 
-A implementação consiste em quatro artefatos principais:
-1. **Correção do ModalDialog** — fix do bug de reabertura do modal (Requisito 0)
-2. **Page Object** (`CreditCardChargePage.ts`) — encapsula seletores e interações
-3. **Seeder** (atualização do `E2eTestSeeder.php`) — dados de teste idempotentes
-4. **Spec** (`credit-card-charge.spec.ts`) — testes organizados por funcionalidade
+A implementação consiste em três artefatos principais:
+1. **Page Object** (`CreditCardChargePage.ts`) — encapsula seletores e interações
+2. **Seeder** (atualização do `E2eTestSeeder.php`) — dados de teste idempotentes
+3. **Spec** (`credit-card-charge.spec.ts`) — testes organizados por funcionalidade
 
 ### Estado Atual do Frontend
 
@@ -22,216 +21,6 @@ A análise do código revelou que `Index.vue` do CreditCardCharge implementa:
 - ❌ Exclusão — sem botão de exclusão na UI (store tem `deletingUid` mas não é usado)
 
 **Decisão:** Os testes de Edição e Exclusão (Requisitos 8 e 9) serão implementados no spec como blocos `test.describe` com `test.skip`, documentando a dependência da implementação UI. Isso permite que os testes sejam ativados assim que os botões forem adicionados.
-
-## Correção do Bug do ModalDialog (Requisito 0)
-
-### Análise da Causa Raiz
-
-O fluxo atual do modal apresenta uma dessincronização entre o estado do reka-ui e a Pinia store:
-
-```mermaid
-sequenceDiagram
-    participant U as Usuário
-    participant S as Store (Pinia)
-    participant W as Watch (Index.vue)
-    participant M as ModalDialog
-    participant R as reka-ui Dialog
-
-    Note over U,R: Fluxo 1: Primeira abertura ✅
-    U->>S: Clica "Criar" → openCreateModal()
-    S->>S: isModalOpen = true
-    S->>W: watch dispara (false → true)
-    W->>M: modalRef.openDialog()
-    M->>R: showDialog = true
-    R->>U: Dialog visível
-
-    Note over U,R: Fluxo 2: Fechamento pelo reka-ui ❌
-    U->>R: Clica X / ESC / overlay
-    R->>M: v-model:open → showDialog = false
-    R->>U: Dialog fecha visualmente
-    Note over S: isModalOpen ainda é true! ❌
-
-    Note over U,R: Fluxo 3: Tentativa de reabrir ❌
-    U->>S: Clica "Criar" → openCreateModal()
-    S->>S: isModalOpen = true (já era true)
-    Note over W: watch NÃO dispara (true → true)
-    Note over U: Modal não abre ❌
-```
-
-### Solução Técnica
-
-A correção envolve duas alterações:
-
-#### 1. `ModalDialog.vue` — Emitir evento ao fechar
-
-Adicionar um handler `@update:open` no componente `Dialog` do reka-ui que emite um evento para o componente pai quando o dialog é fechado internamente.
-
-**Arquivo:** `resources/js/domain/Shared/components/ui/modal/ModalDialog.vue`
-
-**Antes:**
-```vue
-<script setup lang="ts">
-const props = defineProps<{
-	title: string;
-	description?: string;
-	subtitle?: string;
-}>();
-
-const displaySubtitle = computed(() => props.subtitle ?? props.description);
-
-const showDialog = ref(false);
-
-function openDialog() {
-	showDialog.value = true;
-}
-
-function closeDialog() {
-	showDialog.value = false;
-}
-
-defineExpose({
-	openDialog,
-	closeDialog,
-});
-</script>
-
-<template>
-	<Dialog v-model:open="showDialog">
-		<!-- ... -->
-	</Dialog>
-</template>
-```
-
-**Depois:**
-```vue
-<script setup lang="ts">
-const props = defineProps<{
-	title: string;
-	description?: string;
-	subtitle?: string;
-}>();
-
-const emit = defineEmits<{
-	'update:open': [value: boolean];
-}>();
-
-const displaySubtitle = computed(() => props.subtitle ?? props.description);
-
-const showDialog = ref(false);
-
-function openDialog() {
-	showDialog.value = true;
-}
-
-function closeDialog() {
-	showDialog.value = false;
-}
-
-function handleOpenChange(value: boolean) {
-	showDialog.value = value;
-	emit('update:open', value);
-}
-
-defineExpose({
-	openDialog,
-	closeDialog,
-});
-</script>
-
-<template>
-	<Dialog :open="showDialog" @update:open="handleOpenChange">
-		<!-- ... -->
-	</Dialog>
-</template>
-```
-
-**Mudanças chave:**
-- Substituir `v-model:open="showDialog"` por `:open="showDialog"` + `@update:open="handleOpenChange"` para interceptar o evento do reka-ui
-- Adicionar `defineEmits` com o evento `update:open`
-- A função `handleOpenChange` atualiza o `showDialog` local E emite o evento para o pai
-- Compatibilidade retroativa: módulos que não escutam `@update:open` continuam funcionando normalmente (o emit é ignorado)
-
-#### 2. `Index.vue` (CreditCard) — Escutar o evento de fechamento
-
-Adicionar handler `@update:open` no `<ModalDialog>` para sincronizar a store quando o reka-ui fecha o dialog.
-
-**Arquivo:** `resources/js/pages/finance/credit-cards/Index.vue`
-
-**Antes:**
-```vue
-<ModalDialog ref="modalRef" :title="modalTitle">
-```
-
-**Depois:**
-```vue
-<ModalDialog ref="modalRef" :title="modalTitle" @update:open="handleModalOpenChange">
-```
-
-**Handler adicionado:**
-```typescript
-function handleModalOpenChange(value: boolean) {
-	if (!value) {
-		store.closeModal();
-	}
-}
-```
-
-**Lógica:** Quando o reka-ui fecha o dialog (valor `false`), chama `store.closeModal()` que seta `isModalOpen = false`. Na próxima abertura, o `watch` detecta a transição `false → true` e dispara corretamente.
-
-#### 3. Padrão para CreditCardCharge e demais módulos
-
-O `Index.vue` do CreditCardCharge (e qualquer outro módulo que use `ModalDialog`) deve seguir o mesmo padrão:
-
-```vue
-<ModalDialog ref="modalRef" :title="modalTitle" @update:open="handleModalOpenChange">
-```
-
-```typescript
-function handleModalOpenChange(value: boolean) {
-	if (!value) {
-		store.closeModal();
-	}
-}
-```
-
-### Fluxo Corrigido
-
-```mermaid
-sequenceDiagram
-    participant U as Usuário
-    participant S as Store (Pinia)
-    participant W as Watch (Index.vue)
-    participant I as Index.vue
-    participant M as ModalDialog
-    participant R as reka-ui Dialog
-
-    Note over U,R: Fechamento pelo reka-ui (CORRIGIDO) ✅
-    U->>R: Clica X / ESC / overlay
-    R->>M: @update:open(false)
-    M->>M: showDialog = false
-    M->>I: emit('update:open', false)
-    I->>S: store.closeModal()
-    S->>S: isModalOpen = false ✅
-
-    Note over U,R: Reabertura funciona ✅
-    U->>S: Clica "Criar" → openCreateModal()
-    S->>S: isModalOpen = true
-    S->>W: watch dispara (false → true) ✅
-    W->>M: modalRef.openDialog()
-    M->>R: showDialog = true
-    R->>U: Dialog visível ✅
-```
-
-### Impacto e Compatibilidade
-
-| Módulo | Arquivo | Ação Necessária |
-|---|---|---|
-| Shared | `ModalDialog.vue` | Adicionar emit + handler (breaking: nenhum) |
-| CreditCard | `pages/finance/credit-cards/Index.vue` | Adicionar `@update:open` handler |
-| CreditCardCharge | `pages/finance/credit-card-charges/Index.vue` | Adicionar `@update:open` handler (na implementação dos testes E2E) |
-| Demais módulos | Qualquer página que use `ModalDialog` | Adicionar `@update:open` handler quando necessário |
-
-**Nota:** A correção no `ModalDialog.vue` é retrocompatível. Módulos que não adicionarem o handler `@update:open` continuarão funcionando como antes (com o bug). A adição do handler é incremental e pode ser feita módulo a módulo.
 
 ## Arquitetura
 
@@ -309,7 +98,7 @@ Classe TypeScript que encapsula todas as interações com a página de Compras d
 
 ```typescript
 interface CreditCardChargeFormData {
-  credit_card_uid: string;  // UID do cartão (selecionado via Select)
+  credit_card_uid: string;  // Nome do cartão para seleção na UI (ex: "Nubank")
   description: string;       // Descrição da compra
   amount: number;            // Valor total (decimal)
   total_installments: number; // Número de parcelas (1-48)
