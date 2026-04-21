@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { cn } from '@/domain/Shared/lib/utils';
 import type { HTMLAttributes } from 'vue';
 import { computed } from 'vue';
+
+import { cn } from '@/domain/Shared/lib/utils';
 
 const props = defineProps<{
     showIcon?: boolean;

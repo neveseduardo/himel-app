@@ -18,7 +18,7 @@ const emit = defineEmits<{
 			{{ title }}
 		</h1>
 		<Button size="sm" @click="emit('action')">
-			<component :is="buttonIcon" v-if="buttonIcon" class="mr-2 size-4" />
+			<component :is="buttonIcon" v-if="buttonIcon" class="size-4" />
 			{{ buttonLabel }}
 		</Button>
 	</div>

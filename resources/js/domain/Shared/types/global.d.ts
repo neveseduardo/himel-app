@@ -1,5 +1,6 @@
-import type { Auth } from '@/types/auth';
 import type { ClassValue } from 'clsx';
+
+import type { Auth } from '@/types/auth';
 
 declare module 'vue' {
 	interface ComponentCustomProperties {

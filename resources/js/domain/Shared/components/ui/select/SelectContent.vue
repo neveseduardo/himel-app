@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { cn } from '@/domain/Shared/lib/utils';
 import { reactiveOmit } from '@vueuse/core';
 import type { SelectContentEmits, SelectContentProps } from 'reka-ui';
 import {
@@ -9,6 +8,8 @@ import {
 	useForwardPropsEmits,
 } from 'reka-ui';
 import type { HTMLAttributes } from 'vue';
+
+import { cn } from '@/domain/Shared/lib/utils';
 
 import { SelectScrollDownButton, SelectScrollUpButton } from '.';
 

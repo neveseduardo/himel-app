@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { cn } from '@/domain/Shared/lib/utils';
 import { reactiveOmit } from '@vueuse/core';
 import type { DialogOverlayProps } from 'reka-ui';
 import { DialogOverlay } from 'reka-ui';
 import type { HTMLAttributes } from 'vue';
+
+import { cn } from '@/domain/Shared/lib/utils';
 
 const props = defineProps<
     DialogOverlayProps & { class?: HTMLAttributes['class'] }

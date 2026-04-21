@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { cn } from '@/domain/Shared/lib/utils';
 import { Eye, EyeOff } from 'lucide-vue-next';
 import type { HTMLAttributes } from 'vue';
+
+import { cn } from '@/domain/Shared/lib/utils';
 
 defineOptions({ inheritAttrs: false });
 

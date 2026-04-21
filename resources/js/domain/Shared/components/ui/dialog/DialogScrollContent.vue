@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { cn } from '@/domain/Shared/lib/utils';
 import { reactiveOmit } from '@vueuse/core';
 import { X } from 'lucide-vue-next';
 import type { DialogContentEmits, DialogContentProps } from 'reka-ui';
@@ -11,6 +10,8 @@ import {
 	useForwardPropsEmits,
 } from 'reka-ui';
 import type { HTMLAttributes } from 'vue';
+
+import { cn } from '@/domain/Shared/lib/utils';
 
 defineOptions({
 	inheritAttrs: false,

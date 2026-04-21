@@ -114,3 +114,33 @@ Infraestrutura de testes E2E com Playwright para o módulo CreditCard, primeiro 
 - `waitForLoadState('networkidle')` travava por causa do websocket do Vite HMR — substituído por waits explícitos
 - Arquivo `public/hot` do Vite fazia Laravel achar que dev server estava rodando em build mode — removido no script de start
 - Seeder original não limpava dados anteriores — cada execução acumulava cartões, mudando paginação. Corrigido com reset antes de seed
+
+---
+
+## Spec: CreditCard Dialog Desync Fix
+
+Correção do bug onde o dialog de criação/edição do módulo CreditCard parava de abrir após o primeiro fechamento via ESC ou overlay click.
+
+### Requisitos
+- Sincronizar `store.isModalOpen` quando dialog é fechado via mecanismo externo do reka-ui (ESC, overlay)
+- Dialog deve reabrir normalmente após qualquer tipo de fechamento
+- Validar correção com teste E2E
+- Escopo exclusivo do módulo CreditCard
+
+### Decisões de Design
+- `ModalDialog.vue` emite evento `update:open` via watch no `showDialog` interno
+- `Index.vue` do CreditCard escuta `@update:open` e chama `store.closeModal()` quando `false`
+- Abordagem mínima: 2 arquivos de produção alterados, sem breaking changes para outros módulos
+
+### Tasks Concluídas (6/6)
+1. Adicionado `defineEmits` e `watch` em `ModalDialog.vue`
+2. Adicionado handler `@update:open` em `Index.vue` do CreditCard
+3. Adicionados métodos `closeDialogByEsc()` e `closeDialogByOverlay()` no Page Object
+4. Adicionado `test.describe('CreditCard Dialog Reopen')` com 2 testes E2E
+5. Suite E2E completa executada — 28 testes passando (26 existentes + 2 novos)
+
+### Artefatos Alterados
+- `resources/js/domain/Shared/components/ui/modal/ModalDialog.vue` — emit `update:open`
+- `resources/js/pages/finance/credit-cards/Index.vue` — handler `@update:open`
+- `e2e/pages/CreditCardPage.ts` — métodos `closeDialogByEsc()`, `closeDialogByOverlay()`
+- `e2e/tests/credit-card.spec.ts` — 2 testes E2E novos para validar reopen

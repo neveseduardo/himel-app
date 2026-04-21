@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { cn } from '@/domain/Shared/lib/utils';
 import { reactiveOmit } from '@vueuse/core';
 import { Check } from 'lucide-vue-next';
 import type { SelectItemProps } from 'reka-ui';
@@ -10,6 +9,8 @@ import {
 	useForwardProps,
 } from 'reka-ui';
 import type { HTMLAttributes } from 'vue';
+
+import { cn } from '@/domain/Shared/lib/utils';
 
 const props = defineProps<
     SelectItemProps & { class?: HTMLAttributes['class'] }
