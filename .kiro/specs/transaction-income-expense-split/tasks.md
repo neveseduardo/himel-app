@@ -112,7 +112,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
 - [x] 7. Checkpoint — Verificar frontend
   - Garantir que todos os testes existentes passam, perguntar ao usuário se houver dúvidas.
 
-- [ ] 8. Testes unitários PHPUnit para validação condicional
+- [x] 8. Testes unitários PHPUnit para validação condicional
   - [x] 8.1 Testes para StoreTransactionRequest
     - Testar que OUTFLOW rejeita payload sem `category_uid`, `status`, `source`
     - Testar que INFLOW aceita payload com apenas `account_uid`, `amount`, `direction`, `occurred_at`
@@ -126,7 +126,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Testar `prepareForValidation()` aplica defaults para INFLOW
     - _Requisitos: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 9. Testes unitários PHPUnit para lógica de saldo
+- [x] 9. Testes unitários PHPUnit para lógica de saldo
   - [x] 9.1 Testes para TransactionService.create()
     - Testar INFLOW credita saldo imediatamente
     - Testar OUTFLOW PAID debita saldo
@@ -142,7 +142,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Testar InsufficientBalanceException na transição PENDING→PAID com saldo insuficiente
     - _Requisitos: 4.3, 5.2, 5.3, 7.1_
 
-  - [ ] 9.3 Testes para TransactionService.delete()
+  - [x] 9.3 Testes para TransactionService.delete()
     - Testar INFLOW reverte saldo (debita de volta)
     - Testar OUTFLOW PAID reverte saldo (credita de volta)
     - Testar OUTFLOW PENDING não altera saldo
@@ -224,7 +224,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Mínimo 100 iterações com fast-check
     - **Valida: Requisitos 2.2, 2.3**
 
-- [ ] 12. Checkpoint final
+- [x] 12. Checkpoint final
   - Garantir que todos os testes passam, perguntar ao usuário se houver dúvidas.
 
 ## Notas
