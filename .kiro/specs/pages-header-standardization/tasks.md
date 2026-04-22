@@ -58,7 +58,7 @@ Refatoração do componente `PageHeader.vue` para uma API baseada em slots e pro
 - [x] 10. Checkpoint - Ensure all Index pages are migrated
   - Ensure all tests pass, ask the user if questions arise.
 
-- [~] 11. Migrate periods/Show.vue (special case)
+- [-] 11. Migrate periods/Show.vue (special case)
   - Remove `eslint-disable-next-line` comment above `breadcrumbs`
   - Replace the custom header `<div class="flex items-center justify-between">` block with `<PageHeader>` component
   - Pass dynamic title `` :title="`${monthNames[period.month]} ${period.year}`" `` and `:breadcrumbs="breadcrumbs"`

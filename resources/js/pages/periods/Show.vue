@@ -35,7 +35,6 @@ const props = defineProps<{
 
 const monthNames = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/' },
 	{ title: 'Períodos', href: index.url() },
@@ -167,16 +166,13 @@ function handleDetachAll() {
 		</Head>
 
 		<!-- 14.1 — Header with month/year and actions -->
-		<div class="flex items-center justify-between">
-			<div class="flex items-center gap-3">
+		<PageHeader :title="`${monthNames[period.month]} ${period.year}`" :breadcrumbs="breadcrumbs">
+			<template #back>
 				<Button variant="ghost" size="icon" @click="router.get(index.url())">
 					<ArrowLeft class="size-4" />
 				</Button>
-				<h1 class="text-2xl font-semibold">
-					{{ monthNames[period.month] }} {{ period.year }}
-				</h1>
-			</div>
-			<div class="flex items-center gap-2">
+			</template>
+			<template #actions>
 				<AlertDialog>
 					<AlertDialogTrigger as-child>
 						<Button variant="destructive" size="sm">
@@ -207,8 +203,8 @@ function handleDetachAll() {
 					<Play class="mr-2 size-4" />
 					{{ initializing ? 'Inicializando...' : 'Inicializar Período' }}
 				</Button>
-			</div>
-		</div>
+			</template>
+		</PageHeader>
 
 		<!-- 14.1 — Financial summary cards -->
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
