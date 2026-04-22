@@ -103,22 +103,22 @@ Refatoração completa para remover o prefixo redundante `financial_` de tabelas
     - Corrigir bug existente no `PeriodPageController`: `finance.finance.periods.*` → `periods.*`
     - _Requisitos: 11.4, 13.2_
 
-- [ ] 9. Reestruturar Frontend — mover páginas, atualizar sidebar, regenerar Wayfinder
-  - [~] 9.1 Mover páginas Inertia de `resources/js/pages/finance/<domínio>/` para `resources/js/pages/<domínio>/`
+- [x] 9. Reestruturar Frontend — mover páginas, atualizar sidebar, regenerar Wayfinder
+  - [x] 9.1 Mover páginas Inertia de `resources/js/pages/finance/<domínio>/` para `resources/js/pages/<domínio>/`
     - Mover 9 subdiretórios: accounts, categories, credit-cards, credit-card-charges, fixed-expenses, periods, transactions, transfers
     - Decidir destino de `finance/Index.vue` (remover ou incorporar)
     - Remover diretório `resources/js/pages/finance/` vazio
     - _Requisitos: 12.1, 12.2, 12.3, 12.4_
 
-  - [~] 9.2 Atualizar `AppSidebar.vue` — remover prefixo `/finance` de todos os `href`
+  - [x] 9.2 Atualizar `AppSidebar.vue` — remover prefixo `/finance` de todos os `href`
     - Atualizar array `financeNavItems` com URLs limpas
     - Atualizar lógica `isActive` que verifica `href === '/finance'`
     - _Requisitos: 16.1, 16.2, 16.3_
 
-  - [~] 9.3 Atualizar referências a nomes de rotas `finance.*` no frontend (stores, composables, adapters, componentes Vue)
+  - [x] 9.3 Atualizar referências a nomes de rotas `finance.*` no frontend (stores, composables, adapters, componentes Vue)
     - _Requisitos: 15.2_
 
-  - [~] 9.4 Executar `php artisan wayfinder:generate` para regenerar rotas e actions tipadas
+  - [x] 9.4 Executar `php artisan wayfinder:generate` para regenerar rotas e actions tipadas
     - Verificar que `resources/js/routes/` não contém referências a `/finance`
     - Verificar que `resources/js/actions/` está atualizado
     - _Requisitos: 14.1, 14.2, 14.3_

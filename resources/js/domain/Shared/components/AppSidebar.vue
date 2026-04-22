@@ -6,7 +6,6 @@ import {
 	CalendarClock,
 	CalendarDays,
 	CreditCard,
-	LayoutDashboard,
 	ShoppingCart,
 	Tags,
 	Wallet,
@@ -17,24 +16,19 @@ import { toUrl } from '@/domain/Shared/lib/utils';
 import type { NavItem } from '@/types';
 
 const financeNavItems: NavItem[] = [
-	{ title: 'Visão Geral', href: '/finance', icon: LayoutDashboard },
-	{ title: 'Períodos', href: '/finance/periods', icon: CalendarDays },
-	{ title: 'Contas', href: '/finance/accounts', icon: Wallet },
-	{ title: 'Categorias', href: '/finance/categories', icon: Tags },
-	{ title: 'Transações', href: '/finance/transactions', icon: ArrowLeftRight },
-	{ title: 'Transferências', href: '/finance/transfers', icon: ArrowRightLeft },
-	{ title: 'Despesas Fixas', href: '/finance/fixed-expenses', icon: CalendarClock },
-	{ title: 'Cartões', href: '/finance/credit-cards', icon: CreditCard },
-	{ title: 'Compras Cartão', href: '/finance/credit-card-charges', icon: ShoppingCart },
+	{ title: 'Períodos', href: '/periods', icon: CalendarDays },
+	{ title: 'Contas', href: '/accounts', icon: Wallet },
+	{ title: 'Categorias', href: '/categories', icon: Tags },
+	{ title: 'Transações', href: '/transactions', icon: ArrowLeftRight },
+	{ title: 'Transferências', href: '/transfers', icon: ArrowRightLeft },
+	{ title: 'Despesas Fixas', href: '/fixed-expenses', icon: CalendarClock },
+	{ title: 'Cartões', href: '/credit-cards', icon: CreditCard },
+	{ title: 'Compras Cartão', href: '/credit-card-charges', icon: ShoppingCart },
 ];
 
-const { isCurrentOrParentUrl, isCurrentUrl } = useCurrentUrl();
+const { isCurrentOrParentUrl } = useCurrentUrl();
 
 function isActive(item: NavItem): boolean {
-	const href = toUrl(item.href);
-	if (href === '/finance') {
-		return isCurrentUrl(item.href);
-	}
 	return isCurrentOrParentUrl(item.href);
 }
 </script>
@@ -45,7 +39,7 @@ function isActive(item: NavItem): boolean {
 			<SidebarMenu>
 				<SidebarMenuItem>
 					<SidebarMenuButton size="lg" as-child>
-						<Link href="/finance">
+						<Link href="/">
 							<div class="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
 								<Wallet class="size-4" />
 							</div>

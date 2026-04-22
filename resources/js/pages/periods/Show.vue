@@ -34,7 +34,7 @@ const monthNames = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junh
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
-	{ title: 'Financeiro', href: '/finance' },
+	{ title: 'Financeiro', href: '/' },
 	{ title: 'Períodos', href: index.url() },
 	{ title: `${monthNames[props.period.month]} ${props.period.year}`, href: show.url(props.period.uid) },
 ];

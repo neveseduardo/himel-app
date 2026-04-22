@@ -2,49 +2,41 @@
 import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 
-import { destroy, index } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
+import { destroy, index } from '@/actions/App/Domain/Account/Controllers/AccountPageController';
+import AccountForm from '@/domain/Account/components/AccountForm.vue';
+import { useAccountStore } from '@/domain/Account/stores/useAccountStore';
 import type { Account } from '@/domain/Account/types/account';
-import type { Category } from '@/domain/Category/types/category';
 import DataTable from '@/domain/Shared/components/DataTable.vue';
-import DirectionBadge from '@/domain/Shared/components/DirectionBadge.vue';
 import FilterBar from '@/domain/Shared/components/FilterBar.vue';
-import StatusBadge from '@/domain/Shared/components/StatusBadge.vue';
 import ModalDialog from '@/domain/Shared/components/ui/modal/ModalDialog.vue';
 import { useCrudToast } from '@/domain/Shared/composables/useCrudToast';
 import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
 import { usePagination } from '@/domain/Shared/composables/usePagination';
-import { formatCurrency, formatDate } from '@/domain/Shared/services/format';
+import { formatCurrency } from '@/domain/Shared/services/format';
 import type { PaginationMeta } from '@/domain/Shared/types/pagination';
-import TransactionForm from '@/domain/Transaction/components/TransactionForm.vue';
-import { useTransactionStore } from '@/domain/Transaction/stores/useTransactionStore';
-import type { Transaction } from '@/domain/Transaction/types/transaction';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{
-	transactions: Transaction[];
+	accounts: Account[];
 	meta: PaginationMeta;
 	filters: Record<string, string>;
-	accounts?: Account[];
-	categories?: Category[];
 }>();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
-	{ title: 'Financeiro', href: '/finance' },
-	{ title: 'Transações', href: index.url() },
+	{ title: 'Financeiro', href: '/' },
+	{ title: 'Contas', href: index.url() },
 ];
 
 const columns = [
-	{ key: 'description', label: 'Descrição' },
-	{ key: 'amount', label: 'Valor' },
-	{ key: 'direction', label: 'Direção' },
-	{ key: 'status', label: 'Status' },
-	{ key: 'occurred_at', label: 'Data' },
+	{ key: 'name', label: 'Nome' },
+	{ key: 'type', label: 'Tipo' },
+	{ key: 'balance', label: 'Saldo' },
 	{ key: 'actions', label: '' },
 ];
 
-const store = useTransactionStore();
-const { onSuccess, onError } = useCrudToast('Transação');
+const store = useAccountStore();
+const { onSuccess, onError } = useCrudToast('Conta');
 const { filters, applyFilters, resetFilters } = useFinanceFilters(props.filters);
 const { goToPage } = usePagination();
 
@@ -56,9 +48,9 @@ watch(() => store.isModalOpen, (open) => {
 });
 
 const modalTitle = computed(() => {
-	if (store.modalMode === 'create') return 'Nova Transação';
-	if (store.modalMode === 'edit') return 'Editar Transação';
-	return 'Detalhes da Transação';
+	if (store.modalMode === 'create') return 'Nova Conta';
+	if (store.modalMode === 'edit') return 'Editar Conta';
+	return 'Detalhes da Conta';
 });
 
 function handleFormSuccess() {
@@ -83,35 +75,23 @@ function handleDelete(uid: string) {
 
 <template>
 	<div class="flex flex-col gap-6 p-6">
-		<PageHeader title="Transações" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
+		<PageHeader title="Contas" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 
-		<DataTable :columns="columns" :data="transactions as unknown as Record<string, unknown>[]">
-			<template #cell-description="{ row }">
-				{{ (row as unknown as Transaction).description || '—' }}
-			</template>
-			<template #cell-amount="{ row }">
-				{{ formatCurrency((row as unknown as Transaction).amount) }}
-			</template>
-			<template #cell-direction="{ row }">
-				<DirectionBadge :direction="(row as unknown as Transaction).direction" />
-			</template>
-			<template #cell-status="{ row }">
-				<StatusBadge :status="(row as unknown as Transaction).status" />
-			</template>
-			<template #cell-occurred_at="{ row }">
-				{{ formatDate((row as unknown as Transaction).occurred_at) }}
+		<DataTable :columns="columns" :data="accounts as unknown as Record<string, unknown>[]">
+			<template #cell-balance="{ row }">
+				{{ formatCurrency((row as unknown as Account).balance) }}
 			</template>
 			<template #cell-actions="{ row }">
 				<div class="flex justify-end gap-1">
-					<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as Transaction)">
+					<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as Account)">
 						<Eye class="size-4" />
 					</Button>
-					<Button variant="ghost" size="icon" @click="store.openEditModal(row as unknown as Transaction)">
+					<Button variant="ghost" size="icon" @click="store.openEditModal(row as unknown as Account)">
 						<Pencil class="size-4" />
 					</Button>
-					<DeleteConfirmPopover :loading="store.deletingUid === (row as unknown as Transaction).uid" @confirm="handleDelete((row as unknown as Transaction).uid)">
+					<DeleteConfirmPopover :loading="store.deletingUid === (row as unknown as Account).uid" @confirm="handleDelete((row as unknown as Account).uid)">
 						<template #trigger>
 							<Button variant="ghost" size="icon">
 								<Trash2 class="size-4" />
@@ -133,11 +113,9 @@ function handleDelete(uid: string) {
 		</div>
 
 		<ModalDialog ref="modalRef" :title="modalTitle" @update:open="(open: boolean) => { if (!open) store.closeModal(); }">
-			<TransactionForm
+			<AccountForm
 				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 				:readonly="store.modalMode === 'view'"
-				:accounts="accounts ?? []"
-				:categories="categories ?? []"
 				@success="handleFormSuccess"
 				@cancel="store.closeModal()"
 			/>

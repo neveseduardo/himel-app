@@ -2,42 +2,49 @@
 import { router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 
-import { destroy, index } from '@/actions/App/Domain/CreditCard/Controllers/CreditCardPageController';
-import CreditCardForm from '@/domain/CreditCard/components/CreditCardForm.vue';
-import { useCreditCardStore } from '@/domain/CreditCard/stores/useCreditCardStore';
-import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
+import { destroy, index } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
+import type { Account } from '@/domain/Account/types/account';
+import type { Category } from '@/domain/Category/types/category';
 import DataTable from '@/domain/Shared/components/DataTable.vue';
+import DirectionBadge from '@/domain/Shared/components/DirectionBadge.vue';
 import FilterBar from '@/domain/Shared/components/FilterBar.vue';
+import StatusBadge from '@/domain/Shared/components/StatusBadge.vue';
 import ModalDialog from '@/domain/Shared/components/ui/modal/ModalDialog.vue';
 import { useCrudToast } from '@/domain/Shared/composables/useCrudToast';
 import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
 import { usePagination } from '@/domain/Shared/composables/usePagination';
+import { formatCurrency, formatDate } from '@/domain/Shared/services/format';
 import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import TransactionForm from '@/domain/Transaction/components/TransactionForm.vue';
+import { useTransactionStore } from '@/domain/Transaction/stores/useTransactionStore';
+import type { Transaction } from '@/domain/Transaction/types/transaction';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{
-	creditCards: CreditCard[];
+	transactions: Transaction[];
 	meta: PaginationMeta;
 	filters: Record<string, string>;
+	accounts?: Account[];
+	categories?: Category[];
 }>();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
-	{ title: 'Financeiro', href: '/finance' },
-	{ title: 'Cartões', href: index.url() },
+	{ title: 'Financeiro', href: '/' },
+	{ title: 'Transações', href: index.url() },
 ];
 
 const columns = [
-	{ key: 'name', label: 'Nome' },
-	{ key: 'last_four_digits', label: 'Final' },
-	{ key: 'card_type', label: 'Tipo' },
-	{ key: 'closing_day', label: 'Fechamento' },
-	{ key: 'due_day', label: 'Vencimento' },
+	{ key: 'description', label: 'Descrição' },
+	{ key: 'amount', label: 'Valor' },
+	{ key: 'direction', label: 'Direção' },
+	{ key: 'status', label: 'Status' },
+	{ key: 'occurred_at', label: 'Data' },
 	{ key: 'actions', label: '' },
 ];
 
-const store = useCreditCardStore();
-const { onSuccess, onError } = useCrudToast('Cartão');
+const store = useTransactionStore();
+const { onSuccess, onError } = useCrudToast('Transação');
 const { filters, applyFilters, resetFilters } = useFinanceFilters(props.filters);
 const { goToPage } = usePagination();
 
@@ -49,9 +56,9 @@ watch(() => store.isModalOpen, (open) => {
 });
 
 const modalTitle = computed(() => {
-	if (store.modalMode === 'create') return 'Novo Cartão';
-	if (store.modalMode === 'edit') return 'Editar Cartão';
-	return 'Detalhes do Cartão';
+	if (store.modalMode === 'create') return 'Nova Transação';
+	if (store.modalMode === 'edit') return 'Editar Transação';
+	return 'Detalhes da Transação';
 });
 
 function handleFormSuccess() {
@@ -76,34 +83,35 @@ function handleDelete(uid: string) {
 
 <template>
 	<div class="flex flex-col gap-6 p-6">
-		<PageHeader title="Cartões de Crédito" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
+		<PageHeader title="Transações" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 
-		<DataTable :columns="columns" :data="creditCards as unknown as Record<string, unknown>[]">
-			<template #cell-last_four_digits="{ row }">
-				•••• {{ (row as unknown as CreditCard).last_four_digits }}
+		<DataTable :columns="columns" :data="transactions as unknown as Record<string, unknown>[]">
+			<template #cell-description="{ row }">
+				{{ (row as unknown as Transaction).description || '—' }}
 			</template>
-			<template #cell-card_type="{ row }">
-				<Badge variant="outline">
-					{{ (row as unknown as CreditCard).card_type === 'PHYSICAL' ? 'Físico' : 'Virtual' }}
-				</Badge>
+			<template #cell-amount="{ row }">
+				{{ formatCurrency((row as unknown as Transaction).amount) }}
 			</template>
-			<template #cell-closing_day="{ value }">
-				Dia {{ value }}
+			<template #cell-direction="{ row }">
+				<DirectionBadge :direction="(row as unknown as Transaction).direction" />
 			</template>
-			<template #cell-due_day="{ value }">
-				Dia {{ value }}
+			<template #cell-status="{ row }">
+				<StatusBadge :status="(row as unknown as Transaction).status" />
+			</template>
+			<template #cell-occurred_at="{ row }">
+				{{ formatDate((row as unknown as Transaction).occurred_at) }}
 			</template>
 			<template #cell-actions="{ row }">
 				<div class="flex justify-end gap-1">
-					<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as CreditCard)">
+					<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as Transaction)">
 						<Eye class="size-4" />
 					</Button>
-					<Button variant="ghost" size="icon" @click="store.openEditModal(row as unknown as CreditCard)">
+					<Button variant="ghost" size="icon" @click="store.openEditModal(row as unknown as Transaction)">
 						<Pencil class="size-4" />
 					</Button>
-					<DeleteConfirmPopover :loading="store.deletingUid === (row as unknown as CreditCard).uid" @confirm="handleDelete((row as unknown as CreditCard).uid)">
+					<DeleteConfirmPopover :loading="store.deletingUid === (row as unknown as Transaction).uid" @confirm="handleDelete((row as unknown as Transaction).uid)">
 						<template #trigger>
 							<Button variant="ghost" size="icon">
 								<Trash2 class="size-4" />
@@ -125,9 +133,11 @@ function handleDelete(uid: string) {
 		</div>
 
 		<ModalDialog ref="modalRef" :title="modalTitle" @update:open="(open: boolean) => { if (!open) store.closeModal(); }">
-			<CreditCardForm
+			<TransactionForm
 				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 				:readonly="store.modalMode === 'view'"
+				:accounts="accounts ?? []"
+				:categories="categories ?? []"
 				@success="handleFormSuccess"
 				@cancel="store.closeModal()"
 			/>

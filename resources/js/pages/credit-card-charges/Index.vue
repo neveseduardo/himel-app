@@ -1,12 +1,11 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
-import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
+import { Eye, Plus } from 'lucide-vue-next';
 
-import { destroy, index } from '@/actions/App/Domain/FixedExpense/Controllers/FixedExpensePageController';
-import type { Category } from '@/domain/Category/types/category';
-import FixedExpenseForm from '@/domain/FixedExpense/components/FixedExpenseForm.vue';
-import { useFixedExpenseStore } from '@/domain/FixedExpense/stores/useFixedExpenseStore';
-import type { FixedExpense } from '@/domain/FixedExpense/types/fixed-expense';
+import { index } from '@/actions/App/Domain/CreditCardCharge/Controllers/CreditCardChargePageController';
+import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
+import CreditCardChargeForm from '@/domain/CreditCardCharge/components/CreditCardChargeForm.vue';
+import { useCreditCardChargeStore } from '@/domain/CreditCardCharge/stores/useCreditCardChargeStore';
+import type { CreditCardCharge } from '@/domain/CreditCardCharge/types/credit-card-charge';
 import DataTable from '@/domain/Shared/components/DataTable.vue';
 import FilterBar from '@/domain/Shared/components/FilterBar.vue';
 import ModalDialog from '@/domain/Shared/components/ui/modal/ModalDialog.vue';
@@ -18,28 +17,29 @@ import type { PaginationMeta } from '@/domain/Shared/types/pagination';
 import type { BreadcrumbItem } from '@/types';
 
 const props = defineProps<{
-	fixedExpenses: FixedExpense[];
+	charges: CreditCardCharge[];
 	meta: PaginationMeta;
 	filters: Record<string, string>;
-	categories?: Category[];
+	creditCards: CreditCard[];
 }>();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
-	{ title: 'Financeiro', href: '/finance' },
-	{ title: 'Despesas Fixas', href: index.url() },
+	{ title: 'Financeiro', href: '/' },
+	{ title: 'Compras Cartão', href: index.url() },
 ];
 
 const columns = [
 	{ key: 'description', label: 'Descrição' },
-	{ key: 'amount', label: 'Valor' },
-	{ key: 'due_day', label: 'Dia Venc.' },
-	{ key: 'active', label: 'Status' },
+	{ key: 'purchase_date', label: 'Data da Compra' },
+	{ key: 'amount', label: 'Valor Total' },
+	{ key: 'total_installments', label: 'Parcelas' },
+	{ key: 'credit_card', label: 'Cartão' },
 	{ key: 'actions', label: '' },
 ];
 
-const store = useFixedExpenseStore();
-const { onSuccess, onError } = useCrudToast('Despesa fixa');
+const store = useCreditCardChargeStore();
+const { onSuccess } = useCrudToast('Compra no cartão');
 const { filters, applyFilters, resetFilters } = useFinanceFilters(props.filters);
 const { goToPage } = usePagination();
 
@@ -51,67 +51,48 @@ watch(() => store.isModalOpen, (open) => {
 });
 
 const modalTitle = computed(() => {
-	if (store.modalMode === 'create') return 'Nova Despesa Fixa';
-	if (store.modalMode === 'edit') return 'Editar Despesa Fixa';
-	return 'Detalhes da Despesa Fixa';
+	if (store.modalMode === 'create') return 'Nova Compra';
+	return 'Detalhes da Compra';
 });
-
-function handleFormSuccess() {
-	onSuccess(store.modalMode === 'edit' ? 'update' : 'create');
-	store.closeModal();
-}
-
-function handleDelete(uid: string) {
-	store.deletingUid = uid;
-	router.delete(destroy.url(uid), {
-		onSuccess: () => {
-			store.deletingUid = null;
-			onSuccess('delete');
-		},
-		onError: (errors) => {
-			store.deletingUid = null;
-			onError('delete', errors as Record<string, string>);
-		},
-	});
-}
 
 function handleDialogOpenChange(open: boolean) {
 	if (!open && store.isModalOpen) {
 		store.closeModal();
 	}
 }
+
+function handleFormSuccess() {
+	onSuccess('create');
+	store.closeModal();
+}
 </script>
 
 <template>
 	<div class="flex flex-col gap-6 p-6">
-		<PageHeader title="Despesas Fixas" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
+		<PageHeader title="Compras no Cartão" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 
-		<DataTable :columns="columns" :data="fixedExpenses as unknown as Record<string, unknown>[]">
-			<template #cell-amount="{ row }">
-				{{ formatCurrency((row as unknown as FixedExpense).amount) }}
+		<DataTable :columns="columns" :data="charges as unknown as Record<string, unknown>[]">
+			<template #cell-purchase_date="{ row }">
+				{{ (row as unknown as CreditCardCharge).purchase_date
+					? (row as unknown as CreditCardCharge).purchase_date.substring(0, 10).split('-').reverse().join('/')
+					: '—' }}
 			</template>
-			<template #cell-active="{ row }">
-				<Badge :variant="(row as unknown as FixedExpense).active ? 'default' : 'secondary'">
-					{{ (row as unknown as FixedExpense).active ? 'Ativa' : 'Inativa' }}
-				</Badge>
+			<template #cell-amount="{ row }">
+				{{ formatCurrency((row as unknown as CreditCardCharge).amount) }}
+			</template>
+			<template #cell-total_installments="{ row }">
+				{{ (row as unknown as CreditCardCharge).total_installments }}x
+			</template>
+			<template #cell-credit_card="{ row }">
+				{{ (row as unknown as CreditCardCharge).credit_card?.name ?? '—' }}
 			</template>
 			<template #cell-actions="{ row }">
 				<div class="flex justify-end gap-1">
-					<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as FixedExpense)">
+					<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as CreditCardCharge)">
 						<Eye class="size-4" />
 					</Button>
-					<Button variant="ghost" size="icon" @click="store.openEditModal(row as unknown as FixedExpense)">
-						<Pencil class="size-4" />
-					</Button>
-					<DeleteConfirmPopover :loading="store.deletingUid === (row as unknown as FixedExpense).uid" @confirm="handleDelete((row as unknown as FixedExpense).uid)">
-						<template #trigger>
-							<Button variant="ghost" size="icon">
-								<Trash2 class="size-4" />
-							</Button>
-						</template>
-					</DeleteConfirmPopover>
 				</div>
 			</template>
 		</DataTable>
@@ -127,10 +108,10 @@ function handleDialogOpenChange(open: boolean) {
 		</div>
 
 		<ModalDialog ref="modalRef" :title="modalTitle" @update:open="handleDialogOpenChange">
-			<FixedExpenseForm
+			<CreditCardChargeForm
 				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 				:readonly="store.modalMode === 'view'"
-				:categories="categories ?? []"
+				:credit-cards="creditCards"
 				@success="handleFormSuccess"
 				@cancel="store.closeModal()"
 			/>
