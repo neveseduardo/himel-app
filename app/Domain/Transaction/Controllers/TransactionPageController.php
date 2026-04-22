@@ -27,7 +27,7 @@ class TransactionPageController
         $filters = $request->only(['page', 'per_page', 'status', 'direction', 'source', 'account_uid', 'category_uid', 'date_from', 'date_to', 'search']);
         $result = $this->transactionService->getAllWithFilters($userUid, $filters);
 
-        return Inertia::render('finance/transactions/Index', [
+        return Inertia::render('transactions/Index', [
             'transactions' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
@@ -41,7 +41,7 @@ class TransactionPageController
         try {
             $this->transactionService->create($request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.transactions.index')->with('success', 'Transação criada com sucesso.');
+            return redirect()->route('transactions.index')->with('success', 'Transação criada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to create transaction', ['error' => $e->getMessage()]);
 
@@ -54,7 +54,7 @@ class TransactionPageController
         try {
             $this->transactionService->update($uid, $request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.transactions.index')->with('success', 'Transação atualizada com sucesso.');
+            return redirect()->route('transactions.index')->with('success', 'Transação atualizada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to update transaction', ['error' => $e->getMessage()]);
 
@@ -67,7 +67,7 @@ class TransactionPageController
         try {
             $this->transactionService->delete($uid, $request->user()->uid);
 
-            return redirect()->route('finance.transactions.index')->with('success', 'Transação excluída com sucesso.');
+            return redirect()->route('transactions.index')->with('success', 'Transação excluída com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to delete transaction', ['error' => $e->getMessage()]);
 

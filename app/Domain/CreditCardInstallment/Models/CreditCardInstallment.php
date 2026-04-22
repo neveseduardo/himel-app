@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CreditCardInstallment extends Model
 {
-    protected $table = 'financial_credit_card_installments';
+    protected $table = 'credit_card_installments';
 
     /** @use HasFactory<CreditCardInstallmentFactory> */
     use HasFactory, HasUids;
@@ -26,7 +26,7 @@ class CreditCardInstallment extends Model
     protected $fillable = [
         'uid',
         'credit_card_charge_uid',
-        'financial_transaction_uid',
+        'transaction_uid',
         'installment_number',
         'due_date',
         'amount',
@@ -47,6 +47,6 @@ class CreditCardInstallment extends Model
 
     public function transaction(): BelongsTo
     {
-        return $this->belongsTo(Transaction::class, 'financial_transaction_uid', 'uid');
+        return $this->belongsTo(Transaction::class, 'transaction_uid', 'uid');
     }
 }

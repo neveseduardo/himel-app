@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CreditCard extends Model
 {
-    protected $table = 'financial_credit_cards';
+    protected $table = 'credit_cards';
 
     /** @use HasFactory<CreditCardFactory> */
     use HasFactory, HasUids;

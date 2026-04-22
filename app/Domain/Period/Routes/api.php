@@ -8,4 +8,4 @@ Route::apiResource('periods', PeriodController::class)->parameters(['periods' =>
 Route::get('periods/current', [PeriodController::class, 'current']);
 
 Route::post('periods/{uid}/initialize', [PeriodController::class, 'initialize'])
-    ->name('api.finance.periods.initialize');
+    ->name('api.periods.initialize');

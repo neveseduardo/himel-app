@@ -25,7 +25,7 @@ class FixedExpensePageController
         $filters = $request->only(['page', 'per_page', 'active', 'category_uid', 'search']);
         $result = $this->fixedExpenseService->getAllWithFilters($userUid, $filters);
 
-        return Inertia::render('finance/fixed-expenses/Index', [
+        return Inertia::render('fixed-expenses/Index', [
             'fixedExpenses' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
@@ -38,7 +38,7 @@ class FixedExpensePageController
         try {
             $this->fixedExpenseService->create($request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.fixed-expenses.index')->with('success', 'Despesa fixa criada com sucesso.');
+            return redirect()->route('fixed-expenses.index')->with('success', 'Despesa fixa criada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to create fixed expense', ['error' => $e->getMessage()]);
 
@@ -51,7 +51,7 @@ class FixedExpensePageController
         try {
             $this->fixedExpenseService->update($uid, $request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.fixed-expenses.index')->with('success', 'Despesa fixa atualizada com sucesso.');
+            return redirect()->route('fixed-expenses.index')->with('success', 'Despesa fixa atualizada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to update fixed expense', ['error' => $e->getMessage()]);
 
@@ -64,7 +64,7 @@ class FixedExpensePageController
         try {
             $this->fixedExpenseService->delete($uid, $request->user()->uid);
 
-            return redirect()->route('finance.fixed-expenses.index')->with('success', 'Despesa fixa excluída com sucesso.');
+            return redirect()->route('fixed-expenses.index')->with('success', 'Despesa fixa excluída com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to delete fixed expense', ['error' => $e->getMessage()]);
 

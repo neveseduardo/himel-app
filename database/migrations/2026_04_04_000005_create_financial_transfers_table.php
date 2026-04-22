@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('financial_transfers', function (Blueprint $table) {
+        Schema::create('transfers', function (Blueprint $table) {
             $table->uuid('uid')->primary();
             $table->uuid('user_uid');
             $table->uuid('from_account_uid');
@@ -17,14 +17,14 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
-            $table->foreign('from_account_uid')->references('uid')->on('financial_accounts')->onDelete('cascade');
-            $table->foreign('to_account_uid')->references('uid')->on('financial_accounts')->onDelete('cascade');
+            $table->foreign('from_account_uid')->references('uid')->on('accounts')->onDelete('cascade');
+            $table->foreign('to_account_uid')->references('uid')->on('accounts')->onDelete('cascade');
             $table->index('user_uid');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('financial_transfers');
+        Schema::dropIfExists('transfers');
     }
 };

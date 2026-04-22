@@ -54,7 +54,7 @@ class MarkOverdueTransactionsCommandTest extends TestCase
         $this->artisan('transactions:mark-overdue')
             ->assertSuccessful();
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $transaction->uid,
             'status' => Transaction::STATUS_OVERDUE,
         ]);
@@ -70,7 +70,7 @@ class MarkOverdueTransactionsCommandTest extends TestCase
         $this->artisan('transactions:mark-overdue')
             ->assertSuccessful();
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $transaction->uid,
             'status' => Transaction::STATUS_PENDING,
         ]);
@@ -86,7 +86,7 @@ class MarkOverdueTransactionsCommandTest extends TestCase
         $this->artisan('transactions:mark-overdue')
             ->assertSuccessful();
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $transaction->uid,
             'status' => Transaction::STATUS_PAID,
         ]);
@@ -127,7 +127,7 @@ class MarkOverdueTransactionsCommandTest extends TestCase
         $this->artisan('transactions:mark-overdue')
             ->assertSuccessful();
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $transaction->uid,
             'status' => Transaction::STATUS_PENDING,
         ]);

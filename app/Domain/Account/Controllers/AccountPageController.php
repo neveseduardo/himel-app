@@ -23,7 +23,7 @@ class AccountPageController
         $filters = $request->only(['page', 'per_page', 'type', 'search']);
         $result = $this->accountService->getAllWithFilters($userUid, $filters);
 
-        return Inertia::render('finance/accounts/Index', [
+        return Inertia::render('accounts/Index', [
             'accounts' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
@@ -35,7 +35,7 @@ class AccountPageController
         try {
             $this->accountService->create($request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.accounts.index')->with('success', 'Conta criada com sucesso.');
+            return redirect()->route('accounts.index')->with('success', 'Conta criada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to create account', ['error' => $e->getMessage()]);
 
@@ -48,7 +48,7 @@ class AccountPageController
         try {
             $this->accountService->update($uid, $request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.accounts.index')->with('success', 'Conta atualizada com sucesso.');
+            return redirect()->route('accounts.index')->with('success', 'Conta atualizada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to update account', ['error' => $e->getMessage()]);
 
@@ -61,7 +61,7 @@ class AccountPageController
         try {
             $this->accountService->delete($uid, $request->user()->uid);
 
-            return redirect()->route('finance.accounts.index')->with('success', 'Conta excluída com sucesso.');
+            return redirect()->route('accounts.index')->with('success', 'Conta excluída com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to delete account', ['error' => $e->getMessage()]);
 

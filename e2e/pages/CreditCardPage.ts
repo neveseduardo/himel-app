@@ -20,7 +20,7 @@ export class CreditCardPage {
 	// ---------------------------------------------------------------------------
 
 	async goto(): Promise<void> {
-		await this.page.goto('/finance/credit-cards', {
+		await this.page.goto('/credit-cards', {
 			waitUntil: 'domcontentloaded',
 		});
 		await this.page.locator('table').waitFor({ state: 'visible' });

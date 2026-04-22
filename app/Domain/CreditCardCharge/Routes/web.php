@@ -5,5 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('credit-card-charges', CreditCardChargePageController::class)
     ->parameters(['credit-card-charges' => 'uid'])
-    ->names('finance.credit-card-charges')
+    ->names('credit-card-charges')
     ->except(['show', 'create', 'edit', 'update', 'destroy']);

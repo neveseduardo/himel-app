@@ -52,7 +52,7 @@ class PeriodCreationAndDeletionTest extends TestCase
             ->assertJsonPath('data.month', 6)
             ->assertJsonPath('data.year', 2025);
 
-        $this->assertDatabaseHas('financial_periods', [
+        $this->assertDatabaseHas('periods', [
             'user_uid' => $this->user->uid,
             'month' => 6,
             'year' => 2025,
@@ -153,7 +153,7 @@ class PeriodCreationAndDeletionTest extends TestCase
             ->deleteJson("/api/v1/periods/{$period->uid}");
 
         $response->assertStatus(204);
-        $this->assertDatabaseMissing('financial_periods', ['uid' => $period->uid]);
+        $this->assertDatabaseMissing('periods', ['uid' => $period->uid]);
     }
 
     // 16.5 — Test rejection of deletion with PAID transactions
@@ -184,7 +184,7 @@ class PeriodCreationAndDeletionTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonStructure(['error']);
 
-        $this->assertDatabaseHas('financial_periods', ['uid' => $period->uid]);
+        $this->assertDatabaseHas('periods', ['uid' => $period->uid]);
     }
 
     // 16.6 — Test deletion with unlinking of PENDING/OVERDUE transactions
@@ -225,13 +225,13 @@ class PeriodCreationAndDeletionTest extends TestCase
             ->deleteJson("/api/v1/periods/{$period->uid}");
 
         $response->assertStatus(204);
-        $this->assertDatabaseMissing('financial_periods', ['uid' => $period->uid]);
+        $this->assertDatabaseMissing('periods', ['uid' => $period->uid]);
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $pending->uid,
             'period_uid' => null,
         ]);
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $overdue->uid,
             'period_uid' => null,
         ]);

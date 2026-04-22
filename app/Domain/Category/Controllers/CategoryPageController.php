@@ -23,7 +23,7 @@ class CategoryPageController
         $filters = $request->only(['page', 'per_page', 'direction', 'search']);
         $result = $this->categoryService->getAllWithFilters($userUid, $filters);
 
-        return Inertia::render('finance/categories/Index', [
+        return Inertia::render('categories/Index', [
             'categories' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
@@ -35,7 +35,7 @@ class CategoryPageController
         try {
             $this->categoryService->create($request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.categories.index')->with('success', 'Categoria criada com sucesso.');
+            return redirect()->route('categories.index')->with('success', 'Categoria criada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to create category', ['error' => $e->getMessage()]);
 
@@ -48,7 +48,7 @@ class CategoryPageController
         try {
             $this->categoryService->update($uid, $request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.categories.index')->with('success', 'Categoria atualizada com sucesso.');
+            return redirect()->route('categories.index')->with('success', 'Categoria atualizada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to update category', ['error' => $e->getMessage()]);
 
@@ -61,7 +61,7 @@ class CategoryPageController
         try {
             $this->categoryService->delete($uid, $request->user()->uid);
 
-            return redirect()->route('finance.categories.index')->with('success', 'Categoria excluída com sucesso.');
+            return redirect()->route('categories.index')->with('success', 'Categoria excluída com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to delete category', ['error' => $e->getMessage()]);
 

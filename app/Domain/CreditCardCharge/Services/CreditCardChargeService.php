@@ -121,7 +121,7 @@ class CreditCardChargeService implements CreditCardChargeServiceInterface
 
                     CreditCardInstallment::create([
                         'credit_card_charge_uid' => $charge->uid,
-                        'financial_transaction_uid' => $transactionUid,
+                        'transaction_uid' => $transactionUid,
                         'installment_number' => $i,
                         'due_date' => $dueDate,
                         'amount' => $installmentAmount,

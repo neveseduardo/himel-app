@@ -20,7 +20,7 @@ class CreateDefaultCategoriesListenerTest extends TestCase
         $listener = new CreateDefaultCategoriesListener;
         $listener->handle(new Login('web', $user, false));
 
-        $this->assertDatabaseCount('financial_categories', 12);
+        $this->assertDatabaseCount('categories', 12);
 
         $outflowCategories = Category::where('user_uid', $user->uid)
             ->where('direction', Category::DIRECTION_OUTFLOW)
@@ -62,7 +62,7 @@ class CreateDefaultCategoriesListenerTest extends TestCase
         $listener = new CreateDefaultCategoriesListener;
         $listener->handle(new Login('web', $user, false));
 
-        $this->assertDatabaseCount('financial_categories', 1);
+        $this->assertDatabaseCount('categories', 1);
     }
 
     public function test_all_categories_are_associated_with_the_user(): void

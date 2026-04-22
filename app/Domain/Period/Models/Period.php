@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Period extends Model
 {
-    protected $table = 'financial_periods';
+    protected $table = 'periods';
 
     /** @use HasFactory<PeriodFactory> */
     use HasFactory, HasUids;

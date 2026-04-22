@@ -69,7 +69,7 @@ class PeriodInitializationTest extends TestCase
             'updated_at' => now(),
         ], $overrides);
 
-        DB::table('financial_fixed_expenses')->insert($data);
+        DB::table('fixed_expenses')->insert($data);
 
         return FixedExpense::find($uid);
     }
@@ -113,7 +113,7 @@ class PeriodInitializationTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('data.fixed_created', 2);
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'period_uid' => $period->uid,
             'reference_id' => $expense1->uid,
             'source' => Transaction::SOURCE_FIXED,
@@ -123,7 +123,7 @@ class PeriodInitializationTest extends TestCase
             'category_uid' => $this->category->uid,
         ]);
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'period_uid' => $period->uid,
             'reference_id' => $expense2->uid,
             'source' => Transaction::SOURCE_FIXED,
@@ -143,7 +143,7 @@ class PeriodInitializationTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('data.fixed_created', 1);
 
-        $this->assertDatabaseCount('financial_transactions', 1);
+        $this->assertDatabaseCount('transactions', 1);
     }
 
     // 17.2 — Test initialization with credit card installments (linking and creation)
@@ -162,7 +162,7 @@ class PeriodInitializationTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonPath('data.installments_created', 1);
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'period_uid' => $period->uid,
             'reference_id' => $installment->uid,
             'source' => Transaction::SOURCE_CREDIT_CARD,
@@ -210,9 +210,9 @@ class PeriodInitializationTest extends TestCase
             'paid_at' => null,
         ]);
 
-        DB::table('financial_credit_card_installments')
+        DB::table('credit_card_installments')
             ->where('uid', $installment->uid)
-            ->update(['financial_transaction_uid' => $existingTransaction->uid]);
+            ->update(['transaction_uid' => $existingTransaction->uid]);
 
         $response = $this->actingAs($this->user)
             ->postJson("/api/v1/periods/{$period->uid}/initialize");
@@ -221,12 +221,12 @@ class PeriodInitializationTest extends TestCase
             ->assertJsonPath('data.installments_linked', 1)
             ->assertJsonPath('data.installments_created', 0);
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $existingTransaction->uid,
             'period_uid' => $period->uid,
         ]);
 
-        $this->assertDatabaseCount('financial_transactions', 1);
+        $this->assertDatabaseCount('transactions', 1);
     }
 
     // 17.3 — Test idempotency (re-execution without duplicates)
@@ -249,7 +249,7 @@ class PeriodInitializationTest extends TestCase
             ->assertJsonPath('data.fixed_created', 0)
             ->assertJsonPath('data.skipped', 1);
 
-        $this->assertDatabaseCount('financial_transactions', 1);
+        $this->assertDatabaseCount('transactions', 1);
     }
 
     public function test_initialization_is_idempotent_for_installments(): void
@@ -294,7 +294,7 @@ class PeriodInitializationTest extends TestCase
             ->assertJsonPath('data.installments_linked', 0)
             ->assertJsonPath('data.skipped', 0);
 
-        $this->assertDatabaseCount('financial_transactions', 3);
+        $this->assertDatabaseCount('transactions', 3);
     }
 
     public function test_initialization_summary_counts_skipped_on_rerun(): void
@@ -410,6 +410,6 @@ class PeriodInitializationTest extends TestCase
             ->assertJsonPath('data.fixed_created', 1)
             ->assertJsonPath('data.skipped', 1);
 
-        $this->assertDatabaseCount('financial_transactions', 2);
+        $this->assertDatabaseCount('transactions', 2);
     }
 }

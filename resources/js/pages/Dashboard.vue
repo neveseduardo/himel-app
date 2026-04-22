@@ -6,6 +6,6 @@
 import { router } from '@inertiajs/vue3';
 
 onMounted(() => {
-	router.visit('/finance');
+	router.visit('/periods');
 });
 </script>

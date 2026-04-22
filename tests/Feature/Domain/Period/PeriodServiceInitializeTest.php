@@ -68,7 +68,7 @@ class PeriodServiceInitializeTest extends TestCase
             'updated_at' => now(),
         ], $overrides);
 
-        DB::table('financial_fixed_expenses')->insert($data);
+        DB::table('fixed_expenses')->insert($data);
 
         return FixedExpense::find($uid);
     }
@@ -110,7 +110,7 @@ class PeriodServiceInitializeTest extends TestCase
 
         $this->assertEquals(2, $summary['fixed_created']);
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'period_uid' => $period->uid,
             'reference_id' => $expense1->uid,
             'source' => Transaction::SOURCE_FIXED,
@@ -120,7 +120,7 @@ class PeriodServiceInitializeTest extends TestCase
             'category_uid' => $this->category->uid,
         ]);
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'period_uid' => $period->uid,
             'reference_id' => $expense2->uid,
             'source' => Transaction::SOURCE_FIXED,
@@ -137,7 +137,7 @@ class PeriodServiceInitializeTest extends TestCase
         $summary = $this->service->initializePeriod($period->uid, $this->user->uid);
 
         $this->assertEquals(1, $summary['fixed_created']);
-        $this->assertDatabaseCount('financial_transactions', 1);
+        $this->assertDatabaseCount('transactions', 1);
     }
 
     public function test_fixed_expense_due_date_uses_period_month_year(): void
@@ -232,7 +232,7 @@ class PeriodServiceInitializeTest extends TestCase
         $summary = $this->service->initializePeriod($period->uid, $this->user->uid);
 
         $this->assertEquals(1, $summary['installments_created']);
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'period_uid' => $period->uid,
             'reference_id' => $installment->uid,
             'source' => Transaction::SOURCE_CREDIT_CARD,
@@ -280,23 +280,23 @@ class PeriodServiceInitializeTest extends TestCase
             'paid_at' => null,
         ]);
 
-        // Manually set the financial_transaction_uid in DB
-        DB::table('financial_credit_card_installments')
+        // Manually set the transaction_uid in DB
+        DB::table('credit_card_installments')
             ->where('uid', $installment->uid)
-            ->update(['financial_transaction_uid' => $existingTransaction->uid]);
+            ->update(['transaction_uid' => $existingTransaction->uid]);
 
         $summary = $this->service->initializePeriod($period->uid, $this->user->uid);
 
         $this->assertEquals(1, $summary['installments_linked']);
         $this->assertEquals(0, $summary['installments_created']);
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $existingTransaction->uid,
             'period_uid' => $period->uid,
         ]);
 
         // Should not create a new transaction
-        $this->assertDatabaseCount('financial_transactions', 1);
+        $this->assertDatabaseCount('transactions', 1);
     }
 
     public function test_ignores_paid_installments(): void
@@ -311,7 +311,7 @@ class PeriodServiceInitializeTest extends TestCase
 
         $this->assertEquals(0, $summary['installments_created']);
         $this->assertEquals(0, $summary['installments_linked']);
-        $this->assertDatabaseCount('financial_transactions', 0);
+        $this->assertDatabaseCount('transactions', 0);
     }
 
     public function test_ignores_installments_outside_period_month(): void
@@ -324,7 +324,7 @@ class PeriodServiceInitializeTest extends TestCase
         $summary = $this->service->initializePeriod($period->uid, $this->user->uid);
 
         $this->assertEquals(0, $summary['installments_created']);
-        $this->assertDatabaseCount('financial_transactions', 0);
+        $this->assertDatabaseCount('transactions', 0);
     }
 
     // ---- Task 5.3: Idempotency ----
@@ -340,7 +340,7 @@ class PeriodServiceInitializeTest extends TestCase
         $this->assertEquals(1, $summary1['fixed_created']);
         $this->assertEquals(0, $summary2['fixed_created']);
         $this->assertEquals(1, $summary2['skipped']);
-        $this->assertDatabaseCount('financial_transactions', 1);
+        $this->assertDatabaseCount('transactions', 1);
     }
 
     public function test_idempotent_installments_not_duplicated(): void
@@ -372,7 +372,7 @@ class PeriodServiceInitializeTest extends TestCase
         $summary2 = $this->service->initializePeriod($period->uid, $this->user->uid);
         $this->assertEquals(1, $summary2['fixed_created']);
         $this->assertEquals(1, $summary2['skipped']);
-        $this->assertDatabaseCount('financial_transactions', 2);
+        $this->assertDatabaseCount('transactions', 2);
     }
 
     // ---- Task 5.4: DB::transaction and summary ----
@@ -440,6 +440,6 @@ class PeriodServiceInitializeTest extends TestCase
         $this->assertEquals(2, $summary['fixed_created']);
         $this->assertEquals(1, $summary['installments_created']);
         $this->assertEquals(0, $summary['skipped']);
-        $this->assertDatabaseCount('financial_transactions', 3);
+        $this->assertDatabaseCount('transactions', 3);
     }
 }

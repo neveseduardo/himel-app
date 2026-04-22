@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transaction extends Model
 {
-    protected $table = 'financial_transactions';
+    protected $table = 'transactions';
 
     /** @use HasFactory<TransactionFactory> */
     use HasFactory, HasUids;

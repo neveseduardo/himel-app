@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('financial_periods', function (Blueprint $table) {
+        Schema::create('periods', function (Blueprint $table) {
             $table->uuid('uid')->primary();
             $table->tinyInteger('month');
             $table->smallInteger('year');
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('financial_periods');
+        Schema::dropIfExists('periods');
     }
 };

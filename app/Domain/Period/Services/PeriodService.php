@@ -291,7 +291,7 @@ class PeriodService implements PeriodServiceInterface
                 continue;
             }
 
-            $transactionUid = $installment->financial_transaction_uid;
+            $transactionUid = $installment->transaction_uid;
 
             if ($transactionUid) {
                 $existingTransaction = Transaction::find($transactionUid);
