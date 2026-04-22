@@ -257,13 +257,33 @@ class E2eTestSeeder extends Seeder
         $c6Bank = CreditCard::where('user_uid', $user->uid)->where('name', 'C6 Bank')->first();
 
         $charges = [
-            ['credit_card_uid' => $nubank->uid, 'description' => 'Notebook Dell', 'amount' => 4500.00, 'total_installments' => 12, 'purchase_date' => '2024-03-15'],
-            ['credit_card_uid' => $inter->uid, 'description' => 'Fone Bluetooth', 'amount' => 250.00, 'total_installments' => 3, 'purchase_date' => '2024-02-20'],
-            ['credit_card_uid' => $c6Bank->uid, 'description' => 'Curso Online', 'amount' => 1200.00, 'total_installments' => 6, 'purchase_date' => '2024-01-10'],
+            ['credit_card_uid' => $nubank->uid, 'description' => 'Notebook Dell', 'amount' => 4500.00, 'total_installments' => 12, 'purchase_date' => '2024-03-15', 'due_day' => $nubank->due_day],
+            ['credit_card_uid' => $inter->uid, 'description' => 'Fone Bluetooth', 'amount' => 250.00, 'total_installments' => 3, 'purchase_date' => '2024-02-20', 'due_day' => $inter->due_day],
+            ['credit_card_uid' => $c6Bank->uid, 'description' => 'Curso Online', 'amount' => 1200.00, 'total_installments' => 6, 'purchase_date' => '2024-01-10', 'due_day' => $c6Bank->due_day],
         ];
 
-        foreach ($charges as $charge) {
-            CreditCardCharge::create($charge);
+        foreach ($charges as $chargeData) {
+            $dueDay = $chargeData['due_day'];
+            unset($chargeData['due_day']);
+
+            $charge = CreditCardCharge::create($chargeData);
+
+            $totalCents = (int) round($chargeData['amount'] * 100);
+            $baseCents = intdiv($totalCents, $chargeData['total_installments']);
+            $remainder = $totalCents % $chargeData['total_installments'];
+            $purchaseDate = Carbon::parse($chargeData['purchase_date']);
+
+            for ($i = 1; $i <= $chargeData['total_installments']; $i++) {
+                $installmentCents = $baseCents + ($i === $chargeData['total_installments'] ? $remainder : 0);
+                $dueDate = $purchaseDate->copy()->addMonths($i)->day($dueDay);
+
+                CreditCardInstallment::create([
+                    'credit_card_charge_uid' => $charge->uid,
+                    'installment_number' => $i,
+                    'due_date' => $dueDate,
+                    'amount' => $installmentCents / 100,
+                ]);
+            }
         }
     }
 
@@ -388,41 +408,32 @@ class E2eTestSeeder extends Seeder
             'occurred_at' => Carbon::create(2025, 1, 1),
         ]);
 
-        // 4. CREDIT_CARD OUTFLOW — linked to Notebook Dell installment
+        // 4. CREDIT_CARD OUTFLOW — linked to Notebook Dell installment #10 (due 2025-01-15)
         $notebookCharge = CreditCardCharge::whereHas('creditCard', function ($query) use ($user): void {
             $query->where('user_uid', $user->uid);
         })->where('description', 'Notebook Dell')->first();
 
         if ($notebookCharge) {
-            // Create an installment for the charge if none exists
             $installment = CreditCardInstallment::where('credit_card_charge_uid', $notebookCharge->uid)
-                ->orderBy('installment_number')
+                ->where('installment_number', 10)
                 ->first();
 
-            if (! $installment) {
-                $installmentAmount = round($notebookCharge->amount / $notebookCharge->total_installments, 2);
-                $installment = CreditCardInstallment::create([
-                    'credit_card_charge_uid' => $notebookCharge->uid,
-                    'installment_number' => 1,
-                    'amount' => $installmentAmount,
-                    'due_date' => Carbon::create(2025, 1, 15),
+            if ($installment) {
+                Transaction::create([
+                    'user_uid' => $user->uid,
+                    'account_uid' => $bb->uid,
+                    'category_uid' => $moradiaCategory->uid,
+                    'period_uid' => $janeiro->uid,
+                    'amount' => $installment->amount,
+                    'direction' => Transaction::DIRECTION_OUTFLOW,
+                    'status' => Transaction::STATUS_PENDING,
+                    'source' => Transaction::SOURCE_CREDIT_CARD,
+                    'reference_id' => $installment->uid,
+                    'description' => 'Notebook Dell (10/12)',
+                    'due_date' => $installment->due_date,
+                    'occurred_at' => Carbon::create(2025, 1, 1),
                 ]);
             }
-
-            Transaction::create([
-                'user_uid' => $user->uid,
-                'account_uid' => $bb->uid,
-                'category_uid' => $moradiaCategory->uid,
-                'period_uid' => $janeiro->uid,
-                'amount' => $installment->amount,
-                'direction' => Transaction::DIRECTION_OUTFLOW,
-                'status' => Transaction::STATUS_PENDING,
-                'source' => Transaction::SOURCE_CREDIT_CARD,
-                'reference_id' => $installment->uid,
-                'description' => 'Notebook Dell',
-                'due_date' => Carbon::create(2025, 1, 15),
-                'occurred_at' => Carbon::create(2025, 1, 1),
-            ]);
         }
     }
 }
