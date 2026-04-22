@@ -392,6 +392,41 @@ class PeriodService implements PeriodServiceInterface
         });
     }
 
+    public function getFixedExpensesForPeriod(string $periodUid, string $userUid): array
+    {
+        $transactions = Transaction::where('period_uid', $periodUid)
+            ->forUser($userUid)
+            ->where('source', Transaction::SOURCE_FIXED)
+            ->get();
+
+        if ($transactions->isEmpty()) {
+            return ['items' => [], 'subtotal' => 0];
+        }
+
+        $referenceIds = $transactions->pluck('reference_id')->filter()->unique()->values()->toArray();
+
+        $fixedExpenses = FixedExpense::with('category')
+            ->whereIn('uid', $referenceIds)
+            ->get()
+            ->keyBy('uid');
+
+        $items = $transactions->map(function (Transaction $transaction) use ($fixedExpenses): array {
+            $fixedExpense = $fixedExpenses->get($transaction->reference_id);
+
+            return [
+                'transaction_uid' => $transaction->uid,
+                'description' => $fixedExpense?->name,
+                'amount' => (float) $transaction->amount,
+                'due_day' => $fixedExpense?->due_day,
+                'category_name' => $fixedExpense?->category?->name,
+            ];
+        })->values()->toArray();
+
+        $subtotal = $transactions->sum(fn (Transaction $t): float => (float) $t->amount);
+
+        return ['items' => $items, 'subtotal' => $subtotal];
+    }
+
     public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array
     {
         $page = $filters['page'] ?? 1;
