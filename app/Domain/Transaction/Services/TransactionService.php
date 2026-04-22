@@ -148,25 +148,64 @@ class TransactionService implements TransactionServiceInterface
         }
 
         try {
-            return DB::transaction(function () use ($transaction, $data) {
+            return DB::transaction(function () use ($transaction, $data, $userUid) {
+                // Store old values before updating
                 $oldStatus = $transaction->status;
+                $oldAmount = (float) $transaction->amount;
+                $oldDirection = $transaction->direction;
+
+                // Load account with ownership check
+                $account = Account::where('uid', $transaction->account_uid)
+                    ->where('user_uid', $userUid)
+                    ->first();
+
+                // Validate category direction compatibility (only when category_uid is provided and not empty)
+                if (! empty($data['category_uid'])) {
+                    $direction = $data['direction'] ?? $oldDirection;
+                    $category = Category::where('uid', $data['category_uid'])->first();
+                    if ($category && $category->direction !== $direction) {
+                        throw new \InvalidArgumentException(
+                            'A categoria não corresponde à direção da transação.'
+                        );
+                    }
+                }
 
                 $transaction->update(array_filter($data, fn ($value) => $value !== null));
 
-                if (isset($data['status']) && $data['status'] !== $oldStatus) {
-                    if ($data['status'] === Transaction::STATUS_PAID && $oldStatus !== Transaction::STATUS_PAID) {
-                        $this->updateAccountBalance(
-                            $transaction->account_uid,
-                            $transaction->amount,
-                            $transaction->direction
-                        );
-                    } elseif ($oldStatus === Transaction::STATUS_PAID && $data['status'] !== Transaction::STATUS_PAID) {
-                        $this->updateAccountBalance(
-                            $transaction->account_uid,
-                            $transaction->amount,
-                            $transaction->direction,
-                            true
-                        );
+                $newAmount = (float) $transaction->amount;
+                $newStatus = $transaction->status;
+
+                // Balance logic by direction
+                if ($oldDirection === Transaction::DIRECTION_INFLOW) {
+                    // INFLOW: always adjust balance by the difference
+                    if ($account && $newAmount !== $oldAmount) {
+                        $account->balance += ($newAmount - $oldAmount);
+                        $account->save();
+                    }
+                } else {
+                    // OUTFLOW balance logic
+                    if ($account) {
+                        if ($oldStatus !== Transaction::STATUS_PAID && $newStatus === Transaction::STATUS_PAID) {
+                            // PENDING → PAID: check sufficient balance, then debit
+                            if ($account->balance < $newAmount) {
+                                throw new InsufficientBalanceException($account, $newAmount);
+                            }
+                            $account->balance -= $newAmount;
+                            $account->save();
+                        } elseif ($oldStatus === Transaction::STATUS_PAID && $newStatus !== Transaction::STATUS_PAID) {
+                            // PAID → PENDING: credit the amount back
+                            $account->balance += $oldAmount;
+                            $account->save();
+                        } elseif ($oldStatus === Transaction::STATUS_PAID && $newStatus === Transaction::STATUS_PAID && $newAmount !== $oldAmount) {
+                            // PAID stays PAID but amount changes: adjust by difference
+                            $account->balance += $oldAmount;
+                            if ($account->balance < $newAmount) {
+                                throw new InsufficientBalanceException($account, $newAmount);
+                            }
+                            $account->balance -= $newAmount;
+                            $account->save();
+                        }
+                        // PENDING stays PENDING: no balance change
                     }
                 }
 
@@ -194,14 +233,22 @@ class TransactionService implements TransactionServiceInterface
         }
 
         try {
-            return DB::transaction(function () use ($transaction) {
-                if ($transaction->status === Transaction::STATUS_PAID) {
-                    $this->updateAccountBalance(
-                        $transaction->account_uid,
-                        $transaction->amount,
-                        $transaction->direction,
-                        true
-                    );
+            return DB::transaction(function () use ($transaction, $userUid) {
+                $account = Account::where('uid', $transaction->account_uid)
+                    ->where('user_uid', $userUid)
+                    ->first();
+
+                if ($account) {
+                    if ($transaction->direction === Transaction::DIRECTION_INFLOW) {
+                        // INFLOW: always reverse balance
+                        $account->balance -= $transaction->amount;
+                        $account->save();
+                    } elseif ($transaction->status === Transaction::STATUS_PAID) {
+                        // OUTFLOW + PAID: reverse balance (credit back)
+                        $account->balance += $transaction->amount;
+                        $account->save();
+                    }
+                    // OUTFLOW + PENDING/OVERDUE: no balance change
                 }
 
                 Log::info('Transaction deleted', ['uid' => $transaction->uid]);
@@ -233,19 +280,5 @@ class TransactionService implements TransactionServiceInterface
             'status' => Transaction::STATUS_PENDING,
             'paid_at' => null,
         ], $userUid);
-    }
-
-    private function updateAccountBalance(string $accountUid, float $amount, string $direction, bool $reverse = false): void
-    {
-        $account = Account::where('uid', $accountUid)->first();
-
-        if ($account) {
-            $modifier = $direction === Transaction::DIRECTION_INFLOW ? 1 : -1;
-            if ($reverse) {
-                $modifier *= -1;
-            }
-            $account->balance += $amount * $modifier;
-            $account->save();
-        }
     }
 }

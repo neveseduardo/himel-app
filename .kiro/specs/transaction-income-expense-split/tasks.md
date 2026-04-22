@@ -13,7 +13,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Mensagem formatada com nome da conta, valor necessário e disponível, sugestão de transferência
     - _Requisitos: 7.2, 7.3_
 
-  - [-] 1.2 Modificar TransactionService.create() com lógica de saldo por direção
+  - [x] 1.2 Modificar TransactionService.create() com lógica de saldo por direção
     - Validar ownership da conta (`account_uid` pertence ao `userUid`) com `firstOrFail()`
     - Tornar `category_uid` nullable no create (usar `$data['category_uid'] ?? null`)
     - Tornar `status` e `source` com defaults (`$data['status'] ?? 'PAID'`, `$data['source'] ?? 'MANUAL'`)
@@ -23,7 +23,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Validar compatibilidade de direção da categoria (quando informada)
     - _Requisitos: 4.1, 4.4, 4.5, 5.1, 7.1, 7.4_
 
-  - [~] 1.3 Modificar TransactionService.update() com lógica de saldo por direção
+  - [x] 1.3 Modificar TransactionService.update() com lógica de saldo por direção
     - INFLOW: ajustar saldo pela diferença de valor (novo - antigo)
     - OUTFLOW: tratar transições PENDING→PAID (debitar com check de saldo) e PAID→PENDING (creditar de volta)
     - OUTFLOW: ajustar saldo pela diferença de valor quando status permanece PAID
