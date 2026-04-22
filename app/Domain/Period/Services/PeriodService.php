@@ -4,6 +4,7 @@ namespace App\Domain\Period\Services;
 
 use App\Domain\Account\Models\Account;
 use App\Domain\Category\Models\Category;
+use App\Domain\CreditCardCharge\Models\CreditCardCharge;
 use App\Domain\CreditCardInstallment\Models\CreditCardInstallment;
 use App\Domain\FixedExpense\Models\FixedExpense;
 use App\Domain\Period\Contracts\PeriodServiceInterface;
@@ -269,6 +270,8 @@ class PeriodService implements PeriodServiceInterface
      */
     private function processCreditCardInstallments(Period $period, string $userUid, Account $account, array &$summary): void
     {
+        $this->ensureInstallmentsExist($userUid);
+
         $startOfMonth = Carbon::create($period->year, $period->month, 1)->startOfDay();
         $endOfMonth = $startOfMonth->copy()->endOfMonth()->endOfDay();
 
@@ -336,6 +339,36 @@ class PeriodService implements PeriodServiceInterface
         $clampedDay = min($dueDay, $lastDayOfMonth);
 
         return Carbon::create($year, $month, $clampedDay)->startOfDay();
+    }
+
+    private function ensureInstallmentsExist(string $userUid): void
+    {
+        $chargesWithoutInstallments = CreditCardCharge::whereHas('creditCard', function ($query) use ($userUid) {
+            $query->where('user_uid', $userUid);
+        })
+            ->whereDoesntHave('installments')
+            ->with('creditCard')
+            ->get();
+
+        foreach ($chargesWithoutInstallments as $charge) {
+            $totalCents = (int) round($charge->amount * 100);
+            $baseCents = intdiv($totalCents, $charge->total_installments);
+            $remainder = $totalCents % $charge->total_installments;
+            $purchaseDate = Carbon::parse($charge->purchase_date);
+            $dueDay = $charge->creditCard->due_day;
+
+            for ($i = 1; $i <= $charge->total_installments; $i++) {
+                $installmentCents = $baseCents + ($i === $charge->total_installments ? $remainder : 0);
+                $dueDate = $purchaseDate->copy()->addMonths($i)->day($dueDay);
+
+                CreditCardInstallment::create([
+                    'credit_card_charge_uid' => $charge->uid,
+                    'installment_number' => $i,
+                    'due_date' => $dueDate,
+                    'amount' => $installmentCents / 100,
+                ]);
+            }
+        }
     }
 
     private function getDefaultOutflowCategoryUid(string $userUid): string

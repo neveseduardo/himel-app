@@ -509,4 +509,106 @@ class PeriodExpensesInstallmentsTest extends TestCase
         $this->assertEqualsWithDelta(3000.00, $result['total_inflow'], 0.01);
         $this->assertEqualsWithDelta(2200.00, $result['total_outflow'], 0.01);
     }
+
+    // =========================================================================
+    // 9.5 — ensureInstallmentsExist (auto-generate missing installments)
+    // =========================================================================
+
+    public function test_initialize_period_auto_generates_installments_for_charge_with_zero_installments(): void
+    {
+        $card = CreditCard::create([
+            'user_uid' => $this->user->uid,
+            'name' => 'Nubank',
+            'card_type' => CreditCard::CARD_TYPE_PHYSICAL,
+            'due_day' => 15,
+        ]);
+
+        // Create charge with NO installments (simulating import/direct DB insert)
+        $charge = CreditCardCharge::create([
+            'credit_card_uid' => $card->uid,
+            'amount' => 300.00,
+            'description' => 'PICHAU INFORMÁTICA',
+            'total_installments' => 3,
+            'purchase_date' => '2025-05-01',
+        ]);
+
+        // Confirm zero installments before
+        $this->assertSame(0, $charge->installments()->count());
+
+        // Period for July 2025 — installment 2 due on 2025-07-15
+        $period = $this->createPeriod(7, 2025);
+
+        $summary = $this->service->initializePeriod($period->uid, $this->user->uid);
+
+        // Installments should have been auto-generated
+        $this->assertSame(3, $charge->installments()->count());
+
+        // Verify installment amounts use cent-based division (300.00 / 3 = 100.00 each)
+        $installments = $charge->installments()->orderBy('installment_number')->get();
+        $this->assertEqualsWithDelta(100.00, (float) $installments[0]->amount, 0.01);
+        $this->assertEqualsWithDelta(100.00, (float) $installments[1]->amount, 0.01);
+        $this->assertEqualsWithDelta(100.00, (float) $installments[2]->amount, 0.01);
+
+        // Verify due dates: purchase_date + i months, day = due_day
+        $this->assertSame('2025-06-15', $installments[0]->due_date->toDateString());
+        $this->assertSame('2025-07-15', $installments[1]->due_date->toDateString());
+        $this->assertSame('2025-08-15', $installments[2]->due_date->toDateString());
+
+        // Installment 2 (July) should have created a CREDIT_CARD transaction for this period
+        $this->assertGreaterThanOrEqual(1, $summary['installments_created']);
+
+        $transaction = Transaction::where('period_uid', $period->uid)
+            ->where('source', Transaction::SOURCE_CREDIT_CARD)
+            ->first();
+
+        $this->assertNotNull($transaction);
+        $this->assertEqualsWithDelta(100.00, (float) $transaction->amount, 0.01);
+    }
+
+    public function test_ensure_installments_handles_remainder_on_last_installment(): void
+    {
+        $card = CreditCard::create([
+            'user_uid' => $this->user->uid,
+            'name' => 'Inter',
+            'card_type' => CreditCard::CARD_TYPE_PHYSICAL,
+            'due_day' => 10,
+        ]);
+
+        // 100.00 / 3 = 33.33, 33.33, 33.34 (remainder on last)
+        $charge = CreditCardCharge::create([
+            'credit_card_uid' => $card->uid,
+            'amount' => 100.00,
+            'description' => 'Compra com resto',
+            'total_installments' => 3,
+            'purchase_date' => '2025-05-01',
+        ]);
+
+        $period = $this->createPeriod(6, 2025);
+
+        $this->service->initializePeriod($period->uid, $this->user->uid);
+
+        $installments = $charge->installments()->orderBy('installment_number')->get();
+        $this->assertCount(3, $installments);
+
+        // 10000 cents / 3 = 3333 base, remainder 1
+        $this->assertEqualsWithDelta(33.33, (float) $installments[0]->amount, 0.01);
+        $this->assertEqualsWithDelta(33.33, (float) $installments[1]->amount, 0.01);
+        $this->assertEqualsWithDelta(33.34, (float) $installments[2]->amount, 0.01);
+    }
+
+    public function test_ensure_installments_skips_charges_that_already_have_installments(): void
+    {
+        $chain = $this->createCreditCardChain(
+            ['name' => 'Nubank', 'due_day' => 15],
+            ['description' => 'Existing charge', 'total_installments' => 3, 'amount' => 300.00],
+            ['installment_number' => 1, 'amount' => 100.00, 'due_date' => Carbon::create(2025, 6, 15)]
+        );
+
+        $period = $this->createPeriod(6, 2025);
+
+        $this->service->initializePeriod($period->uid, $this->user->uid);
+
+        // Should still have only 1 installment (the original), not regenerated
+        $this->assertSame(1, $chain['charge']->installments()->count());
+    }
 }
