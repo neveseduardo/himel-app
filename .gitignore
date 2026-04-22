@@ -24,7 +24,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.nova
-/.vscode
 /.zed
 
 # E2E Testing
