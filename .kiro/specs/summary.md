@@ -252,3 +252,36 @@ Enriquecimento da página Show do Period com despesas fixas, parcelas de cartão
 - `resources/js/domain/Period/types/period.ts` — 6 novas interfaces + PeriodSummary expandido
 - `resources/js/pages/periods/Show.vue` — 3 novas seções + resumo expandido + null handling
 - `tests/Feature/PeriodExpensesInstallmentsTest.php` — 14 testes PHPUnit
+
+---
+
+## Spec: Pages Header Standardization
+
+Padronização do componente `PageHeader.vue` para servir como cabeçalho unificado em todas as páginas da aplicação, substituindo a API rígida (props `buttonLabel`/`buttonIcon` + emit `action`) por uma API flexível baseada em props e slots.
+
+### Requisitos
+- Prop `title` (required) e `breadcrumbs?` (optional `BreadcrumbItem[]`)
+- Slot `#back` para botão de voltar (lado esquerdo, antes do título)
+- Slot `#actions` para botões de ação (lado direito, alinhado à direita, condicional)
+- Remoção da API antiga (`buttonLabel`, `buttonIcon`, `@action`)
+- Migração de 8 Index pages e 1 Show page (periods/Show.vue)
+- Consistência visual mantida
+
+### Decisões de Design
+- Breadcrumbs renderizam acima da title row (mesmo padrão do `AppSidebarHeader.vue`)
+- Slot `#back` dentro do flex container à esquerda com `gap-3`
+- Slot `#actions` condicional via `v-if="$slots.actions"` para não renderizar container vazio
+- `defineSlots` para tipagem type-safe dos slots
+- Sem PBT — refatoração pura de UI sem lógica de negócio
+
+### Tasks Concluídas (12/12)
+1. Refatoração do `PageHeader.vue` (nova API com props/slots)
+2-9. Migração das 8 Index pages (accounts, categories, credit-cards, credit-card-charges, fixed-expenses, periods, transactions, transfers)
+10. Checkpoint — lint e type-check OK
+11. Migração do `periods/Show.vue` (caso especial com `#back` + 3 botões de ação)
+12. Checkpoint final — lint e type-check OK
+
+### Artefatos Alterados
+- `resources/js/domain/Shared/components/PageHeader.vue` — nova API com `title`, `breadcrumbs?`, `#back`, `#actions`
+- 8 Index pages migradas para nova API (accounts, categories, credit-cards, credit-card-charges, fixed-expenses, periods, transactions, transfers)
+- `resources/js/pages/periods/Show.vue` — migrado para nova API com `#back` e `#actions` slots
