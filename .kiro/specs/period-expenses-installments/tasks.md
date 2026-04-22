@@ -6,11 +6,11 @@
 - [x] 1.2 Implementar `getFixedExpensesForPeriod` no `PeriodService`: buscar transações FIXED do período, resolver reference_id → FixedExpense (com category), retornar items + subtotal, tratar referências inválidas com campos nulos
 - [x] 1.3 Implementar `getInstallmentsForPeriod` no `PeriodService`: buscar transações CREDIT_CARD do período, resolver reference_id → CreditCardInstallment (com charge.creditCard), retornar items com installment_number/total_installments + subtotal, tratar referências inválidas
 - [x] 1.4 Implementar `getCardBreakdownForPeriod` no `PeriodService`: agrupar parcelas por cartão de crédito, retornar cards[] com nome e total por cartão + grand_total
-- [-] 1.5 Estender `getByUidWithSummary` no `PeriodService`: adicionar subtotais por source (total_fixed_expenses, total_credit_card_installments, total_manual, total_transfer) ao retorno existente
+- [x] 1.5 Estender `getByUidWithSummary` no `PeriodService`: adicionar subtotais por source (total_fixed_expenses, total_credit_card_installments, total_manual, total_transfer) ao retorno existente
 
 ## Tarefa 2: Backend — Atualizar PeriodPageController::show
 
-- [~] 2.1 Chamar os novos métodos do PeriodService no método `show` do `PeriodPageController` e passar os dados como props Inertia adicionais (fixed_expenses, installments, card_breakdown, summary expandido)
+- [-] 2.1 Chamar os novos métodos do PeriodService no método `show` do `PeriodPageController` e passar os dados como props Inertia adicionais (fixed_expenses, installments, card_breakdown, summary expandido)
 
 ## Tarefa 3: Frontend — Tipos TypeScript
 

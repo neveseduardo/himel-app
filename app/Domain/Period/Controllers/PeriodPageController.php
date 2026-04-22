@@ -71,18 +71,29 @@ class PeriodPageController
         $accounts = $this->accountService->getAll($userUid);
         $categories = $this->categoryService->getAll($userUid);
 
+        $fixedExpenses = $this->periodService->getFixedExpensesForPeriod($uid, $userUid);
+        $installments = $this->periodService->getInstallmentsForPeriod($uid, $userUid);
+        $cardBreakdown = $this->periodService->getCardBreakdownForPeriod($uid, $userUid);
+
         return Inertia::render('periods/Show', [
             'period' => $periodSummary['period'],
             'summary' => [
                 'total_inflow' => $periodSummary['total_inflow'],
                 'total_outflow' => $periodSummary['total_outflow'],
                 'balance' => $periodSummary['balance'],
+                'total_fixed_expenses' => $periodSummary['total_fixed_expenses'],
+                'total_credit_card_installments' => $periodSummary['total_credit_card_installments'],
+                'total_manual' => $periodSummary['total_manual'],
+                'total_transfer' => $periodSummary['total_transfer'],
             ],
             'transactions' => $transactions['data'],
             'meta' => $transactions['meta'],
             'filters' => $filters,
             'accounts' => $accounts,
             'categories' => $categories,
+            'fixed_expenses' => $fixedExpenses,
+            'installments' => $installments,
+            'card_breakdown' => $cardBreakdown,
         ]);
     }
 
