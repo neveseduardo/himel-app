@@ -109,25 +109,25 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Gerenciar estado dos modais localmente (refs `inflowModalOpen`, `outflowModalOpen`)
     - _Requisito: 8.6_
 
-- [ ] 7. Checkpoint — Verificar frontend
+- [x] 7. Checkpoint — Verificar frontend
   - Garantir que todos os testes existentes passam, perguntar ao usuário se houver dúvidas.
 
 - [ ] 8. Testes unitários PHPUnit para validação condicional
-  - [ ] 8.1 Testes para StoreTransactionRequest
+  - [x] 8.1 Testes para StoreTransactionRequest
     - Testar que OUTFLOW rejeita payload sem `category_uid`, `status`, `source`
     - Testar que INFLOW aceita payload com apenas `account_uid`, `amount`, `direction`, `occurred_at`
     - Testar que `prepareForValidation()` aplica defaults `status=PAID` e `source=MANUAL` para INFLOW
     - Testar que INFLOW aceita campos opcionais quando presentes
     - _Requisitos: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7_
 
-  - [ ] 8.2 Testes para UpdateTransactionRequest
+  - [x] 8.2 Testes para UpdateTransactionRequest
     - Testar validação condicional na atualização para INFLOW e OUTFLOW
     - Testar detecção de direção da transação existente quando não enviada no payload
     - Testar `prepareForValidation()` aplica defaults para INFLOW
     - _Requisitos: 6.1, 6.2, 6.3, 6.4_
 
 - [ ] 9. Testes unitários PHPUnit para lógica de saldo
-  - [ ] 9.1 Testes para TransactionService.create()
+  - [x] 9.1 Testes para TransactionService.create()
     - Testar INFLOW credita saldo imediatamente
     - Testar OUTFLOW PAID debita saldo
     - Testar OUTFLOW PENDING não altera saldo
@@ -135,7 +135,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Testar rejeição quando conta não pertence ao usuário
     - _Requisitos: 4.1, 4.5, 5.1, 7.1, 7.4_
 
-  - [ ] 9.2 Testes para TransactionService.update()
+  - [x] 9.2 Testes para TransactionService.update()
     - Testar INFLOW ajusta saldo pela diferença de valor
     - Testar OUTFLOW transição PENDING→PAID debita saldo
     - Testar OUTFLOW transição PAID→PENDING credita saldo de volta
