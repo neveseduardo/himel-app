@@ -397,17 +397,17 @@ test.describe('Transaction Deletion', () => {
 	});
 
 	test('deleted transaction removed from DataTable', async () => {
-		await transactionPage.search('Salário Mensal');
+		await transactionPage.search('Conta de Luz');
 
-		const rowBefore = await transactionPage.getRowByDescription('Salário Mensal');
+		const rowBefore = await transactionPage.getRowByDescription('Conta de Luz');
 		await expect(rowBefore).toBeVisible();
 
-		await transactionPage.clickDeleteButton('Salário Mensal');
+		await transactionPage.clickDeleteButton('Conta de Luz');
 		await transactionPage.confirmDelete();
 		await transactionPage.waitForToast('Transação excluído(a) com sucesso!');
 
 		await transactionPage.page.locator('table').waitFor({ state: 'visible' });
-		await transactionPage.search('Salário Mensal');
+		await transactionPage.search('Conta de Luz');
 
 		const emptyState = await transactionPage.getEmptyState();
 		await expect(emptyState).toBeVisible();

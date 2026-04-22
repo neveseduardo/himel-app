@@ -306,8 +306,6 @@ function handleDetachAll() {
 					</p>
 				</CardContent>
 			</Card>
-
-
 		</div>
 
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -395,7 +393,7 @@ function handleDetachAll() {
 		</div>
 
 		<!-- 14.3 — Transaction filters -->
-		<div class="flex flex-wrap items-end gap-3">
+		<div class="flex flex-wrap items-end gap-4">
 			<div class="min-w-[150px]">
 				<label class="mb-1 block text-sm font-medium text-muted-foreground">Status</label>
 				<Select v-model="filters.status">

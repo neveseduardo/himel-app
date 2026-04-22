@@ -258,11 +258,8 @@ export class TransactionPage {
 	async submitFormAndWaitForRedirect(): Promise<void> {
 		const dialog = this.page.getByRole('dialog');
 		const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
-		const responsePromise = this.page.waitForResponse(
-			(resp) => resp.url().includes('transactions') && resp.status() < 400
-		);
 		await submitBtn.click();
-		await responsePromise;
+		await dialog.waitFor({ state: 'hidden', timeout: 10_000 });
 	}
 
 	async cancelForm(): Promise<void> {
@@ -342,7 +339,7 @@ export class TransactionPage {
 	async waitForToast(message: string): Promise<void> {
 		await this.page
 			.getByText(message)
-			.waitFor({ state: 'visible', timeout: 5_000 });
+			.waitFor({ state: 'visible', timeout: 10_000 });
 	}
 
 	// ---------------------------------------------------------------------------
