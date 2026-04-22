@@ -362,6 +362,10 @@ class PeriodService implements PeriodServiceInterface
         $totals = Transaction::where('period_uid', $period->uid)
             ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) as total_inflow', [Transaction::DIRECTION_INFLOW])
             ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) as total_outflow', [Transaction::DIRECTION_OUTFLOW])
+            ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_fixed_expenses', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_FIXED])
+            ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_credit_card_installments', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_CREDIT_CARD])
+            ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_manual', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_MANUAL])
+            ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_transfer', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_TRANSFER])
             ->first();
 
         $totalInflow = (float) $totals->total_inflow;
@@ -372,6 +376,10 @@ class PeriodService implements PeriodServiceInterface
             'total_inflow' => $totalInflow,
             'total_outflow' => $totalOutflow,
             'balance' => $totalInflow - $totalOutflow,
+            'total_fixed_expenses' => (float) $totals->total_fixed_expenses,
+            'total_credit_card_installments' => (float) $totals->total_credit_card_installments,
+            'total_manual' => (float) $totals->total_manual,
+            'total_transfer' => (float) $totals->total_transfer,
         ];
     }
 
