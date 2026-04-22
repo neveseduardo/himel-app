@@ -3,6 +3,7 @@
 namespace App\Domain\Transaction\Controllers;
 
 use App\Domain\Transaction\Contracts\TransactionServiceInterface;
+use App\Domain\Transaction\Exceptions\InsufficientBalanceException;
 use App\Domain\Transaction\Requests\StoreTransactionRequest;
 use App\Domain\Transaction\Requests\UpdateTransactionRequest;
 use App\Domain\Transaction\Resources\TransactionResource;
@@ -34,6 +35,11 @@ class TransactionController
             $transaction = $this->transactionService->create($request->validated(), $userUid);
 
             return response()->json(['data' => new TransactionResource($transaction)], 201);
+        } catch (InsufficientBalanceException $e) {
+            return response()->json([
+                'error' => 'Saldo insuficiente.',
+                'message' => $e->getMessage(),
+            ], 422);
         } catch (\Throwable $e) {
             Log::error('Failed to create transaction', [
                 'user_uid' => $request->user()->uid,
@@ -71,6 +77,11 @@ class TransactionController
             }
 
             return response()->json(['data' => new TransactionResource($transaction)]);
+        } catch (InsufficientBalanceException $e) {
+            return response()->json([
+                'error' => 'Saldo insuficiente.',
+                'message' => $e->getMessage(),
+            ], 422);
         } catch (\Throwable $e) {
             Log::error('Failed to update transaction', [
                 'uid' => $uid,

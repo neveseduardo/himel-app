@@ -5,6 +5,7 @@ namespace App\Domain\Transaction\Controllers;
 use App\Domain\Account\Contracts\AccountServiceInterface;
 use App\Domain\Category\Contracts\CategoryServiceInterface;
 use App\Domain\Transaction\Contracts\TransactionServiceInterface;
+use App\Domain\Transaction\Exceptions\InsufficientBalanceException;
 use App\Domain\Transaction\Requests\StoreTransactionRequest;
 use App\Domain\Transaction\Requests\UpdateTransactionRequest;
 use Illuminate\Http\RedirectResponse;
@@ -42,6 +43,8 @@ class TransactionPageController
             $this->transactionService->create($request->validated(), $request->user()->uid);
 
             return redirect()->route('transactions.index')->with('success', 'Transação criada com sucesso.');
+        } catch (InsufficientBalanceException $e) {
+            return back()->withErrors(['amount' => $e->getMessage()]);
         } catch (\Throwable $e) {
             Log::error('Failed to create transaction', ['error' => $e->getMessage()]);
 
@@ -55,6 +58,8 @@ class TransactionPageController
             $this->transactionService->update($uid, $request->validated(), $request->user()->uid);
 
             return redirect()->route('transactions.index')->with('success', 'Transação atualizada com sucesso.');
+        } catch (InsufficientBalanceException $e) {
+            return back()->withErrors(['amount' => $e->getMessage()]);
         } catch (\Throwable $e) {
             Log::error('Failed to update transaction', ['error' => $e->getMessage()]);
 

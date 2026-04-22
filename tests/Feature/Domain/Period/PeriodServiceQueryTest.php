@@ -204,7 +204,7 @@ class PeriodServiceQueryTest extends TestCase
         $this->assertCount(2, $result['data']);
         $this->assertEquals(2, $result['meta']['total']);
         $this->assertEquals(1, $result['meta']['current_page']);
-        $this->assertEquals(10, $result['meta']['per_page']);
+        $this->assertEquals(2, $result['meta']['per_page']);
     }
 
     public function test_get_transactions_for_period_returns_empty_for_no_transactions(): void
@@ -300,7 +300,7 @@ class PeriodServiceQueryTest extends TestCase
         $this->assertCount(1, $result['data']);
     }
 
-    public function test_get_transactions_for_period_supports_pagination(): void
+    public function test_get_transactions_for_period_returns_all_without_pagination(): void
     {
         $period = $this->createPeriod();
 
@@ -308,22 +308,12 @@ class PeriodServiceQueryTest extends TestCase
             $this->createTransaction($period, ['amount' => ($i + 1) * 100]);
         }
 
-        $page1 = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid, [
-            'per_page' => 2,
-            'page' => 1,
-        ]);
+        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid);
 
-        $page2 = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid, [
-            'per_page' => 2,
-            'page' => 2,
-        ]);
-
-        $this->assertCount(2, $page1['data']);
-        $this->assertCount(2, $page2['data']);
-        $this->assertEquals(5, $page1['meta']['total']);
-        $this->assertEquals(3, $page1['meta']['last_page']);
-        $this->assertEquals(1, $page1['meta']['current_page']);
-        $this->assertEquals(2, $page2['meta']['current_page']);
+        $this->assertCount(5, $result['data']);
+        $this->assertEquals(5, $result['meta']['total']);
+        $this->assertEquals(1, $result['meta']['last_page']);
+        $this->assertEquals(1, $result['meta']['current_page']);
     }
 
     public function test_get_transactions_for_period_excludes_other_user_transactions(): void
@@ -358,14 +348,18 @@ class PeriodServiceQueryTest extends TestCase
         $this->assertEquals(100.00, $result['data'][0]->amount);
     }
 
-    public function test_get_transactions_for_period_caps_per_page_at_100(): void
+    public function test_get_transactions_for_period_ignores_pagination_params(): void
     {
         $period = $this->createPeriod();
+
+        $this->createTransaction($period, ['amount' => 100.00]);
 
         $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid, [
             'per_page' => 500,
         ]);
 
-        $this->assertEquals(100, $result['meta']['per_page']);
+        $this->assertCount(1, $result['data']);
+        $this->assertEquals(1, $result['meta']['total']);
+        $this->assertEquals(1, $result['meta']['last_page']);
     }
 }

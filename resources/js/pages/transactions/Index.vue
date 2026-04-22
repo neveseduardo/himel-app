@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
-import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
+import { ChevronDown, Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 
 import { destroy, index } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
 import type { Account } from '@/domain/Account/types/account';
@@ -15,6 +15,7 @@ import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters
 import { usePagination } from '@/domain/Shared/composables/usePagination';
 import { formatCurrency, formatDate } from '@/domain/Shared/services/format';
 import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import InflowTransactionForm from '@/domain/Transaction/components/InflowTransactionForm.vue';
 import TransactionForm from '@/domain/Transaction/components/TransactionForm.vue';
 import { useTransactionStore } from '@/domain/Transaction/stores/useTransactionStore';
 import type { Transaction } from '@/domain/Transaction/types/transaction';
@@ -47,22 +48,35 @@ const { onSuccess, onError } = useCrudToast('Transação');
 const { filters, applyFilters, resetFilters } = useFinanceFilters(props.filters);
 const { goToPage } = usePagination();
 
-const modalRef = ref<InstanceType<typeof ModalDialog> | null>(null);
+const inflowModalRef = ref<InstanceType<typeof ModalDialog> | null>(null);
+const outflowModalRef = ref<InstanceType<typeof ModalDialog> | null>(null);
 
-watch(() => store.isModalOpen, (open) => {
-	if (open) modalRef.value?.openDialog();
-	else modalRef.value?.closeDialog();
+watch(() => store.inflowModalOpen, (open) => {
+	if (open) inflowModalRef.value?.openDialog();
+	else inflowModalRef.value?.closeDialog();
 });
 
-const modalTitle = computed(() => {
-	if (store.modalMode === 'create') return 'Nova Transação';
-	if (store.modalMode === 'edit') return 'Editar Transação';
-	return 'Detalhes da Transação';
+watch(() => store.outflowModalOpen, (open) => {
+	if (open) outflowModalRef.value?.openDialog();
+	else outflowModalRef.value?.closeDialog();
+});
+
+const inflowModalTitle = computed(() => {
+	if (store.modalMode === 'create') return 'Nova Entrada';
+	if (store.modalMode === 'edit') return 'Editar Entrada';
+	return 'Detalhes da Entrada';
+});
+
+const outflowModalTitle = computed(() => {
+	if (store.modalMode === 'create') return 'Nova Saída';
+	if (store.modalMode === 'edit') return 'Editar Saída';
+	return 'Detalhes da Saída';
 });
 
 function handleFormSuccess() {
 	onSuccess(store.modalMode === 'edit' ? 'update' : 'create');
-	store.closeModal();
+	store.closeInflowModal();
+	store.closeOutflowModal();
 }
 
 function handleDelete(uid: string) {
@@ -88,10 +102,23 @@ function handleDelete(uid: string) {
 
 		<PageHeader title="Transações" :breadcrumbs="breadcrumbs">
 			<template #actions>
-				<Button size="sm" @click="store.openCreateModal()">
-					<Plus class="size-4" />
-					Criar
-				</Button>
+				<DropdownMenu>
+					<DropdownMenuTrigger as-child>
+						<Button size="sm">
+							<Plus class="size-4" />
+							Nova Transação
+							<ChevronDown class="ml-1 size-3" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuItem @click="store.openCreateInflowModal()">
+							Entrada
+						</DropdownMenuItem>
+						<DropdownMenuItem @click="store.openCreateOutflowModal()">
+							Saída
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 			</template>
 		</PageHeader>
 
@@ -142,14 +169,23 @@ function handleDelete(uid: string) {
 			</Button>
 		</div>
 
-		<ModalDialog ref="modalRef" :title="modalTitle" @update:open="(open: boolean) => { if (!open) store.closeModal(); }">
+		<ModalDialog ref="inflowModalRef" :title="inflowModalTitle" @update:open="(open: boolean) => { if (!open) store.closeInflowModal(); }">
+			<InflowTransactionForm
+				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
+				:accounts="accounts ?? []"
+				@success="handleFormSuccess"
+				@cancel="store.closeInflowModal()"
+			/>
+		</ModalDialog>
+
+		<ModalDialog ref="outflowModalRef" :title="outflowModalTitle" @update:open="(open: boolean) => { if (!open) store.closeOutflowModal(); }">
 			<TransactionForm
 				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 				:readonly="store.modalMode === 'view'"
 				:accounts="accounts ?? []"
 				:categories="categories ?? []"
 				@success="handleFormSuccess"
-				@cancel="store.closeModal()"
+				@cancel="store.closeOutflowModal()"
 			/>
 		</ModalDialog>
 	</div>

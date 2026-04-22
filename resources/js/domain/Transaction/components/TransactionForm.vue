@@ -36,7 +36,7 @@ const initialValues = computed(() => ({
 	account_uid: props.item?.account?.uid ?? '',
 	category_uid: props.item?.category?.uid ?? '',
 	amount: props.item?.amount ?? 0,
-	direction: props.item?.direction ?? 'OUTFLOW',
+	direction: 'OUTFLOW',
 	status: props.item?.status ?? 'PENDING',
 	source: props.item?.source ?? 'MANUAL',
 	description: props.item?.description ?? '',
@@ -97,7 +97,7 @@ const initialValues = computed(() => ({
 					</ValidatedField>
 				</div>
 
-				<div class="grid gap-4 md:grid-cols-3">
+				<div class="grid gap-4 md:grid-cols-2">
 					<ValidatedField name="amount" label="Valor">
 						<template #default="{ field }">
 							<Input
@@ -107,28 +107,6 @@ const initialValues = computed(() => ({
 								min="0.01"
 								:disabled="props.readonly"
 							/>
-						</template>
-					</ValidatedField>
-
-					<ValidatedField name="direction" label="Direção">
-						<template #default="{ field, handleChange }">
-							<Select
-								:model-value="field.value as string"
-								:disabled="props.readonly"
-								@update:model-value="handleChange"
-							>
-								<SelectTrigger>
-									<SelectValue />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="INFLOW">
-										Entrada
-									</SelectItem>
-									<SelectItem value="OUTFLOW">
-										Saída
-									</SelectItem>
-								</SelectContent>
-							</Select>
 						</template>
 					</ValidatedField>
 

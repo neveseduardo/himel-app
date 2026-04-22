@@ -2,14 +2,21 @@ import type { Locator, Page } from '@playwright/test';
 
 export interface TransactionFormData {
 	account_uid: string;
-	category_uid: string;
+	category_uid?: string;
 	amount: number;
-	direction: 'INFLOW' | 'OUTFLOW';
-	status: 'PENDING' | 'PAID';
+	direction?: 'INFLOW' | 'OUTFLOW';
+	status?: 'PENDING' | 'PAID';
 	description: string;
 	occurred_at: string;
-	due_date: string;
-	paid_at: string;
+	due_date?: string;
+	paid_at?: string;
+}
+
+export interface InflowTransactionFormData {
+	account_uid: string;
+	amount: number;
+	description: string;
+	occurred_at: string;
 }
 
 export class TransactionPage {
@@ -125,9 +132,21 @@ export class TransactionPage {
 	// CRUD Modal interactions
 	// ---------------------------------------------------------------------------
 
-	async clickCreateButton(): Promise<void> {
-		await this.page.getByRole('button', { name: 'Criar' }).click();
+	async clickCreateOutflowButton(): Promise<void> {
+		await this.page.getByRole('button', { name: 'Nova Transação' }).click();
+		await this.page.getByRole('menuitem', { name: 'Saída' }).click();
 		await this.page.getByRole('dialog').waitFor({ state: 'visible' });
+	}
+
+	async clickCreateInflowButton(): Promise<void> {
+		await this.page.getByRole('button', { name: 'Nova Transação' }).click();
+		await this.page.getByRole('menuitem', { name: 'Entrada' }).click();
+		await this.page.getByRole('dialog').waitFor({ state: 'visible' });
+	}
+
+	/** @deprecated Use clickCreateOutflowButton() — kept for backward compatibility */
+	async clickCreateButton(): Promise<void> {
+		await this.clickCreateOutflowButton();
 	}
 
 	async clickEditButton(desc: string): Promise<void> {
@@ -184,23 +203,13 @@ export class TransactionPage {
 		// amount — number input
 		await dialog.locator('[name="amount"]').fill(String(data.amount));
 
-		// direction — third Select (nth 2)
-		if (data.direction) {
-			const directionMap: Record<string, string> = {
-				INFLOW: 'Entrada',
-				OUTFLOW: 'Saída',
-			};
-			await dialog.getByRole('combobox').nth(2).click();
-			await this.page.getByRole('option', { name: directionMap[data.direction] }).click();
-		}
-
-		// status — fourth Select (nth 3)
+		// status — third Select (nth 2) — direction was removed from OUTFLOW form
 		if (data.status) {
 			const statusMap: Record<string, string> = {
 				PENDING: 'Pendente',
 				PAID: 'Pago',
 			};
-			await dialog.getByRole('combobox').nth(3).click();
+			await dialog.getByRole('combobox').nth(2).click();
 			await this.page.getByRole('option', { name: statusMap[data.status] }).click();
 		}
 
@@ -221,10 +230,36 @@ export class TransactionPage {
 		}
 	}
 
+	async fillInflowForm(data: InflowTransactionFormData): Promise<void> {
+		const dialog = this.page.getByRole('dialog');
+
+		// account_uid — only Select in inflow form
+		if (data.account_uid) {
+			await dialog.getByRole('combobox').nth(0).click();
+			await this.page.getByRole('option', { name: data.account_uid }).click();
+		}
+
+		// amount — number input
+		await dialog.locator('[name="amount"]').fill(String(data.amount));
+
+		// description — text input
+		await dialog.locator('[name="description"]').fill(data.description);
+
+		// occurred_at — date input
+		await dialog.locator('[name="occurred_at"]').fill(data.occurred_at);
+	}
+
 	async submitForm(): Promise<void> {
 		const dialog = this.page.getByRole('dialog');
 		const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
 		await submitBtn.click();
+	}
+
+	async submitFormAndWaitForRedirect(): Promise<void> {
+		const dialog = this.page.getByRole('dialog');
+		const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
+		await submitBtn.click();
+		await dialog.waitFor({ state: 'hidden', timeout: 10_000 });
 	}
 
 	async cancelForm(): Promise<void> {
@@ -242,8 +277,7 @@ export class TransactionPage {
 		const comboboxMap: Record<string, number> = {
 			account_uid: 0,
 			category_uid: 1,
-			direction: 2,
-			status: 3,
+			status: 2,
 		};
 
 		if (field in comboboxMap) {
@@ -259,8 +293,7 @@ export class TransactionPage {
 		const comboboxMap: Record<string, number> = {
 			account_uid: 0,
 			category_uid: 1,
-			direction: 2,
-			status: 3,
+			status: 2,
 		};
 
 		if (field in comboboxMap) {
@@ -306,7 +339,7 @@ export class TransactionPage {
 	async waitForToast(message: string): Promise<void> {
 		await this.page
 			.getByText(message)
-			.waitFor({ state: 'visible', timeout: 5_000 });
+			.waitFor({ state: 'visible', timeout: 10_000 });
 	}
 
 	// ---------------------------------------------------------------------------
@@ -318,7 +351,6 @@ export class TransactionPage {
 			account_uid: 'Conta',
 			category_uid: 'Categoria',
 			amount: 'Valor',
-			direction: 'Direção',
 			status: 'Status',
 			description: 'Descrição',
 			occurred_at: 'Data',

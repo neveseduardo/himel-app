@@ -554,9 +554,6 @@ class PeriodService implements PeriodServiceInterface
 
     public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array
     {
-        $page = $filters['page'] ?? 1;
-        $perPage = min($filters['per_page'] ?? 10, 100);
-
         $query = Transaction::where('period_uid', $periodUid)
             ->forUser($userUid)
             ->with(['account', 'category']);
@@ -567,18 +564,15 @@ class PeriodService implements PeriodServiceInterface
 
         $query->orderBy('due_date', 'asc')->orderBy('created_at', 'desc');
 
-        $total = $query->count();
-        $items = $query->skip(($page - 1) * $perPage)->take($perPage)->get();
-
-        $paginator = new LengthAwarePaginator($items, $total, $perPage, $page);
+        $items = $query->get();
 
         return [
-            'data' => $paginator->items(),
+            'data' => $items->all(),
             'meta' => [
-                'current_page' => $paginator->currentPage(),
-                'per_page' => $paginator->perPage(),
-                'total' => $paginator->total(),
-                'last_page' => $paginator->lastPage(),
+                'current_page' => 1,
+                'per_page' => $items->count(),
+                'total' => $items->count(),
+                'last_page' => 1,
             ],
         ];
     }

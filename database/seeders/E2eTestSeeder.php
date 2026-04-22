@@ -360,7 +360,7 @@ class E2eTestSeeder extends Seeder
         $alimentacaoCategory = Category::where('user_uid', $user->uid)->where('name', 'Alimentação')->first();
         $moradiaCategory = Category::where('user_uid', $user->uid)->where('name', 'Moradia')->first();
 
-        // 1. MANUAL INFLOW — Salário
+        // 1. MANUAL INFLOW — Salário Janeiro
         Transaction::create([
             'user_uid' => $user->uid,
             'account_uid' => $bb->uid,
@@ -370,12 +370,12 @@ class E2eTestSeeder extends Seeder
             'direction' => Transaction::DIRECTION_INFLOW,
             'status' => Transaction::STATUS_PENDING,
             'source' => Transaction::SOURCE_MANUAL,
-            'description' => 'Salário',
+            'description' => 'Salário Janeiro',
             'due_date' => Carbon::create(2025, 1, 5),
             'occurred_at' => Carbon::create(2025, 1, 1),
         ]);
 
-        // 2. MANUAL OUTFLOW — Supermercado
+        // 2. MANUAL OUTFLOW — Supermercado Janeiro
         Transaction::create([
             'user_uid' => $user->uid,
             'account_uid' => $bb->uid,
@@ -385,7 +385,7 @@ class E2eTestSeeder extends Seeder
             'direction' => Transaction::DIRECTION_OUTFLOW,
             'status' => Transaction::STATUS_PENDING,
             'source' => Transaction::SOURCE_MANUAL,
-            'description' => 'Supermercado',
+            'description' => 'Supermercado Janeiro',
             'due_date' => Carbon::create(2025, 1, 10),
             'occurred_at' => Carbon::create(2025, 1, 1),
         ]);

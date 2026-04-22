@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { ArrowLeft, CheckCircle, Play, Plus, Trash2, X } from 'lucide-vue-next';
+import { ArrowLeft, CheckCircle, ChevronDown, Play, Plus, Trash2, X } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 
 import { detachTransactions, index, initialize, show } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
@@ -13,9 +13,9 @@ import DirectionBadge from '@/domain/Shared/components/DirectionBadge.vue';
 import StatusBadge from '@/domain/Shared/components/StatusBadge.vue';
 import ModalDialog from '@/domain/Shared/components/ui/modal/ModalDialog.vue';
 import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters';
-import { usePagination } from '@/domain/Shared/composables/usePagination';
 import { formatCurrency, formatDate } from '@/domain/Shared/services/format';
 import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import InflowTransactionForm from '@/domain/Transaction/components/InflowTransactionForm.vue';
 import TransactionForm from '@/domain/Transaction/components/TransactionForm.vue';
 import type { Transaction } from '@/domain/Transaction/types/transaction';
 import type { BreadcrumbItem } from '@/types';
@@ -41,7 +41,15 @@ const breadcrumbs: BreadcrumbItem[] = [
 	{ title: `${monthNames[props.period.month]} ${props.period.year}`, href: show.url(props.period.uid) },
 ];
 
-const columns = [
+const inflowColumns = [
+	{ key: 'description', label: 'Descrição' },
+	{ key: 'account', label: 'Conta' },
+	{ key: 'amount', label: 'Valor' },
+	{ key: 'occurred_at', label: 'Data' },
+	{ key: 'actions', label: '' },
+];
+
+const outflowColumns = [
 	{ key: 'description', label: 'Descrição' },
 	{ key: 'category', label: 'Categoria' },
 	{ key: 'account', label: 'Conta' },
@@ -52,7 +60,6 @@ const columns = [
 ];
 
 const { filters } = useFinanceFilters(props.filters);
-const { goToPage } = usePagination();
 
 const initializing = ref(false);
 const payingUid = ref<string | null>(null);
@@ -130,7 +137,8 @@ const outflowSubtotal = computed(() =>
 );
 
 // 7.3 — Create transaction modal
-const createModalRef = ref<InstanceType<typeof ModalDialog> | null>(null);
+const inflowCreateModalRef = ref<InstanceType<typeof ModalDialog> | null>(null);
+const outflowCreateModalRef = ref<InstanceType<typeof ModalDialog> | null>(null);
 
 const periodDate = computed(() => {
 	const month = String(props.period.month).padStart(2, '0');
@@ -138,7 +146,8 @@ const periodDate = computed(() => {
 });
 
 function handleCreateSuccess() {
-	createModalRef.value?.closeDialog();
+	inflowCreateModalRef.value?.closeDialog();
+	outflowCreateModalRef.value?.closeDialog();
 }
 
 // 7.4 — Detach all transactions
@@ -176,8 +185,8 @@ function handleDetachAll() {
 				<AlertDialog>
 					<AlertDialogTrigger as-child>
 						<Button variant="destructive" size="sm">
-							<Trash2 class="mr-2 size-4" />
-							Remover Todas as Transações
+							<Trash2 class="size-4" />
+							Remover Transações
 						</Button>
 					</AlertDialogTrigger>
 					<AlertDialogContent>
@@ -195,19 +204,32 @@ function handleDetachAll() {
 						</AlertDialogFooter>
 					</AlertDialogContent>
 				</AlertDialog>
-				<Button size="sm" @click="createModalRef?.openDialog()">
-					<Plus class="mr-2 size-4" />
-					Nova Transação
-				</Button>
+				<DropdownMenu>
+					<DropdownMenuTrigger as-child>
+						<Button size="sm" variant="outline">
+							<Plus class="size-4" />
+							Nova Transação
+							<ChevronDown class="size-3" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuItem @click="inflowCreateModalRef?.openDialog()">
+							Entrada
+						</DropdownMenuItem>
+						<DropdownMenuItem @click="outflowCreateModalRef?.openDialog()">
+							Saída
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 				<Button size="sm" :disabled="initializing" @click="handleInitialize">
-					<Play class="mr-2 size-4" />
-					{{ initializing ? 'Inicializando...' : 'Inicializar Período' }}
+					<Play class="size-4" />
+					{{ initializing ? 'Inicializando...' : ' Processar Período' }}
 				</Button>
 			</template>
 		</PageHeader>
 
 		<!-- 14.1 — Financial summary cards -->
-		<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
 			<Card>
 				<CardHeader class="pb-2">
 					<CardTitle class="text-sm font-medium text-muted-foreground">
@@ -220,6 +242,7 @@ function handleDetachAll() {
 					</p>
 				</CardContent>
 			</Card>
+
 			<Card>
 				<CardHeader class="pb-2">
 					<CardTitle class="text-sm font-medium text-muted-foreground">
@@ -250,6 +273,27 @@ function handleDetachAll() {
 					</div>
 				</CardContent>
 			</Card>
+
+			<Card>
+				<CardHeader class="pb-2">
+					<CardTitle class="text-lg font-semibold">
+						Resumo por Cartão
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<div class="space-y-2">
+						<div v-for="card in cardBreakdown.cards" :key="card.credit_card_uid" class="flex items-center justify-between">
+							<span class="text-sm">{{ card.credit_card_name }}</span>
+							<span class="text-sm font-medium">{{ formatCurrency(card.total) }}</span>
+						</div>
+					</div>
+				</CardContent>
+				<CardFooter class="flex justify-between border-t pt-4">
+					<span class="text-sm font-semibold">Total</span>
+					<span class="text-sm font-bold">{{ formatCurrency(cardBreakdown.grand_total) }}</span>
+				</CardFooter>
+			</Card>
+
 			<Card>
 				<CardHeader class="pb-2">
 					<CardTitle class="text-sm font-medium text-muted-foreground">
@@ -280,44 +324,45 @@ function handleDetachAll() {
 						</p>
 					</template>
 					<template v-else>
-						<Table>
-							<TableHeader>
-								<TableRow>
-									<TableHead>Nome</TableHead>
-									<TableHead>Valor</TableHead>
-									<TableHead>Categoria</TableHead>
-									<TableHead>Vencimento</TableHead>
-								</TableRow>
-							</TableHeader>
-							<TableBody>
-								<TableRow v-for="item in fixedExpenses.items" :key="item.transaction_uid">
-									<TableCell>{{ item.description ?? '—' }}</TableCell>
-									<TableCell>{{ formatCurrency(item.amount) }}</TableCell>
-									<TableCell>{{ item.category_name ?? '—' }}</TableCell>
-									<TableCell>{{ item.due_day ?? '—' }}</TableCell>
-								</TableRow>
-							</TableBody>
-						</Table>
+						<div class="max-h-80 overflow-y-auto">
+							<Table>
+								<TableHeader>
+									<TableRow>
+										<TableHead>Nome</TableHead>
+										<TableHead>Valor</TableHead>
+										<TableHead>Categoria</TableHead>
+										<TableHead>Vencimento</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									<TableRow v-for="item in fixedExpenses.items" :key="item.transaction_uid">
+										<TableCell>{{ item.description ?? '—' }}</TableCell>
+										<TableCell>{{ formatCurrency(item.amount) }}</TableCell>
+										<TableCell>{{ item.category_name ?? '—' }}</TableCell>
+										<TableCell>{{ item.due_day ?? '—' }}</TableCell>
+									</TableRow>
+								</TableBody>
+							</Table>
+						</div>
 					</template>
 				</CardContent>
 			</Card>
 
-			<div class="grid gap-4">
-				<!-- Parcelas de Cartão section -->
-				<Card>
-					<CardHeader class="flex flex-row items-center justify-between pb-2">
-						<CardTitle class="text-lg font-semibold">
-							Parcelas de Cartão
-						</CardTitle>
-						<span class="text-lg font-bold text-muted-foreground">{{ formatCurrency(installments.subtotal) }}</span>
-					</CardHeader>
-					<CardContent>
-						<template v-if="installments.items.length === 0">
-							<p class="py-4 text-center text-sm text-muted-foreground">
-								Nenhuma parcela de cartão neste período.
-							</p>
-						</template>
-						<template v-else>
+			<Card>
+				<CardHeader class="flex flex-row items-center justify-between pb-2">
+					<CardTitle class="text-lg font-semibold">
+						Parcelas de Cartão
+					</CardTitle>
+					<span class="text-lg font-bold text-muted-foreground">{{ formatCurrency(installments.subtotal) }}</span>
+				</CardHeader>
+				<CardContent>
+					<template v-if="installments.items.length === 0">
+						<p class="py-4 text-center text-sm text-muted-foreground">
+							Nenhuma parcela de cartão neste período.
+						</p>
+					</template>
+					<template v-else>
+						<div class="max-h-80 overflow-y-auto">
 							<Table>
 								<TableHeader>
 									<TableRow>
@@ -341,35 +386,14 @@ function handleDetachAll() {
 									</TableRow>
 								</TableBody>
 							</Table>
-						</template>
-					</CardContent>
-				</Card>
-
-				<!-- Resumo por Cartão section -->
-				<Card v-if="cardBreakdown.cards.length > 0">
-					<CardHeader class="pb-2">
-						<CardTitle class="text-lg font-semibold">
-							Resumo por Cartão
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div class="space-y-2">
-							<div v-for="card in cardBreakdown.cards" :key="card.credit_card_uid" class="flex items-center justify-between">
-								<span class="text-sm">{{ card.credit_card_name }}</span>
-								<span class="text-sm font-medium">{{ formatCurrency(card.total) }}</span>
-							</div>
 						</div>
-					</CardContent>
-					<CardFooter class="flex justify-between border-t pt-4">
-						<span class="text-sm font-semibold">Total</span>
-						<span class="text-sm font-bold">{{ formatCurrency(cardBreakdown.grand_total) }}</span>
-					</CardFooter>
-				</Card>
-			</div>
+					</template>
+				</CardContent>
+			</Card>
 		</div>
 
 		<!-- 14.3 — Transaction filters -->
-		<div class="flex flex-wrap items-end gap-3">
+		<div class="flex flex-wrap items-end gap-4">
 			<div class="min-w-[150px]">
 				<label class="mb-1 block text-sm font-medium text-muted-foreground">Status</label>
 				<Select v-model="filters.status">
@@ -447,134 +471,121 @@ function handleDetachAll() {
 			</div>
 		</div>
 
-		<!-- 7.2 — Entradas (INFLOW) section -->
-		<Card>
-			<CardHeader class="flex flex-row items-center justify-between pb-2">
-				<CardTitle class="text-lg font-semibold text-green-700 dark:text-green-400">
-					Entradas
-				</CardTitle>
-				<span class="text-lg font-bold text-green-600 dark:text-green-400">{{ formatCurrency(inflowSubtotal) }}</span>
-			</CardHeader>
-			<CardContent>
-				<template v-if="inflowTransactions.length === 0">
-					<p class="py-4 text-center text-sm text-muted-foreground">
-						Nenhuma entrada neste período.
-					</p>
-				</template>
-				<template v-else>
-					<DataTable :columns="columns" :data="inflowTransactions as unknown as Record<string, unknown>[]">
-						<template #cell-description="{ row }">
-							{{ (row as unknown as Transaction).description || '—' }}
-						</template>
-						<template #cell-category="{ row }">
-							{{ (row as unknown as Transaction).category?.name || '—' }}
-						</template>
-						<template #cell-account="{ row }">
-							{{ (row as unknown as Transaction).account?.name || '—' }}
-						</template>
-						<template #cell-amount="{ row }">
-							<DirectionBadge :direction="(row as unknown as Transaction).direction" />
-							{{ formatCurrency((row as unknown as Transaction).amount) }}
-						</template>
-						<template #cell-due_date="{ row }">
-							{{ (row as unknown as Transaction).due_date ? formatDate((row as unknown as Transaction).due_date!) : '—' }}
-						</template>
-						<template #cell-status="{ row }">
-							<StatusBadge :status="(row as unknown as Transaction).status" />
-						</template>
-						<template #cell-actions="{ row }">
-							<div class="flex justify-end gap-1">
-								<Button
-									v-if="(row as unknown as Transaction).status !== 'PAID'"
-									variant="ghost"
-									size="icon"
-									:disabled="payingUid === (row as unknown as Transaction).uid"
-									title="Marcar como pago"
-									@click="handleMarkAsPaid(row as unknown as Transaction)"
-								>
-									<CheckCircle class="size-4" />
-								</Button>
-							</div>
-						</template>
-					</DataTable>
-				</template>
-			</CardContent>
-		</Card>
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+			<!-- 7.2 — Entradas (INFLOW) section -->
+			<Card>
+				<CardHeader class="flex flex-row items-center justify-between pb-2">
+					<CardTitle class="text-lg font-semibold text-green-700 dark:text-green-400">
+						Entradas
+					</CardTitle>
+					<span class="text-lg font-bold text-green-600 dark:text-green-400">{{ formatCurrency(inflowSubtotal) }}</span>
+				</CardHeader>
+				<CardContent>
+					<template v-if="inflowTransactions.length === 0">
+						<p class="py-4 text-center text-sm text-muted-foreground">
+							Nenhuma entrada neste período.
+						</p>
+					</template>
+					<template v-else>
+						<div class="max-h-80 overflow-y-auto">
+							<DataTable :columns="inflowColumns" :data="inflowTransactions as unknown as Record<string, unknown>[]">
+								<template #cell-description="{ row }">
+									{{ (row as unknown as Transaction).description || '—' }}
+								</template>
+								<template #cell-account="{ row }">
+									{{ (row as unknown as Transaction).account?.name || '—' }}
+								</template>
+								<template #cell-amount="{ row }">
+									<DirectionBadge :direction="(row as unknown as Transaction).direction" />
+									{{ formatCurrency((row as unknown as Transaction).amount) }}
+								</template>
+								<template #cell-occurred_at="{ row }">
+									{{ (row as unknown as Transaction).occurred_at ? formatDate((row as unknown as Transaction).occurred_at!) : '—' }}
+								</template>
+								<template #cell-actions />
+							</DataTable>
+						</div>
+					</template>
+				</CardContent>
+			</Card>
 
-		<!-- 7.2 — Saídas (OUTFLOW) section -->
-		<Card>
-			<CardHeader class="flex flex-row items-center justify-between pb-2">
-				<CardTitle class="text-lg font-semibold text-red-700 dark:text-red-400">
-					Saídas
-				</CardTitle>
-				<span class="text-lg font-bold text-red-600 dark:text-red-400">{{ formatCurrency(outflowSubtotal) }}</span>
-			</CardHeader>
-			<CardContent>
-				<template v-if="outflowTransactions.length === 0">
-					<p class="py-4 text-center text-sm text-muted-foreground">
-						Nenhuma saída neste período.
-					</p>
-				</template>
-				<template v-else>
-					<DataTable :columns="columns" :data="outflowTransactions as unknown as Record<string, unknown>[]">
-						<template #cell-description="{ row }">
-							{{ (row as unknown as Transaction).description || '—' }}
-						</template>
-						<template #cell-category="{ row }">
-							{{ (row as unknown as Transaction).category?.name || '—' }}
-						</template>
-						<template #cell-account="{ row }">
-							{{ (row as unknown as Transaction).account?.name || '—' }}
-						</template>
-						<template #cell-amount="{ row }">
-							<DirectionBadge :direction="(row as unknown as Transaction).direction" />
-							{{ formatCurrency((row as unknown as Transaction).amount) }}
-						</template>
-						<template #cell-due_date="{ row }">
-							{{ (row as unknown as Transaction).due_date ? formatDate((row as unknown as Transaction).due_date!) : '—' }}
-						</template>
-						<template #cell-status="{ row }">
-							<StatusBadge :status="(row as unknown as Transaction).status" />
-						</template>
-						<template #cell-actions="{ row }">
-							<div class="flex justify-end gap-1">
-								<Button
-									v-if="(row as unknown as Transaction).status !== 'PAID'"
-									variant="ghost"
-									size="icon"
-									:disabled="payingUid === (row as unknown as Transaction).uid"
-									title="Marcar como pago"
-									@click="handleMarkAsPaid(row as unknown as Transaction)"
-								>
-									<CheckCircle class="size-4" />
-								</Button>
-							</div>
-						</template>
-					</DataTable>
-				</template>
-			</CardContent>
-		</Card>
-
-		<!-- Pagination -->
-		<div v-if="meta.last_page > 1" class="flex justify-center gap-2">
-			<Button variant="outline" size="sm" :disabled="meta.current_page <= 1" @click="goToPage(show.url(period.uid), meta.current_page - 1, filters)">
-				Anterior
-			</Button>
-			<span class="flex items-center px-3 text-sm">{{ meta.current_page }} / {{ meta.last_page }}</span>
-			<Button variant="outline" size="sm" :disabled="meta.current_page >= meta.last_page" @click="goToPage(show.url(period.uid), meta.current_page + 1, filters)">
-				Próxima
-			</Button>
+			<!-- 7.2 — Saídas (OUTFLOW) section -->
+			<Card>
+				<CardHeader class="flex flex-row items-center justify-between pb-2">
+					<CardTitle class="text-lg font-semibold text-red-700 dark:text-red-400">
+						Saídas
+					</CardTitle>
+					<span class="text-lg font-bold text-red-600 dark:text-red-400">{{ formatCurrency(outflowSubtotal) }}</span>
+				</CardHeader>
+				<CardContent>
+					<template v-if="outflowTransactions.length === 0">
+						<p class="py-4 text-center text-sm text-muted-foreground">
+							Nenhuma saída neste período.
+						</p>
+					</template>
+					<template v-else>
+						<div class="max-h-80 overflow-y-auto">
+							<DataTable :columns="outflowColumns" :data="outflowTransactions as unknown as Record<string, unknown>[]">
+								<template #cell-description="{ row }">
+									{{ (row as unknown as Transaction).description || '—' }}
+								</template>
+								<template #cell-category="{ row }">
+									{{ (row as unknown as Transaction).category?.name || '—' }}
+								</template>
+								<template #cell-account="{ row }">
+									{{ (row as unknown as Transaction).account?.name || '—' }}
+								</template>
+								<template #cell-amount="{ row }">
+									<DirectionBadge :direction="(row as unknown as Transaction).direction" />
+									{{ formatCurrency((row as unknown as Transaction).amount) }}
+								</template>
+								<template #cell-due_date="{ row }">
+									{{ (row as unknown as Transaction).due_date ? formatDate((row as unknown as Transaction).due_date!) : '—' }}
+								</template>
+								<template #cell-status="{ row }">
+									<StatusBadge :status="(row as unknown as Transaction).status" />
+								</template>
+								<template #cell-actions="{ row }">
+									<div class="flex justify-end gap-1">
+										<Button
+											v-if="(row as unknown as Transaction).status !== 'PAID'"
+											variant="ghost"
+											size="icon"
+											:disabled="payingUid === (row as unknown as Transaction).uid"
+											title="Marcar como pago"
+											@click="handleMarkAsPaid(row as unknown as Transaction)"
+										>
+											<CheckCircle class="size-4" />
+										</Button>
+									</div>
+								</template>
+							</DataTable>
+						</div>
+					</template>
+				</CardContent>
+			</Card>
 		</div>
 
-		<!-- 7.3 — Create transaction modal -->
-		<ModalDialog ref="createModalRef" title="Nova Transação" description="Criar transação vinculada ao período">
+		<!-- 7.3 — Create inflow transaction modal -->
+		<ModalDialog ref="inflowCreateModalRef" title="Nova Entrada" description="Criar entrada vinculada ao período">
+			<InflowTransactionForm
+				:accounts="accounts"
+				:period-uid="period.uid"
+				:period-date="periodDate"
+				@success="handleCreateSuccess"
+				@cancel="inflowCreateModalRef?.closeDialog()"
+			/>
+		</ModalDialog>
+
+		<!-- 7.3 — Create outflow transaction modal -->
+		<ModalDialog ref="outflowCreateModalRef" title="Nova Saída" description="Criar saída vinculada ao período">
 			<TransactionForm
 				:accounts="accounts"
 				:categories="categories"
 				:period-uid="period.uid"
 				:period-date="periodDate"
 				@success="handleCreateSuccess"
-				@cancel="createModalRef?.closeDialog()"
+				@cancel="outflowCreateModalRef?.closeDialog()"
 			/>
 		</ModalDialog>
 	</div>
