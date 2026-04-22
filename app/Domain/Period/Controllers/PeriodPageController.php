@@ -91,9 +91,9 @@ class PeriodPageController
             'filters' => $filters,
             'accounts' => $accounts,
             'categories' => $categories,
-            'fixed_expenses' => $fixedExpenses,
+            'fixedExpenses' => $fixedExpenses,
             'installments' => $installments,
-            'card_breakdown' => $cardBreakdown,
+            'cardBreakdown' => $cardBreakdown,
         ]);
     }
 

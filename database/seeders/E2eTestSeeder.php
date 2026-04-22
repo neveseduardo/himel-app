@@ -8,9 +8,11 @@ use App\Domain\CreditCard\Models\CreditCard;
 use App\Domain\CreditCardCharge\Models\CreditCardCharge;
 use App\Domain\CreditCardInstallment\Models\CreditCardInstallment;
 use App\Domain\FixedExpense\Models\FixedExpense;
+use App\Domain\Period\Models\Period;
 use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Transfer\Models\Transfer;
 use App\Domain\User\Models\User;
+use Carbon\Carbon;
 use Database\Factories\AccountFactory;
 use Database\Factories\CreditCardChargeFactory;
 use Database\Factories\CreditCardFactory;
@@ -59,6 +61,10 @@ class E2eTestSeeder extends Seeder
         $this->resetFixedExpenses($user);
         $this->seedNamedFixedExpenses($user);
         $this->seedFactoryFixedExpenses($user);
+
+        $this->resetPeriods($user);
+        $this->seedNamedPeriods($user);
+        $this->seedPeriodTransactions($user);
     }
 
     private function ensureDefaultCategories(User $user): void
@@ -303,5 +309,120 @@ class E2eTestSeeder extends Seeder
             'user_uid' => $user->uid,
             'category_uid' => $category->uid,
         ]);
+    }
+
+    private function resetPeriods(User $user): void
+    {
+        $periodUids = Period::where('user_uid', $user->uid)->pluck('uid');
+
+        Transaction::whereIn('period_uid', $periodUids)->update(['period_uid' => null]);
+        Period::where('user_uid', $user->uid)->delete();
+    }
+
+    private function seedNamedPeriods(User $user): void
+    {
+        $periods = [
+            ['month' => 1, 'year' => 2025],
+            ['month' => 2, 'year' => 2025],
+            ['month' => 3, 'year' => 2025],
+        ];
+
+        foreach ($periods as $period) {
+            Period::create(array_merge($period, ['user_uid' => $user->uid]));
+        }
+    }
+
+    private function seedPeriodTransactions(User $user): void
+    {
+        $janeiro = Period::where('user_uid', $user->uid)->where('month', 1)->where('year', 2025)->first();
+        $bb = Account::where('user_uid', $user->uid)->where('name', 'Conta Corrente BB')->first();
+        $salarioCategory = Category::where('user_uid', $user->uid)->where('name', 'Salário')->first();
+        $alimentacaoCategory = Category::where('user_uid', $user->uid)->where('name', 'Alimentação')->first();
+        $moradiaCategory = Category::where('user_uid', $user->uid)->where('name', 'Moradia')->first();
+
+        // 1. MANUAL INFLOW — Salário
+        Transaction::create([
+            'user_uid' => $user->uid,
+            'account_uid' => $bb->uid,
+            'category_uid' => $salarioCategory->uid,
+            'period_uid' => $janeiro->uid,
+            'amount' => 5000.00,
+            'direction' => Transaction::DIRECTION_INFLOW,
+            'status' => Transaction::STATUS_PENDING,
+            'source' => Transaction::SOURCE_MANUAL,
+            'description' => 'Salário',
+            'due_date' => Carbon::create(2025, 1, 5),
+            'occurred_at' => Carbon::create(2025, 1, 1),
+        ]);
+
+        // 2. MANUAL OUTFLOW — Supermercado
+        Transaction::create([
+            'user_uid' => $user->uid,
+            'account_uid' => $bb->uid,
+            'category_uid' => $alimentacaoCategory->uid,
+            'period_uid' => $janeiro->uid,
+            'amount' => 300.00,
+            'direction' => Transaction::DIRECTION_OUTFLOW,
+            'status' => Transaction::STATUS_PENDING,
+            'source' => Transaction::SOURCE_MANUAL,
+            'description' => 'Supermercado',
+            'due_date' => Carbon::create(2025, 1, 10),
+            'occurred_at' => Carbon::create(2025, 1, 1),
+        ]);
+
+        // 3. FIXED OUTFLOW — linked to Aluguel fixed expense
+        $aluguel = FixedExpense::where('user_uid', $user->uid)->where('name', 'Aluguel')->first();
+
+        Transaction::create([
+            'user_uid' => $user->uid,
+            'account_uid' => $bb->uid,
+            'category_uid' => $moradiaCategory->uid,
+            'period_uid' => $janeiro->uid,
+            'amount' => 1500.00,
+            'direction' => Transaction::DIRECTION_OUTFLOW,
+            'status' => Transaction::STATUS_PENDING,
+            'source' => Transaction::SOURCE_FIXED,
+            'reference_id' => $aluguel->uid,
+            'description' => 'Aluguel',
+            'due_date' => Carbon::create(2025, 1, 10),
+            'occurred_at' => Carbon::create(2025, 1, 1),
+        ]);
+
+        // 4. CREDIT_CARD OUTFLOW — linked to Notebook Dell installment
+        $notebookCharge = CreditCardCharge::whereHas('creditCard', function ($query) use ($user): void {
+            $query->where('user_uid', $user->uid);
+        })->where('description', 'Notebook Dell')->first();
+
+        if ($notebookCharge) {
+            // Create an installment for the charge if none exists
+            $installment = CreditCardInstallment::where('credit_card_charge_uid', $notebookCharge->uid)
+                ->orderBy('installment_number')
+                ->first();
+
+            if (! $installment) {
+                $installmentAmount = round($notebookCharge->amount / $notebookCharge->total_installments, 2);
+                $installment = CreditCardInstallment::create([
+                    'credit_card_charge_uid' => $notebookCharge->uid,
+                    'installment_number' => 1,
+                    'amount' => $installmentAmount,
+                    'due_date' => Carbon::create(2025, 1, 15),
+                ]);
+            }
+
+            Transaction::create([
+                'user_uid' => $user->uid,
+                'account_uid' => $bb->uid,
+                'category_uid' => $moradiaCategory->uid,
+                'period_uid' => $janeiro->uid,
+                'amount' => $installment->amount,
+                'direction' => Transaction::DIRECTION_OUTFLOW,
+                'status' => Transaction::STATUS_PENDING,
+                'source' => Transaction::SOURCE_CREDIT_CARD,
+                'reference_id' => $installment->uid,
+                'description' => 'Notebook Dell',
+                'due_date' => Carbon::create(2025, 1, 15),
+                'occurred_at' => Carbon::create(2025, 1, 1),
+            ]);
+        }
     }
 }
