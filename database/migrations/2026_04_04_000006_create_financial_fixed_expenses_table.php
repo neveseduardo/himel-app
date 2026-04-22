@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('financial_fixed_expenses', function (Blueprint $table) {
+        Schema::create('fixed_expenses', function (Blueprint $table) {
             $table->uuid('uid')->primary();
             $table->uuid('user_uid');
             $table->uuid('category_uid');
@@ -19,13 +19,13 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('user_uid')->references('uid')->on('users')->onDelete('cascade');
-            $table->foreign('category_uid')->references('uid')->on('financial_categories')->onDelete('restrict');
+            $table->foreign('category_uid')->references('uid')->on('categories')->onDelete('restrict');
             $table->index('user_uid');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('financial_fixed_expenses');
+        Schema::dropIfExists('fixed_expenses');
     }
 };

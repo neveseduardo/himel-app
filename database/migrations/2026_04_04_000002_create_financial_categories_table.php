@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('financial_categories', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->uuid('uid')->primary();
             $table->string('name');
             $table->enum('direction', ['INFLOW', 'OUTFLOW']);
@@ -21,6 +21,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('financial_categories');
+        Schema::dropIfExists('categories');
     }
 };

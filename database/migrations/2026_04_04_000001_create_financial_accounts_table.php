@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('financial_accounts', function (Blueprint $table) {
+        Schema::create('accounts', function (Blueprint $table) {
             $table->uuid('uid')->primary();
             $table->string('name');
             $table->enum('type', ['CHECKING', 'SAVINGS', 'CASH', 'OTHER'])->default('CHECKING');
@@ -22,6 +22,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('financial_accounts');
+        Schema::dropIfExists('accounts');
     }
 };
