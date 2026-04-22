@@ -21,7 +21,7 @@ const props = defineProps<{
 	transfers: Transfer[];
 	meta: PaginationMeta;
 	filters: Record<string, string>;
-	accounts?: Account[];
+	accounts: Account[];
 }>();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -124,7 +124,7 @@ function handleDelete(uid: string) {
 			<TransferForm
 				:item="store.modalMode !== 'create' ? store.currentItem ?? undefined : undefined"
 				:readonly="store.modalMode === 'view'"
-				:accounts="accounts ?? []"
+				:accounts="accounts"
 				@success="handleFormSuccess"
 				@cancel="store.closeModal()"
 			/>

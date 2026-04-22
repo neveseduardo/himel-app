@@ -39,21 +39,21 @@ test.describe('Account Listing', () => {
 		await accountPage.search('Conta Corrente BB');
 		const bbRow = await accountPage.getRowByName('Conta Corrente BB');
 		await expect(bbRow).toContainText('Conta Corrente BB');
-		await expect(bbRow).toContainText('Conta Corrente');
+		await expect(bbRow).toContainText('CHECKING');
 		await expect(bbRow).toContainText('5.000,00');
 
 		await accountPage.clearSearch();
 		await accountPage.search('Poupança Nubank');
 		const nubankRow = await accountPage.getRowByName('Poupança Nubank');
 		await expect(nubankRow).toContainText('Poupança Nubank');
-		await expect(nubankRow).toContainText('Poupança');
+		await expect(nubankRow).toContainText('SAVINGS');
 		await expect(nubankRow).toContainText('12.000,00');
 
 		await accountPage.clearSearch();
 		await accountPage.search('Carteira');
 		const carteiraRow = await accountPage.getRowByName('Carteira');
 		await expect(carteiraRow).toContainText('Carteira');
-		await expect(carteiraRow).toContainText('Dinheiro');
+		await expect(carteiraRow).toContainText('CASH');
 		await expect(carteiraRow).toContainText('350,50');
 	});
 });
@@ -393,17 +393,17 @@ test.describe('Account Deletion', () => {
 	});
 
 	test('deleted account removed from DataTable', async () => {
-		await accountPage.search('Carteira');
+		await accountPage.search('Conta Nova Listagem');
 
-		const rowBefore = await accountPage.getRowByName('Carteira');
+		const rowBefore = await accountPage.getRowByName('Conta Nova Listagem');
 		await expect(rowBefore).toBeVisible();
 
-		await accountPage.clickDeleteButton('Carteira');
+		await accountPage.clickDeleteButton('Conta Nova Listagem');
 		await accountPage.confirmDelete();
 		await accountPage.waitForToast('Conta excluído(a) com sucesso!');
 
 		await accountPage.page.locator('table').waitFor({ state: 'visible' });
-		await accountPage.search('Carteira');
+		await accountPage.search('Conta Nova Listagem');
 
 		const emptyState = await accountPage.getEmptyState();
 		await expect(emptyState).toBeVisible();

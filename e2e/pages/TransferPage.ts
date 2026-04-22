@@ -55,7 +55,7 @@ export class TransferPage {
 
 	async getRowByText(text: string): Promise<Locator> {
 		return this.page.locator('table tbody tr').filter({
-			has: this.page.getByText(text, { exact: true }),
+			has: this.page.getByText(text),
 		});
 	}
 

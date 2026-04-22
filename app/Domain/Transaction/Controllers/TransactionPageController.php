@@ -31,8 +31,8 @@ class TransactionPageController
             'transactions' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
-            'accounts' => Inertia::optional(fn () => $this->accountService->getAll($userUid)),
-            'categories' => Inertia::optional(fn () => $this->categoryService->getAll($userUid)),
+            'accounts' => fn () => $this->accountService->getAll($userUid),
+            'categories' => fn () => $this->categoryService->getAll($userUid),
         ]);
     }
 
