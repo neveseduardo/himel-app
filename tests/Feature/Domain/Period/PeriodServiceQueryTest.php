@@ -204,7 +204,7 @@ class PeriodServiceQueryTest extends TestCase
         $this->assertCount(2, $result['data']);
         $this->assertEquals(2, $result['meta']['total']);
         $this->assertEquals(1, $result['meta']['current_page']);
-        $this->assertEquals(15, $result['meta']['per_page']);
+        $this->assertEquals(10, $result['meta']['per_page']);
     }
 
     public function test_get_transactions_for_period_returns_empty_for_no_transactions(): void

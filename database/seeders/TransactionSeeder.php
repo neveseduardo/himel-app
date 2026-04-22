@@ -25,12 +25,25 @@ class TransactionSeeder extends Seeder
 
             $account = $accounts->first();
 
+            $inflowDescriptions = [
+                'Salário mensal', 'Freelance design', 'Venda de produto', 'Reembolso empresa',
+                'Rendimento investimento', 'Cashback cartão', 'Presente recebido', 'Bônus trimestral',
+                'Aluguel recebido', 'Comissão de vendas',
+            ];
+
+            $outflowDescriptions = [
+                'Supermercado', 'Conta de luz', 'Conta de água', 'Internet fibra',
+                'Combustível', 'Farmácia', 'Restaurante', 'Assinatura streaming',
+                'Manutenção carro', 'Material escritório',
+            ];
+
             for ($i = 0; $i < 10; $i++) {
                 $category = $inflowCategories->random();
                 Transaction::create([
                     'user_uid' => $user->uid,
                     'account_uid' => $account->uid,
                     'category_uid' => $category->uid,
+                    'description' => $inflowDescriptions[$i],
                     'amount' => rand(1000, 10000),
                     'direction' => Transaction::DIRECTION_INFLOW,
                     'status' => Transaction::STATUS_PAID,
@@ -48,6 +61,7 @@ class TransactionSeeder extends Seeder
                     'user_uid' => $user->uid,
                     'account_uid' => $account->uid,
                     'category_uid' => $category->uid,
+                    'description' => $outflowDescriptions[$i],
                     'amount' => rand(50, 500),
                     'direction' => Transaction::DIRECTION_OUTFLOW,
                     'status' => $status,

@@ -24,7 +24,7 @@ class CreditCardChargeService implements CreditCardChargeServiceInterface
     public function getAllWithFilters(string $userUid, array $filters = []): array
     {
         $page = $filters['page'] ?? 1;
-        $perPage = min($filters['per_page'] ?? 15, 100);
+        $perPage = min($filters['per_page'] ?? 10, 100);
 
         $query = CreditCardCharge::whereHas('creditCard', function ($query) use ($userUid) {
             $query->where('user_uid', $userUid);

@@ -30,7 +30,7 @@ class PeriodService implements PeriodServiceInterface
     public function getAllWithFilters(string $userUid, array $filters = []): array
     {
         $page = $filters['page'] ?? 1;
-        $perPage = min($filters['per_page'] ?? 15, 100);
+        $perPage = min($filters['per_page'] ?? 10, 100);
 
         $query = Period::forUser($userUid)->withCount('transactions');
 
@@ -395,7 +395,7 @@ class PeriodService implements PeriodServiceInterface
     public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array
     {
         $page = $filters['page'] ?? 1;
-        $perPage = min($filters['per_page'] ?? 15, 100);
+        $perPage = min($filters['per_page'] ?? 10, 100);
 
         $query = Transaction::where('period_uid', $periodUid)
             ->forUser($userUid)

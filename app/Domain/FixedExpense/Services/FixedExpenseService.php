@@ -21,7 +21,7 @@ class FixedExpenseService implements FixedExpenseServiceInterface
     public function getAllWithFilters(string $userUid, array $filters = []): array
     {
         $page = $filters['page'] ?? 1;
-        $perPage = min($filters['per_page'] ?? 15, 100);
+        $perPage = min($filters['per_page'] ?? 10, 100);
 
         $query = FixedExpense::forUser($userUid)
             ->with(['category']);
