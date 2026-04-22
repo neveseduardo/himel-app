@@ -427,6 +427,43 @@ class PeriodService implements PeriodServiceInterface
         return ['items' => $items, 'subtotal' => $subtotal];
     }
 
+    public function getInstallmentsForPeriod(string $periodUid, string $userUid): array
+    {
+        $transactions = Transaction::where('period_uid', $periodUid)
+            ->forUser($userUid)
+            ->where('source', Transaction::SOURCE_CREDIT_CARD)
+            ->get();
+
+        if ($transactions->isEmpty()) {
+            return ['items' => [], 'subtotal' => 0];
+        }
+
+        $referenceIds = $transactions->pluck('reference_id')->filter()->unique()->values()->toArray();
+
+        $installments = CreditCardInstallment::with('charge.creditCard')
+            ->whereIn('uid', $referenceIds)
+            ->get()
+            ->keyBy('uid');
+
+        $items = $transactions->map(function (Transaction $transaction) use ($installments): array {
+            $installment = $installments->get($transaction->reference_id);
+
+            return [
+                'transaction_uid' => $transaction->uid,
+                'charge_description' => $installment?->charge?->description,
+                'amount' => (float) $transaction->amount,
+                'due_date' => $installment?->due_date?->toDateString(),
+                'installment_number' => $installment?->installment_number,
+                'total_installments' => $installment?->charge?->total_installments,
+                'credit_card_name' => $installment?->charge?->creditCard?->name,
+            ];
+        })->values()->toArray();
+
+        $subtotal = $transactions->sum(fn (Transaction $t): float => (float) $t->amount);
+
+        return ['items' => $items, 'subtotal' => $subtotal];
+    }
+
     public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array
     {
         $page = $filters['page'] ?? 1;
