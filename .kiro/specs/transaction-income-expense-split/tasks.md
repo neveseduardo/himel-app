@@ -58,7 +58,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
 - [x] 4. Checkpoint — Verificar backend
   - Garantir que todos os testes existentes passam, perguntar ao usuário se houver dúvidas.
 
-- [-] 5. Criar schema e formulário INFLOW no frontend
+- [x] 5. Criar schema e formulário INFLOW no frontend
   - [x] 5.1 Criar inflow-transaction-schema.ts
     - Criar `resources/js/domain/Transaction/validations/inflow-transaction-schema.ts`
     - Schema Zod com campos: `account_uid` (uuid, obrigatório), `amount` (number, positivo), `description` (string, nullable, opcional), `occurred_at` (string, obrigatório), `direction` (literal `'INFLOW'`, default `'INFLOW'`)
@@ -81,21 +81,21 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Emits: `success`, `cancel`
     - _Requisitos: 3.4, 3.5, 3.7_
 
-  - [ ] 5.4 Atualizar TransactionForm.vue para foco em OUTFLOW
+  - [x] 5.4 Atualizar TransactionForm.vue para foco em OUTFLOW
     - Remover o Select de direção do template
     - Hardcodar `direction: 'OUTFLOW'` nos `initialValues`
     - Manter todos os campos existentes (conta, categoria, valor, status, descrição, datas)
     - _Requisito: 3.6_
 
-- [ ] 6. Atualizar store e páginas com modais separados por direção
-  - [ ] 6.1 Atualizar useTransactionStore com modais separados
+- [x] 6. Atualizar store e páginas com modais separados por direção
+  - [x] 6.1 Atualizar useTransactionStore com modais separados
     - Adicionar refs: `inflowModalOpen`, `outflowModalOpen`
     - Adicionar funções: `openCreateInflowModal()`, `openCreateOutflowModal()`, `closeInflowModal()`, `closeOutflowModal()`
     - Modificar `openEditModal(item)`: detectar `item.direction` e abrir modal correto
     - Remover ou deprecar `isModalOpen` e `openCreateModal()` genéricos
     - _Requisitos: 3.2, 3.3, 3.8, 3.9_
 
-  - [ ] 6.2 Atualizar transactions/Index.vue com dropdown e dois dialogs
+  - [x] 6.2 Atualizar transactions/Index.vue com dropdown e dois dialogs
     - Substituir botão "Criar" por `DropdownMenu` com opções "Entrada" e "Saída"
     - Renderizar dois `ModalDialog`: um para `InflowTransactionForm`, outro para `TransactionForm`
     - Conectar watchers aos novos refs do store (`inflowModalOpen`, `outflowModalOpen`)
@@ -103,7 +103,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Manter funcionalidade de view/edit/delete existente, roteando edição pelo formulário correto
     - _Requisitos: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-  - [ ] 6.3 Atualizar periods/Show.vue com dropdown e dois dialogs
+  - [x] 6.3 Atualizar periods/Show.vue com dropdown e dois dialogs
     - Substituir botão "Nova Transação" por `DropdownMenu` com opções "Entrada" e "Saída"
     - Renderizar dois `ModalDialog`: um para `InflowTransactionForm` (com `periodUid` e `periodDate`), outro para `TransactionForm`
     - Gerenciar estado dos modais localmente (refs `inflowModalOpen`, `outflowModalOpen`)

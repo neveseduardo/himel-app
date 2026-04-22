@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { ArrowLeft, CheckCircle, Play, Plus, Trash2, X } from 'lucide-vue-next';
+import { ArrowLeft, CheckCircle, ChevronDown, Play, Plus, Trash2, X } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 
 import { detachTransactions, index, initialize, show } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
@@ -16,6 +16,7 @@ import { useFinanceFilters } from '@/domain/Shared/composables/useFinanceFilters
 import { usePagination } from '@/domain/Shared/composables/usePagination';
 import { formatCurrency, formatDate } from '@/domain/Shared/services/format';
 import type { PaginationMeta } from '@/domain/Shared/types/pagination';
+import InflowTransactionForm from '@/domain/Transaction/components/InflowTransactionForm.vue';
 import TransactionForm from '@/domain/Transaction/components/TransactionForm.vue';
 import type { Transaction } from '@/domain/Transaction/types/transaction';
 import type { BreadcrumbItem } from '@/types';
@@ -130,7 +131,8 @@ const outflowSubtotal = computed(() =>
 );
 
 // 7.3 — Create transaction modal
-const createModalRef = ref<InstanceType<typeof ModalDialog> | null>(null);
+const inflowCreateModalRef = ref<InstanceType<typeof ModalDialog> | null>(null);
+const outflowCreateModalRef = ref<InstanceType<typeof ModalDialog> | null>(null);
 
 const periodDate = computed(() => {
 	const month = String(props.period.month).padStart(2, '0');
@@ -138,7 +140,8 @@ const periodDate = computed(() => {
 });
 
 function handleCreateSuccess() {
-	createModalRef.value?.closeDialog();
+	inflowCreateModalRef.value?.closeDialog();
+	outflowCreateModalRef.value?.closeDialog();
 }
 
 // 7.4 — Detach all transactions
@@ -195,10 +198,23 @@ function handleDetachAll() {
 						</AlertDialogFooter>
 					</AlertDialogContent>
 				</AlertDialog>
-				<Button size="sm" @click="createModalRef?.openDialog()">
-					<Plus class="mr-2 size-4" />
-					Nova Transação
-				</Button>
+				<DropdownMenu>
+					<DropdownMenuTrigger as-child>
+						<Button size="sm">
+							<Plus class="size-4" />
+							Nova Transação
+							<ChevronDown class="ml-1 size-3" />
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						<DropdownMenuItem @click="inflowCreateModalRef?.openDialog()">
+							Entrada
+						</DropdownMenuItem>
+						<DropdownMenuItem @click="outflowCreateModalRef?.openDialog()">
+							Saída
+						</DropdownMenuItem>
+					</DropdownMenuContent>
+				</DropdownMenu>
 				<Button size="sm" :disabled="initializing" @click="handleInitialize">
 					<Play class="mr-2 size-4" />
 					{{ initializing ? 'Inicializando...' : 'Inicializar Período' }}
@@ -566,15 +582,26 @@ function handleDetachAll() {
 			</Button>
 		</div>
 
-		<!-- 7.3 — Create transaction modal -->
-		<ModalDialog ref="createModalRef" title="Nova Transação" description="Criar transação vinculada ao período">
+		<!-- 7.3 — Create inflow transaction modal -->
+		<ModalDialog ref="inflowCreateModalRef" title="Nova Entrada" description="Criar entrada vinculada ao período">
+			<InflowTransactionForm
+				:accounts="accounts"
+				:period-uid="period.uid"
+				:period-date="periodDate"
+				@success="handleCreateSuccess"
+				@cancel="inflowCreateModalRef?.closeDialog()"
+			/>
+		</ModalDialog>
+
+		<!-- 7.3 — Create outflow transaction modal -->
+		<ModalDialog ref="outflowCreateModalRef" title="Nova Saída" description="Criar saída vinculada ao período">
 			<TransactionForm
 				:accounts="accounts"
 				:categories="categories"
 				:period-uid="period.uid"
 				:period-date="periodDate"
 				@success="handleCreateSuccess"
-				@cancel="createModalRef?.closeDialog()"
+				@cancel="outflowCreateModalRef?.closeDialog()"
 			/>
 		</ModalDialog>
 	</div>
