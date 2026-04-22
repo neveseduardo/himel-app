@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<CreditCardInstallment>
  */
-class FinancialCreditCardInstallmentFactory extends Factory
+class CreditCardInstallmentFactory extends Factory
 {
     public function definition(): array
     {

@@ -7,7 +7,7 @@ use App\Domain\Transfer\Models\Transfer;
 use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
-class FinancialTransferSeeder extends Seeder
+class TransferSeeder extends Seeder
 {
     public function run(): void
     {

@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    protected $table = 'financial_categories';
+    protected $table = 'categories';
 
     /** @use HasFactory<CategoryFactory> */
     use HasFactory, HasUids;

@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<Transaction>
  */
-class FinancialTransactionFactory extends Factory
+class TransactionFactory extends Factory
 {
     protected $model = Transaction::class;
 

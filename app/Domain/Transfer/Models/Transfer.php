@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transfer extends Model
 {
-    protected $table = 'financial_transfers';
+    protected $table = 'transfers';
 
     /** @use HasFactory<TransferFactory> */
     use HasFactory, HasUids;

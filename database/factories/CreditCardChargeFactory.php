@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<CreditCardCharge>
  */
-class FinancialCreditCardChargeFactory extends Factory
+class CreditCardChargeFactory extends Factory
 {
     protected $model = CreditCardCharge::class;
 

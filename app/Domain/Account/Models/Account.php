@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Account extends Model
 {
-    protected $table = 'financial_accounts';
+    protected $table = 'accounts';
 
     /** @use HasFactory<AccountFactory> */
     use HasFactory, HasUids;

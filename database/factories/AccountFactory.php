@@ -2,21 +2,24 @@
 
 namespace Database\Factories;
 
-use App\Domain\Category\Models\Category;
+use App\Domain\Account\Models\Account;
 use App\Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<Category>
+ * @extends Factory<Account>
  */
-class FinancialCategoryFactory extends Factory
+class AccountFactory extends Factory
 {
+    protected $model = Account::class;
+
     public function definition(): array
     {
         return [
             'user_uid' => fn () => User::factory()->create()->uid,
             'name' => fake()->word(),
-            'direction' => fake()->randomElement(Category::getDirections()),
+            'type' => fake()->randomElement(Account::getTypes()),
+            'balance' => fake()->randomFloat(2, 0, 10000),
         ];
     }
 }

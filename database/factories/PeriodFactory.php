@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<Period>
  */
-class FinancialPeriodFactory extends Factory
+class PeriodFactory extends Factory
 {
     public function definition(): array
     {

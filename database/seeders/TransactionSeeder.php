@@ -8,7 +8,7 @@ use App\Domain\Transaction\Models\Transaction;
 use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
-class FinancialTransactionSeeder extends Seeder
+class TransactionSeeder extends Seeder
 {
     public function run(): void
     {

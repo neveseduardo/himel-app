@@ -7,7 +7,7 @@ use App\Domain\FixedExpense\Models\FixedExpense;
 use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
-class FinancialFixedExpenseSeeder extends Seeder
+class FixedExpenseSeeder extends Seeder
 {
     public function run(): void
     {

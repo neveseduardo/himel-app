@@ -6,7 +6,7 @@ use App\Domain\Period\Models\Period;
 use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
-class FinancialPeriodSeeder extends Seeder
+class PeriodSeeder extends Seeder
 {
     public function run(): void
     {

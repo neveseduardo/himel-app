@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class FixedExpense extends Model
 {
-    protected $table = 'financial_fixed_expenses';
+    protected $table = 'fixed_expenses';
 
     /** @use HasFactory<FixedExpenseFactory> */
     use HasFactory, HasUids;

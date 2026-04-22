@@ -11,12 +11,12 @@ use App\Domain\FixedExpense\Models\FixedExpense;
 use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Transfer\Models\Transfer;
 use App\Domain\User\Models\User;
-use Database\Factories\FinancialAccountFactory;
-use Database\Factories\FinancialCreditCardChargeFactory;
-use Database\Factories\FinancialCreditCardFactory;
-use Database\Factories\FinancialFixedExpenseFactory;
-use Database\Factories\FinancialTransactionFactory;
-use Database\Factories\FinancialTransferFactory;
+use Database\Factories\AccountFactory;
+use Database\Factories\CreditCardChargeFactory;
+use Database\Factories\CreditCardFactory;
+use Database\Factories\FixedExpenseFactory;
+use Database\Factories\TransactionFactory;
+use Database\Factories\TransferFactory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -107,7 +107,7 @@ class E2eTestSeeder extends Seeder
 
     private function seedFactoryAccounts(User $user): void
     {
-        FinancialAccountFactory::new()->count(20)->create(['user_uid' => $user->uid]);
+        AccountFactory::new()->count(20)->create(['user_uid' => $user->uid]);
     }
 
     private function resetTransfers(User $user): void
@@ -137,7 +137,7 @@ class E2eTestSeeder extends Seeder
         $accountUids = Account::where('user_uid', $user->uid)->pluck('uid')->toArray();
 
         foreach (range(1, 13) as $i) {
-            FinancialTransferFactory::new()->create([
+            TransferFactory::new()->create([
                 'user_uid' => $user->uid,
                 'from_account_uid' => $accountUids[$i % count($accountUids)],
                 'to_account_uid' => $accountUids[($i + 1) % count($accountUids)],
@@ -203,7 +203,7 @@ class E2eTestSeeder extends Seeder
         $categoryUids = Category::where('user_uid', $user->uid)->pluck('uid')->toArray();
 
         foreach (range(1, 20) as $i) {
-            FinancialTransactionFactory::new()->create([
+            TransactionFactory::new()->create([
                 'user_uid' => $user->uid,
                 'account_uid' => $accountUids[$i % count($accountUids)],
                 'category_uid' => $categoryUids[$i % count($categoryUids)],
@@ -231,7 +231,7 @@ class E2eTestSeeder extends Seeder
 
     private function seedFactoryCreditCards(User $user): void
     {
-        FinancialCreditCardFactory::new()->count(20)->create(['user_uid' => $user->uid]);
+        CreditCardFactory::new()->count(20)->create(['user_uid' => $user->uid]);
     }
 
     private function resetCreditCardCharges(User $user): void
@@ -269,7 +269,7 @@ class E2eTestSeeder extends Seeder
             ->toArray();
 
         foreach (range(1, 13) as $i) {
-            FinancialCreditCardChargeFactory::new()->create([
+            CreditCardChargeFactory::new()->create([
                 'credit_card_uid' => $cardUids[$i % count($cardUids)],
             ]);
         }
@@ -299,7 +299,7 @@ class E2eTestSeeder extends Seeder
     {
         $category = Category::where('user_uid', $user->uid)->where('direction', 'OUTFLOW')->first();
 
-        FinancialFixedExpenseFactory::new()->count(20)->create([
+        FixedExpenseFactory::new()->count(20)->create([
             'user_uid' => $user->uid,
             'category_uid' => $category->uid,
         ]);

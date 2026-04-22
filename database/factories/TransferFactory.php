@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<Transfer>
  */
-class FinancialTransferFactory extends Factory
+class TransferFactory extends Factory
 {
     protected $model = Transfer::class;
 

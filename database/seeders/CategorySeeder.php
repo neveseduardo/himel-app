@@ -6,7 +6,7 @@ use App\Domain\Category\Models\Category;
 use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
-class FinancialCategorySeeder extends Seeder
+class CategorySeeder extends Seeder
 {
     public function run(): void
     {

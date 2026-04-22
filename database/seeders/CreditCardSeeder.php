@@ -6,7 +6,7 @@ use App\Domain\CreditCard\Models\CreditCard;
 use App\Domain\User\Models\User;
 use Illuminate\Database\Seeder;
 
-class FinancialCreditCardSeeder extends Seeder
+class CreditCardSeeder extends Seeder
 {
     public function run(): void
     {
