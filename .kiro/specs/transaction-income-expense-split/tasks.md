@@ -6,7 +6,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
 
 ## Tarefas
 
-- [-] 1. Criar InsufficientBalanceException e modificar TransactionService
+- [x] 1. Criar InsufficientBalanceException e modificar TransactionService
   - [x] 1.1 Criar classe InsufficientBalanceException
     - Criar `app/Domain/Transaction/Exceptions/InsufficientBalanceException.php`
     - Recebe `Account` e `float $requiredAmount` no construtor
@@ -29,48 +29,48 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - OUTFLOW: ajustar saldo pela diferença de valor quando status permanece PAID
     - _Requisitos: 4.3, 5.2, 5.3, 7.1_
 
-  - [~] 1.4 Modificar TransactionService.delete() com lógica de saldo por direção
+  - [x] 1.4 Modificar TransactionService.delete() com lógica de saldo por direção
     - INFLOW: sempre reverter saldo (debitar o valor de volta)
     - OUTFLOW + PAID: reverter saldo (creditar o valor de volta)
     - OUTFLOW + PENDING: saldo inalterado
     - _Requisitos: 4.2, 5.4, 5.5_
 
 - [ ] 2. Modificar Form Requests com validação condicional por direção
-  - [~] 2.1 Modificar StoreTransactionRequest
+  - [x] 2.1 Modificar StoreTransactionRequest
     - Adicionar `prepareForValidation()`: se `direction=INFLOW`, aplicar `mergeIfMissing` com `status=PAID` e `source=MANUAL`
     - Alterar regras: `category_uid`, `status`, `source` usam `required_if:direction,OUTFLOW` + `nullable`
     - Manter `account_uid`, `amount`, `direction`, `occurred_at` como `required`
     - Atualizar mensagens de validação para refletir condicionalidade
     - _Requisitos: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7_
 
-  - [~] 2.2 Modificar UpdateTransactionRequest
+  - [x] 2.2 Modificar UpdateTransactionRequest
     - Adicionar `prepareForValidation()`: detectar direção do payload ou da transação existente via `Transaction::where('uid', $this->route('uid'))`
     - Se `direction=INFLOW`, aplicar `mergeIfMissing` com `status=PAID` e `source=MANUAL`
     - Alterar regras: `category_uid`, `status`, `source` usam `required_if:direction,OUTFLOW` + `nullable`
     - Manter campos com `sometimes` para update parcial
     - _Requisitos: 6.1, 6.2, 6.3, 6.4_
 
-- [~] 3. Modificar TransactionPageController para tratar InsufficientBalanceException
+- [ ] 3. Modificar TransactionPageController para tratar InsufficientBalanceException
   - Capturar `InsufficientBalanceException` nos métodos `store` e `update`
   - Retornar `back()->withErrors(['amount' => $e->getMessage()])` para que o erro apareça no formulário
   - _Requisitos: 7.2, 7.3_
 
-- [~] 4. Checkpoint — Verificar backend
+- [ ] 4. Checkpoint — Verificar backend
   - Garantir que todos os testes existentes passam, perguntar ao usuário se houver dúvidas.
 
 - [ ] 5. Criar schema e formulário INFLOW no frontend
-  - [~] 5.1 Criar inflow-transaction-schema.ts
+  - [ ] 5.1 Criar inflow-transaction-schema.ts
     - Criar `resources/js/domain/Transaction/validations/inflow-transaction-schema.ts`
     - Schema Zod com campos: `account_uid` (uuid, obrigatório), `amount` (number, positivo), `description` (string, nullable, opcional), `occurred_at` (string, obrigatório), `direction` (literal `'INFLOW'`, default `'INFLOW'`)
     - Exportar tipo `InflowTransactionFormData`
     - _Requisitos: 2.2, 2.3_
 
-  - [~] 5.2 Atualizar transaction-schema.ts para foco em OUTFLOW
+  - [ ] 5.2 Atualizar transaction-schema.ts para foco em OUTFLOW
     - Adicionar default `'OUTFLOW'` ao campo `direction`
     - Manter todos os campos obrigatórios existentes (`category_uid`, `status`, etc.)
     - _Requisito: 2.1_
 
-  - [~] 5.3 Criar InflowTransactionForm.vue
+  - [ ] 5.3 Criar InflowTransactionForm.vue
     - Criar `resources/js/domain/Transaction/components/InflowTransactionForm.vue`
     - Campos visíveis: conta (Select), valor (Input number), descrição (Input text, opcional), data (Input date)
     - Campo hidden: `direction = 'INFLOW'`
@@ -81,21 +81,21 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Emits: `success`, `cancel`
     - _Requisitos: 3.4, 3.5, 3.7_
 
-  - [~] 5.4 Atualizar TransactionForm.vue para foco em OUTFLOW
+  - [ ] 5.4 Atualizar TransactionForm.vue para foco em OUTFLOW
     - Remover o Select de direção do template
     - Hardcodar `direction: 'OUTFLOW'` nos `initialValues`
     - Manter todos os campos existentes (conta, categoria, valor, status, descrição, datas)
     - _Requisito: 3.6_
 
 - [ ] 6. Atualizar store e páginas com modais separados por direção
-  - [~] 6.1 Atualizar useTransactionStore com modais separados
+  - [ ] 6.1 Atualizar useTransactionStore com modais separados
     - Adicionar refs: `inflowModalOpen`, `outflowModalOpen`
     - Adicionar funções: `openCreateInflowModal()`, `openCreateOutflowModal()`, `closeInflowModal()`, `closeOutflowModal()`
     - Modificar `openEditModal(item)`: detectar `item.direction` e abrir modal correto
     - Remover ou deprecar `isModalOpen` e `openCreateModal()` genéricos
     - _Requisitos: 3.2, 3.3, 3.8, 3.9_
 
-  - [~] 6.2 Atualizar transactions/Index.vue com dropdown e dois dialogs
+  - [ ] 6.2 Atualizar transactions/Index.vue com dropdown e dois dialogs
     - Substituir botão "Criar" por `DropdownMenu` com opções "Entrada" e "Saída"
     - Renderizar dois `ModalDialog`: um para `InflowTransactionForm`, outro para `TransactionForm`
     - Conectar watchers aos novos refs do store (`inflowModalOpen`, `outflowModalOpen`)
@@ -103,31 +103,31 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Manter funcionalidade de view/edit/delete existente, roteando edição pelo formulário correto
     - _Requisitos: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-  - [~] 6.3 Atualizar periods/Show.vue com dropdown e dois dialogs
+  - [ ] 6.3 Atualizar periods/Show.vue com dropdown e dois dialogs
     - Substituir botão "Nova Transação" por `DropdownMenu` com opções "Entrada" e "Saída"
     - Renderizar dois `ModalDialog`: um para `InflowTransactionForm` (com `periodUid` e `periodDate`), outro para `TransactionForm`
     - Gerenciar estado dos modais localmente (refs `inflowModalOpen`, `outflowModalOpen`)
     - _Requisito: 8.6_
 
-- [~] 7. Checkpoint — Verificar frontend
+- [ ] 7. Checkpoint — Verificar frontend
   - Garantir que todos os testes existentes passam, perguntar ao usuário se houver dúvidas.
 
 - [ ] 8. Testes unitários PHPUnit para validação condicional
-  - [~] 8.1 Testes para StoreTransactionRequest
+  - [ ] 8.1 Testes para StoreTransactionRequest
     - Testar que OUTFLOW rejeita payload sem `category_uid`, `status`, `source`
     - Testar que INFLOW aceita payload com apenas `account_uid`, `amount`, `direction`, `occurred_at`
     - Testar que `prepareForValidation()` aplica defaults `status=PAID` e `source=MANUAL` para INFLOW
     - Testar que INFLOW aceita campos opcionais quando presentes
     - _Requisitos: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7_
 
-  - [~] 8.2 Testes para UpdateTransactionRequest
+  - [ ] 8.2 Testes para UpdateTransactionRequest
     - Testar validação condicional na atualização para INFLOW e OUTFLOW
     - Testar detecção de direção da transação existente quando não enviada no payload
     - Testar `prepareForValidation()` aplica defaults para INFLOW
     - _Requisitos: 6.1, 6.2, 6.3, 6.4_
 
 - [ ] 9. Testes unitários PHPUnit para lógica de saldo
-  - [~] 9.1 Testes para TransactionService.create()
+  - [ ] 9.1 Testes para TransactionService.create()
     - Testar INFLOW credita saldo imediatamente
     - Testar OUTFLOW PAID debita saldo
     - Testar OUTFLOW PENDING não altera saldo
@@ -135,14 +135,14 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Testar rejeição quando conta não pertence ao usuário
     - _Requisitos: 4.1, 4.5, 5.1, 7.1, 7.4_
 
-  - [~] 9.2 Testes para TransactionService.update()
+  - [ ] 9.2 Testes para TransactionService.update()
     - Testar INFLOW ajusta saldo pela diferença de valor
     - Testar OUTFLOW transição PENDING→PAID debita saldo
     - Testar OUTFLOW transição PAID→PENDING credita saldo de volta
     - Testar InsufficientBalanceException na transição PENDING→PAID com saldo insuficiente
     - _Requisitos: 4.3, 5.2, 5.3, 7.1_
 
-  - [~] 9.3 Testes para TransactionService.delete()
+  - [ ] 9.3 Testes para TransactionService.delete()
     - Testar INFLOW reverte saldo (debita de volta)
     - Testar OUTFLOW PAID reverte saldo (credita de volta)
     - Testar OUTFLOW PENDING não altera saldo
@@ -224,7 +224,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Mínimo 100 iterações com fast-check
     - **Valida: Requisitos 2.2, 2.3**
 
-- [~] 12. Checkpoint final
+- [ ] 12. Checkpoint final
   - Garantir que todos os testes passam, perguntar ao usuário se houver dúvidas.
 
 ## Notas
