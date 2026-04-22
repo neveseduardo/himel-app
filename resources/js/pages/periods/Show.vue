@@ -333,7 +333,7 @@ function handleDetachAll() {
 							<TableRow v-for="item in installments.items" :key="item.transaction_uid">
 								<TableCell>
 									{{ item.charge_description ?? '—' }}
-									<Badge v-if="item.installment_number != null && item.total_installments != null" variant="secondary" class="ml-2">
+									<Badge v-if="item.installment_number != null && item.total_installments != null" :variant="item.installment_number === item.total_installments ? 'default' : 'secondary'" :class="[item.installment_number === item.total_installments ? 'bg-green-600 text-white hover:bg-green-600' : '', 'ml-2']">
 										{{ item.installment_number }}/{{ item.total_installments }}
 									</Badge>
 								</TableCell>
