@@ -55,22 +55,22 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
   - Retornar `back()->withErrors(['amount' => $e->getMessage()])` para que o erro apareça no formulário
   - _Requisitos: 7.2, 7.3_
 
-- [ ] 4. Checkpoint — Verificar backend
+- [x] 4. Checkpoint — Verificar backend
   - Garantir que todos os testes existentes passam, perguntar ao usuário se houver dúvidas.
 
-- [ ] 5. Criar schema e formulário INFLOW no frontend
-  - [ ] 5.1 Criar inflow-transaction-schema.ts
+- [-] 5. Criar schema e formulário INFLOW no frontend
+  - [x] 5.1 Criar inflow-transaction-schema.ts
     - Criar `resources/js/domain/Transaction/validations/inflow-transaction-schema.ts`
     - Schema Zod com campos: `account_uid` (uuid, obrigatório), `amount` (number, positivo), `description` (string, nullable, opcional), `occurred_at` (string, obrigatório), `direction` (literal `'INFLOW'`, default `'INFLOW'`)
     - Exportar tipo `InflowTransactionFormData`
     - _Requisitos: 2.2, 2.3_
 
-  - [ ] 5.2 Atualizar transaction-schema.ts para foco em OUTFLOW
+  - [x] 5.2 Atualizar transaction-schema.ts para foco em OUTFLOW
     - Adicionar default `'OUTFLOW'` ao campo `direction`
     - Manter todos os campos obrigatórios existentes (`category_uid`, `status`, etc.)
     - _Requisito: 2.1_
 
-  - [ ] 5.3 Criar InflowTransactionForm.vue
+  - [x] 5.3 Criar InflowTransactionForm.vue
     - Criar `resources/js/domain/Transaction/components/InflowTransactionForm.vue`
     - Campos visíveis: conta (Select), valor (Input number), descrição (Input text, opcional), data (Input date)
     - Campo hidden: `direction = 'INFLOW'`
