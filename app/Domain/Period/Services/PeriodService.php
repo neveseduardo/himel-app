@@ -464,6 +464,53 @@ class PeriodService implements PeriodServiceInterface
         return ['items' => $items, 'subtotal' => $subtotal];
     }
 
+    public function getCardBreakdownForPeriod(string $periodUid, string $userUid): array
+    {
+        $transactions = Transaction::where('period_uid', $periodUid)
+            ->forUser($userUid)
+            ->where('source', Transaction::SOURCE_CREDIT_CARD)
+            ->get();
+
+        if ($transactions->isEmpty()) {
+            return ['cards' => [], 'grand_total' => 0];
+        }
+
+        $referenceIds = $transactions->pluck('reference_id')->filter()->unique()->values()->toArray();
+
+        $installments = CreditCardInstallment::with('charge.creditCard')
+            ->whereIn('uid', $referenceIds)
+            ->get()
+            ->keyBy('uid');
+
+        $cardTotals = [];
+
+        foreach ($transactions as $transaction) {
+            $installment = $installments->get($transaction->reference_id);
+            $creditCard = $installment?->charge?->creditCard;
+
+            if (! $creditCard) {
+                continue;
+            }
+
+            $cardUid = $creditCard->uid;
+
+            if (! isset($cardTotals[$cardUid])) {
+                $cardTotals[$cardUid] = [
+                    'credit_card_name' => $creditCard->name,
+                    'credit_card_uid' => $cardUid,
+                    'total' => 0.0,
+                ];
+            }
+
+            $cardTotals[$cardUid]['total'] += (float) $transaction->amount;
+        }
+
+        $cards = array_values($cardTotals);
+        $grandTotal = array_sum(array_column($cards, 'total'));
+
+        return ['cards' => $cards, 'grand_total' => $grandTotal];
+    }
+
     public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array
     {
         $page = $filters['page'] ?? 1;
