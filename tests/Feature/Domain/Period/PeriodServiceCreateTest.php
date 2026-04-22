@@ -31,7 +31,7 @@ class PeriodServiceCreateTest extends TestCase
         $this->assertEquals($user->uid, $period->user_uid);
         $this->assertEquals(6, $period->month);
         $this->assertEquals(2025, $period->year);
-        $this->assertDatabaseHas('financial_periods', [
+        $this->assertDatabaseHas('periods', [
             'user_uid' => $user->uid,
             'month' => 6,
             'year' => 2025,
@@ -59,7 +59,7 @@ class PeriodServiceCreateTest extends TestCase
         $period2 = $this->service->create($user2->uid, 6, 2025);
 
         $this->assertNotEquals($period1->uid, $period2->uid);
-        $this->assertDatabaseCount('financial_periods', 2);
+        $this->assertDatabaseCount('periods', 2);
     }
 
     public function test_create_allows_different_month_for_same_user(): void

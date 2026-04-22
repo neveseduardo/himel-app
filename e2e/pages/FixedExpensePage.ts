@@ -20,7 +20,7 @@ export class FixedExpensePage {
 	// ---------------------------------------------------------------------------
 
 	async goto(): Promise<void> {
-		await this.page.goto('/finance/fixed-expenses', {
+		await this.page.goto('/fixed-expenses', {
 			waitUntil: 'domcontentloaded',
 		});
 		await this.page.locator('table').waitFor({ state: 'visible' });

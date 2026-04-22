@@ -69,7 +69,7 @@ class PeriodServiceDeleteTest extends TestCase
         $result = $this->service->delete($period->uid, $this->user->uid);
 
         $this->assertTrue($result);
-        $this->assertDatabaseMissing('financial_periods', ['uid' => $period->uid]);
+        $this->assertDatabaseMissing('periods', ['uid' => $period->uid]);
     }
 
     public function test_returns_false_for_nonexistent_period(): void
@@ -100,8 +100,8 @@ class PeriodServiceDeleteTest extends TestCase
             // expected
         }
 
-        $this->assertDatabaseHas('financial_periods', ['uid' => $period->uid]);
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('periods', ['uid' => $period->uid]);
+        $this->assertDatabaseHas('transactions', [
             'uid' => $transaction->uid,
             'period_uid' => $period->uid,
         ]);
@@ -115,8 +115,8 @@ class PeriodServiceDeleteTest extends TestCase
         $result = $this->service->delete($period->uid, $this->user->uid);
 
         $this->assertTrue($result);
-        $this->assertDatabaseMissing('financial_periods', ['uid' => $period->uid]);
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseMissing('periods', ['uid' => $period->uid]);
+        $this->assertDatabaseHas('transactions', [
             'uid' => $transaction->uid,
             'period_uid' => null,
         ]);
@@ -130,8 +130,8 @@ class PeriodServiceDeleteTest extends TestCase
         $result = $this->service->delete($period->uid, $this->user->uid);
 
         $this->assertTrue($result);
-        $this->assertDatabaseMissing('financial_periods', ['uid' => $period->uid]);
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseMissing('periods', ['uid' => $period->uid]);
+        $this->assertDatabaseHas('transactions', [
             'uid' => $transaction->uid,
             'period_uid' => null,
         ]);
@@ -146,12 +146,12 @@ class PeriodServiceDeleteTest extends TestCase
         $result = $this->service->delete($period->uid, $this->user->uid);
 
         $this->assertTrue($result);
-        $this->assertDatabaseMissing('financial_periods', ['uid' => $period->uid]);
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseMissing('periods', ['uid' => $period->uid]);
+        $this->assertDatabaseHas('transactions', [
             'uid' => $pending->uid,
             'period_uid' => null,
         ]);
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $overdue->uid,
             'period_uid' => null,
         ]);
@@ -178,7 +178,7 @@ class PeriodServiceDeleteTest extends TestCase
 
         $this->service->delete($period1->uid, $this->user->uid);
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $otherTransaction->uid,
             'period_uid' => $period2->uid,
         ]);

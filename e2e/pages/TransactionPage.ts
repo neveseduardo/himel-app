@@ -24,7 +24,7 @@ export class TransactionPage {
 	// ---------------------------------------------------------------------------
 
 	async goto(): Promise<void> {
-		await this.page.goto('/finance/transactions', {
+		await this.page.goto('/transactions', {
 			waitUntil: 'domcontentloaded',
 		});
 		await this.page.locator('table').waitFor({ state: 'visible' });

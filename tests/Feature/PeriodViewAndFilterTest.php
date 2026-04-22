@@ -79,11 +79,11 @@ class PeriodViewAndFilterTest extends TestCase
         $this->createTransaction(['amount' => 1000.00, 'direction' => Transaction::DIRECTION_INFLOW, 'category_uid' => $this->inflowCategory->uid]);
 
         $response = $this->actingAs($this->user)
-            ->get("/finance/periods/{$this->period->uid}");
+            ->get("/periods/{$this->period->uid}");
 
         $response->assertStatus(200)
             ->assertInertia(fn (Assert $page) => $page
-                ->component('finance/periods/Show')
+                ->component('periods/Show')
                 ->has('period')
                 ->has('transactions')
             );
@@ -121,7 +121,7 @@ class PeriodViewAndFilterTest extends TestCase
     public function test_show_page_returns_404_for_nonexistent_period(): void
     {
         $response = $this->actingAs($this->user)
-            ->get('/finance/periods/nonexistent-uid');
+            ->get('/periods/nonexistent-uid');
 
         $response->assertStatus(404);
     }
@@ -136,7 +136,7 @@ class PeriodViewAndFilterTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->get("/finance/periods/{$otherPeriod->uid}");
+            ->get("/periods/{$otherPeriod->uid}");
 
         $response->assertStatus(404);
     }
@@ -228,11 +228,11 @@ class PeriodViewAndFilterTest extends TestCase
         $this->createTransaction(['status' => Transaction::STATUS_PAID, 'paid_at' => now(), 'source' => Transaction::SOURCE_MANUAL]);
 
         $response = $this->actingAs($this->user)
-            ->get("/finance/periods/{$this->period->uid}?status=PENDING");
+            ->get("/periods/{$this->period->uid}?status=PENDING");
 
         $response->assertStatus(200)
             ->assertInertia(fn (Assert $page) => $page
-                ->component('finance/periods/Show')
+                ->component('periods/Show')
             );
     }
 

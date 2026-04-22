@@ -67,19 +67,19 @@ class PeriodTransactionManagementTest extends TestCase
         }
 
         $response = $this->actingAs($this->user)
-            ->delete("/finance/periods/{$period->uid}/transactions");
+            ->delete("/periods/{$period->uid}/transactions");
 
         $response->assertRedirect();
 
         foreach ($txUids as $uid) {
-            $this->assertDatabaseHas('financial_transactions', [
+            $this->assertDatabaseHas('transactions', [
                 'uid' => $uid,
                 'period_uid' => null,
             ]);
         }
 
         // None deleted
-        $this->assertDatabaseCount('financial_transactions', 3);
+        $this->assertDatabaseCount('transactions', 3);
     }
 
     public function test_detach_returns_success_message_with_count(): void
@@ -105,10 +105,10 @@ class PeriodTransactionManagementTest extends TestCase
         }
 
         $response = $this->actingAs($this->user)
-            ->from("/finance/periods/{$period->uid}")
-            ->delete("/finance/periods/{$period->uid}/transactions");
+            ->from("/periods/{$period->uid}")
+            ->delete("/periods/{$period->uid}/transactions");
 
-        $response->assertRedirect(route('finance.finance.periods.show', $period->uid));
+        $response->assertRedirect(route('periods.show', $period->uid));
         $response->assertSessionHas('success', '5 transação(ões) desvinculada(s) do período.');
     }
 
@@ -121,10 +121,10 @@ class PeriodTransactionManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->from("/finance/periods/{$period->uid}")
-            ->delete("/finance/periods/{$period->uid}/transactions");
+            ->from("/periods/{$period->uid}")
+            ->delete("/periods/{$period->uid}/transactions");
 
-        $response->assertRedirect(route('finance.finance.periods.show', $period->uid));
+        $response->assertRedirect(route('periods.show', $period->uid));
         $response->assertSessionHas('success', '0 transação(ões) desvinculada(s) do período.');
     }
 
@@ -163,12 +163,12 @@ class PeriodTransactionManagementTest extends TestCase
 
         // Authenticated as $this->user, trying to detach from another user's period
         $response = $this->actingAs($this->user)
-            ->delete("/finance/periods/{$otherPeriod->uid}/transactions");
+            ->delete("/periods/{$otherPeriod->uid}/transactions");
 
         $response->assertRedirect();
 
         // Transaction should still be linked to the period (not detached)
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'uid' => $tx->uid,
             'period_uid' => $otherPeriod->uid,
         ]);
@@ -187,7 +187,7 @@ class PeriodTransactionManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->post("/finance/periods/{$period->uid}/transactions", [
+            ->post("/periods/{$period->uid}/transactions", [
                 'account_uid' => $this->account->uid,
                 'category_uid' => $this->category->uid,
                 'amount' => 250.50,
@@ -199,7 +199,7 @@ class PeriodTransactionManagementTest extends TestCase
 
         $response->assertRedirect();
 
-        $this->assertDatabaseHas('financial_transactions', [
+        $this->assertDatabaseHas('transactions', [
             'user_uid' => $this->user->uid,
             'account_uid' => $this->account->uid,
             'category_uid' => $this->category->uid,
@@ -218,7 +218,7 @@ class PeriodTransactionManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->post("/finance/periods/{$period->uid}/transactions", [
+            ->post("/periods/{$period->uid}/transactions", [
                 'account_uid' => $this->account->uid,
                 'category_uid' => $this->category->uid,
                 'amount' => 100,
@@ -228,7 +228,7 @@ class PeriodTransactionManagementTest extends TestCase
                 'occurred_at' => '2025-04-01',
             ]);
 
-        $response->assertRedirect(route('finance.finance.periods.show', $period->uid));
+        $response->assertRedirect(route('periods.show', $period->uid));
         $response->assertSessionHas('success', 'Transação criada com sucesso.');
     }
 
@@ -241,8 +241,8 @@ class PeriodTransactionManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->from("/finance/periods/{$period->uid}")
-            ->post("/finance/periods/{$period->uid}/transactions", [
+            ->from("/periods/{$period->uid}")
+            ->post("/periods/{$period->uid}/transactions", [
                 'account_uid' => $this->account->uid,
                 'category_uid' => $this->category->uid,
                 'amount' => 100,
@@ -253,7 +253,7 @@ class PeriodTransactionManagementTest extends TestCase
                 'period_uid' => 'not-a-valid-uuid',
             ]);
 
-        $response->assertRedirect("/finance/periods/{$period->uid}");
+        $response->assertRedirect("/periods/{$period->uid}");
         $response->assertSessionHasErrors(['period_uid']);
     }
 
@@ -266,11 +266,11 @@ class PeriodTransactionManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->get("/finance/periods/{$period->uid}");
+            ->get("/periods/{$period->uid}");
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
-            ->component('finance/periods/Show')
+            ->component('periods/Show')
             ->has('accounts')
             ->has('categories')
         );
@@ -297,11 +297,11 @@ class PeriodTransactionManagementTest extends TestCase
         ]);
 
         $response = $this->actingAs($this->user)
-            ->get("/finance/periods/{$period->uid}");
+            ->get("/periods/{$period->uid}");
 
         $response->assertOk();
         $response->assertInertia(fn ($page) => $page
-            ->component('finance/periods/Show')
+            ->component('periods/Show')
             ->has('transactions', 1, fn ($tx) => $tx
                 ->has('account')
                 ->has('category')
@@ -354,7 +354,7 @@ class PeriodTransactionManagementTest extends TestCase
             $occurredAt = sprintf('%04d-%02d-%02d', $period->year, $period->month, $day);
 
             $response = $this->actingAs($this->user)
-                ->post("/finance/periods/{$period->uid}/transactions", [
+                ->post("/periods/{$period->uid}/transactions", [
                     'account_uid' => $this->account->uid,
                     'category_uid' => $categoryUid,
                     'amount' => $amount,
@@ -413,7 +413,7 @@ class PeriodTransactionManagementTest extends TestCase
             $occurredAt = sprintf('%04d-%02d-%02d', $period->year, $period->month, $day);
 
             $response = $this->actingAs($this->user)
-                ->post("/finance/periods/{$period->uid}/transactions", [
+                ->post("/periods/{$period->uid}/transactions", [
                     'account_uid' => $this->account->uid,
                     'category_uid' => $this->category->uid,
                     'amount' => $amount,
@@ -460,8 +460,8 @@ class PeriodTransactionManagementTest extends TestCase
 
         foreach ($invalidStrings as $index => $invalidValue) {
             $response = $this->actingAs($this->user)
-                ->from("/finance/periods/{$period->uid}")
-                ->post("/finance/periods/{$period->uid}/transactions", [
+                ->from("/periods/{$period->uid}")
+                ->post("/periods/{$period->uid}/transactions", [
                     'account_uid' => $this->account->uid,
                     'category_uid' => $this->category->uid,
                     'amount' => 100,
@@ -472,7 +472,7 @@ class PeriodTransactionManagementTest extends TestCase
                     'period_uid' => $invalidValue,
                 ]);
 
-            $response->assertRedirect("/finance/periods/{$period->uid}");
+            $response->assertRedirect("/periods/{$period->uid}");
             $response->assertSessionHasErrors(
                 ['period_uid'],
                 '',
@@ -528,13 +528,13 @@ class PeriodTransactionManagementTest extends TestCase
             $totalBefore = Transaction::count();
 
             $response = $this->actingAs($this->user)
-                ->delete("/finance/periods/{$period->uid}/transactions");
+                ->delete("/periods/{$period->uid}/transactions");
 
             $response->assertRedirect();
 
             // All transactions still exist with period_uid = null
             foreach ($txUids as $uid) {
-                $this->assertDatabaseHas('financial_transactions', [
+                $this->assertDatabaseHas('transactions', [
                     'uid' => $uid,
                     'period_uid' => null,
                 ]);

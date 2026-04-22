@@ -123,15 +123,15 @@ Refatoração completa para remover o prefixo redundante `financial_` de tabelas
     - Verificar que `resources/js/actions/` está atualizado
     - _Requisitos: 14.1, 14.2, 14.3_
 
-- [~] 10. Checkpoint — Verificar frontend e rotas
+- [x] 10. Checkpoint — Verificar frontend e rotas
   - Executar `npm run types:check` — deve reportar 0 erros TypeScript
   - Executar `php artisan route:list --name=finance` — deve retornar 0 resultados
   - Executar `vendor/bin/pint --dirty --format agent` — deve reportar 0 erros
   - Perguntar ao usuário se há dúvidas antes de prosseguir
   - _Requisitos: 14.4_
 
-- [ ] 11. Atualizar testes PHPUnit
-  - [~] 11.1 Atualizar referências a tabelas e colunas nos 9 arquivos de teste
+- [x] 11. Atualizar testes PHPUnit
+  - [x] 11.1 Atualizar referências a tabelas e colunas nos 9 arquivos de teste
     - `assertDatabaseHas('financial_X', ...)` → `assertDatabaseHas('X', ...)`
     - `assertDatabaseMissing('financial_X', ...)` → `assertDatabaseMissing('X', ...)`
     - `assertDatabaseCount('financial_X', ...)` → `assertDatabaseCount('X', ...)`
@@ -140,15 +140,15 @@ Refatoração completa para remover o prefixo redundante `financial_` de tabelas
     - Arquivos: `PeriodInitializationTest`, `PeriodCreationAndDeletionTest`, `PeriodViewAndFilterTest`, `PeriodTransactionManagementTest`, `PeriodServiceInitializeTest`, `PeriodServiceDeleteTest`, `PeriodServiceCreateTest`, `CreateDefaultCategoriesListenerTest`, `MarkOverdueTransactionsCommandTest`
     - _Requisitos: 8.1, 8.2, 8.3_
 
-- [ ] 12. Atualizar testes E2E — Page Objects e URLs
-  - [~] 12.1 Atualizar o método `goto()` nos 6 Page Objects para remover prefixo `/finance` da URL
+- [x] 12. Atualizar testes E2E — Page Objects e URLs
+  - [x] 12.1 Atualizar o método `goto()` nos 6 Page Objects para remover prefixo `/finance` da URL
     - `AccountPage.ts`, `CreditCardPage.ts`, `CreditCardChargePage.ts`, `TransferPage.ts`, `FixedExpensePage.ts`, `TransactionPage.ts`
     - _Requisitos: 17.1, 17.2_
 
-  - [~] 12.2 Atualizar referências a nomes de rotas `finance.*` nos testes E2E (se houver)
+  - [x] 12.2 Atualizar referências a nomes de rotas `finance.*` nos testes E2E (se houver)
     - _Requisitos: 15.3_
 
-- [~] 13. Verificação final de integridade
+- [x] 13. Verificação final de integridade
   - Executar `php artisan migrate:fresh --seed` — deve completar sem erros
   - Executar `php artisan test --compact` — deve ter 0 falhas
   - Executar `vendor/bin/pint --dirty --format agent` — deve reportar 0 erros
