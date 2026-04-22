@@ -5,6 +5,7 @@ namespace App\Domain\Transaction\Services;
 use App\Domain\Account\Models\Account;
 use App\Domain\Category\Models\Category;
 use App\Domain\Transaction\Contracts\TransactionServiceInterface;
+use App\Domain\Transaction\Exceptions\InsufficientBalanceException;
 use App\Domain\Transaction\Models\Transaction;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
@@ -77,22 +78,30 @@ class TransactionService implements TransactionServiceInterface
     {
         try {
             return DB::transaction(function () use ($data, $userUid) {
-                $category = Category::where('uid', $data['category_uid'])->first();
+                // 1. Validate account ownership
+                $account = Account::where('uid', $data['account_uid'])
+                    ->where('user_uid', $userUid)
+                    ->firstOrFail();
 
-                if ($category && $category->direction !== $data['direction']) {
-                    throw new \InvalidArgumentException(
-                        'A categoria não corresponde à direção da transação.'
-                    );
+                // 2. Validate category (only when provided)
+                if (! empty($data['category_uid'])) {
+                    $category = Category::where('uid', $data['category_uid'])->first();
+                    if ($category && $category->direction !== $data['direction']) {
+                        throw new \InvalidArgumentException(
+                            'A categoria não corresponde à direção da transação.'
+                        );
+                    }
                 }
 
+                // 3. Create transaction with nullable fields
                 $transaction = Transaction::create([
                     'user_uid' => $userUid,
                     'account_uid' => $data['account_uid'],
-                    'category_uid' => $data['category_uid'],
+                    'category_uid' => $data['category_uid'] ?? null,
                     'amount' => $data['amount'],
                     'direction' => $data['direction'],
-                    'status' => $data['status'],
-                    'source' => $data['source'],
+                    'status' => $data['status'] ?? 'PAID',
+                    'source' => $data['source'] ?? 'MANUAL',
                     'description' => $data['description'] ?? null,
                     'occurred_at' => $data['occurred_at'],
                     'due_date' => $data['due_date'] ?? null,
@@ -101,12 +110,16 @@ class TransactionService implements TransactionServiceInterface
                     'period_uid' => $data['period_uid'] ?? null,
                 ]);
 
-                if ($transaction->status === Transaction::STATUS_PAID) {
-                    $this->updateAccountBalance(
-                        $transaction->account_uid,
-                        $transaction->amount,
-                        $transaction->direction
-                    );
+                // 4. Balance logic by direction
+                if ($transaction->direction === Transaction::DIRECTION_INFLOW) {
+                    $account->balance += $transaction->amount;
+                    $account->save();
+                } elseif ($transaction->status === Transaction::STATUS_PAID) {
+                    if ($account->balance < $transaction->amount) {
+                        throw new InsufficientBalanceException($account, (float) $transaction->amount);
+                    }
+                    $account->balance -= $transaction->amount;
+                    $account->save();
                 }
 
                 Log::info('Transaction created', [
