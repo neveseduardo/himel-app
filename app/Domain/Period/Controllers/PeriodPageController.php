@@ -120,7 +120,7 @@ class PeriodPageController
 
             $this->transactionService->create($data, $request->user()->uid);
 
-            return redirect()->route('periods.show', $uid)->with('success', 'Transação criada com sucesso.');
+            return redirect("/periods/{$uid}")->with('success', 'Transação criada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to create transaction for period', [
                 'period_uid' => $uid,
@@ -137,7 +137,7 @@ class PeriodPageController
         try {
             $count = $this->periodService->detachAllTransactions($uid, $request->user()->uid);
 
-            return redirect()->route('periods.show', $uid)
+            return redirect("/periods/{$uid}")
                 ->with('success', sprintf('%d transação(ões) desvinculada(s) do período.', $count));
         } catch (\Throwable $e) {
             Log::error('Failed to detach transactions from period', [
@@ -163,7 +163,7 @@ class PeriodPageController
                 $result['skipped'],
             );
 
-            return redirect()->route('periods.show', $uid)->with('success', $message);
+            return redirect("/periods/{$uid}")->with('success', $message);
         } catch (\Throwable $e) {
             Log::error('Failed to initialize period', [
                 'uid' => $uid,

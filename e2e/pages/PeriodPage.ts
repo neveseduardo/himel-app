@@ -314,6 +314,26 @@ export class PeriodPage {
 		await this.page.getByRole('button', { name: /Inicializar Período/ }).click();
 	}
 
+	async initializePeriodAndWait(): Promise<void> {
+		const responsePromise = this.page.waitForResponse(
+			(resp) => resp.url().includes('/periods/') && resp.status() === 200
+		);
+		await this.clickInitializeButton();
+		await responsePromise;
+		// Wait for the page to reload with new data
+		await this.page.locator('h1').waitFor({ state: 'visible', timeout: 10_000 });
+	}
+
+	async getAllCurrencyValues(): Promise<string[]> {
+		const elements = this.page.locator('text=/R\\$\\s/');
+		const count = await elements.count();
+		const values: string[] = [];
+		for (let i = 0; i < count; i++) {
+			values.push(await elements.nth(i).innerText());
+		}
+		return values;
+	}
+
 	// ---------------------------------------------------------------------------
 	// Toast
 	// ---------------------------------------------------------------------------

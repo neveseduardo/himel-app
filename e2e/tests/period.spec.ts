@@ -284,7 +284,203 @@ test.describe('Show Page — Card Breakdown Section', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 7. Period Deletion
+// 7. Period Initialization (Fevereiro 2025 — no pre-seeded transactions)
+// ---------------------------------------------------------------------------
+
+test.describe('Period Initialization', () => {
+	let periodPage: PeriodPage;
+
+	test('Fevereiro 2025 starts with empty sections before initialization', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Fevereiro');
+
+		// Fixed expenses section should be empty
+		const fixedEmpty = await periodPage.getFixedExpensesEmptyState();
+		await expect(fixedEmpty).toBeVisible();
+
+		// Installments section should be empty
+		const installmentsEmpty = await periodPage.getInstallmentsEmptyState();
+		await expect(installmentsEmpty).toBeVisible();
+
+		// Card breakdown should not be visible
+		const cardBreakdownVisible = await periodPage.isCardBreakdownVisible();
+		expect(cardBreakdownVisible).toBe(false);
+	});
+
+	test('clicking "Inicializar Período" shows success toast', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Fevereiro');
+
+		// Verify we're on the show page with empty state
+		const title = await periodPage.getShowPageTitle();
+		expect(title).toContain('Fevereiro');
+
+		// Click initialize and wait for the page to update
+		await periodPage.clickInitializeButton();
+
+		// Wait for the Despesas Fixas section to have items (proves initialization worked)
+		const section = page.locator('[data-slot="card"]').filter({
+			has: page.getByRole('heading', { name: 'Despesas Fixas' }),
+		}).first();
+		await expect(section.getByText('Aluguel')).toBeVisible({ timeout: 15_000 });
+	});
+
+	test('after initialization, Despesas Fixas section has items', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Fevereiro');
+
+		const rows = await periodPage.getFixedExpensesRows();
+		expect(rows.length).toBeGreaterThan(0);
+
+		// Verify Aluguel and Internet appear (active fixed expenses from seeder)
+		const section = page.locator('[data-slot="card"]').filter({
+			has: page.getByRole('heading', { name: 'Despesas Fixas' }),
+		}).first();
+		await expect(section.getByText('Aluguel')).toBeVisible();
+		await expect(section.getByText('Internet')).toBeVisible();
+	});
+
+	test('after initialization, Parcelas de Cartão section has items', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Fevereiro');
+
+		const rows = await periodPage.getInstallmentsRows();
+		expect(rows.length).toBeGreaterThan(0);
+
+		// Verify Notebook Dell installment appears
+		const section = page.locator('[data-slot="card"]').filter({
+			has: page.getByRole('heading', { name: 'Parcelas de Cartão' }),
+		}).first();
+		await expect(section.getByText('Notebook Dell')).toBeVisible();
+	});
+
+	test('after initialization, installment badge shows correct format', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Fevereiro');
+
+		const badge = await periodPage.getInstallmentBadge(0);
+		expect(badge).toMatch(/\d+\/\d+/);
+	});
+
+	test('after initialization, Resumo por Cartão section is visible', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Fevereiro');
+
+		const isVisible = await periodPage.isCardBreakdownVisible();
+		expect(isVisible).toBe(true);
+
+		const items = await periodPage.getCardBreakdownItems();
+		expect(items.length).toBeGreaterThan(0);
+
+		// Verify Nubank card appears
+		const cardNames = items.map((item) => item.name);
+		expect(cardNames).toContain('Nubank');
+	});
+
+	test('after initialization, outflow card does NOT show "R$ NaN"', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Fevereiro');
+
+		const composition = await periodPage.getOutflowComposition();
+
+		for (const [, value] of Object.entries(composition)) {
+			expect(value).not.toContain('NaN');
+		}
+	});
+
+	test('after initialization, summary cards show valid currency values', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Fevereiro');
+
+		const entradas = await periodPage.getSummaryCardValue('Entradas');
+		expect(entradas).toContain('R$');
+		expect(entradas).not.toContain('NaN');
+
+		const saidas = await periodPage.getSummaryCardValue('Saídas');
+		expect(saidas).toContain('R$');
+		expect(saidas).not.toContain('NaN');
+
+		const saldo = await periodPage.getSummaryCardValue('Saldo');
+		expect(saldo).toContain('R$');
+		expect(saldo).not.toContain('NaN');
+	});
+
+	test('after initialization, Despesas Fixas and Parcelas de Cartão show non-zero values in composition', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Fevereiro');
+
+		const composition = await periodPage.getOutflowComposition();
+		expect(composition['Despesas Fixas']).toBeTruthy();
+		expect(composition['Despesas Fixas']).not.toBe('R$ 0,00');
+		expect(composition['Parcelas de Cartão']).toBeTruthy();
+		expect(composition['Parcelas de Cartão']).not.toBe('R$ 0,00');
+	});
+});
+
+// ---------------------------------------------------------------------------
+// 8. Show Page — No NaN Values
+// ---------------------------------------------------------------------------
+
+test.describe('Show Page — No NaN Values', () => {
+	let periodPage: PeriodPage;
+
+	test('Janeiro 2025 summary cards do not show "R$ NaN"', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Janeiro');
+
+		const entradas = await periodPage.getSummaryCardValue('Entradas');
+		expect(entradas).not.toContain('NaN');
+
+		const saidas = await periodPage.getSummaryCardValue('Saídas');
+		expect(saidas).not.toContain('NaN');
+
+		const saldo = await periodPage.getSummaryCardValue('Saldo');
+		expect(saldo).not.toContain('NaN');
+	});
+
+	test('Janeiro 2025 outflow composition does not show "R$ NaN"', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Janeiro');
+
+		const composition = await periodPage.getOutflowComposition();
+
+		for (const [, value] of Object.entries(composition)) {
+			expect(value).not.toContain('NaN');
+		}
+	});
+
+	test('Janeiro 2025 Entradas/Saídas section headers do not show "R$ NaN"', async ({ page }) => {
+		periodPage = new PeriodPage(page);
+		await periodPage.goto();
+		await periodPage.gotoShow('Janeiro');
+
+		// Check the Entradas transaction section header subtotal (green heading)
+		const entradasHeading = page.locator('h3.text-green-700, [data-slot="card-title"].text-green-700').filter({ hasText: 'Entradas' });
+		const entradasCard = page.locator('[data-slot="card"]').filter({ has: entradasHeading }).first();
+		const entradasSubtotal = await entradasCard.locator('[data-slot="card-header"] span').innerText();
+		expect(entradasSubtotal).not.toContain('NaN');
+
+		// Check the Saídas transaction section header subtotal (red heading)
+		const saidasHeading = page.locator('h3.text-red-700, [data-slot="card-title"].text-red-700').filter({ hasText: 'Saídas' });
+		const saidasCard = page.locator('[data-slot="card"]').filter({ has: saidasHeading }).first();
+		const saidasSubtotal = await saidasCard.locator('[data-slot="card-header"] span').innerText();
+		expect(saidasSubtotal).not.toContain('NaN');
+	});
+});
+
+// ---------------------------------------------------------------------------
+// 9. Period Deletion
 // ---------------------------------------------------------------------------
 
 test.describe('Period Deletion', () => {

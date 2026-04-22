@@ -123,11 +123,11 @@ const outflowTransactions = computed(() =>
 );
 
 const inflowSubtotal = computed(() =>
-	inflowTransactions.value.reduce((sum, t) => sum + t.amount, 0)
+	inflowTransactions.value.reduce((sum, t) => sum + Number(t.amount), 0)
 );
 
 const outflowSubtotal = computed(() =>
-	outflowTransactions.value.reduce((sum, t) => sum + t.amount, 0)
+	outflowTransactions.value.reduce((sum, t) => sum + Number(t.amount), 0)
 );
 
 // 7.3 — Create transaction modal
