@@ -8,9 +8,11 @@ use App\Domain\CreditCard\Models\CreditCard;
 use App\Domain\CreditCardCharge\Models\CreditCardCharge;
 use App\Domain\CreditCardInstallment\Models\CreditCardInstallment;
 use App\Domain\FixedExpense\Models\FixedExpense;
+use App\Domain\Period\Models\Period;
 use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Transfer\Models\Transfer;
 use App\Domain\User\Models\User;
+use Carbon\Carbon;
 use Database\Factories\AccountFactory;
 use Database\Factories\CreditCardChargeFactory;
 use Database\Factories\CreditCardFactory;
@@ -59,6 +61,10 @@ class E2eTestSeeder extends Seeder
         $this->resetFixedExpenses($user);
         $this->seedNamedFixedExpenses($user);
         $this->seedFactoryFixedExpenses($user);
+
+        $this->resetPeriods($user);
+        $this->seedNamedPeriods($user);
+        $this->seedPeriodTransactions($user);
     }
 
     private function ensureDefaultCategories(User $user): void
@@ -251,13 +257,33 @@ class E2eTestSeeder extends Seeder
         $c6Bank = CreditCard::where('user_uid', $user->uid)->where('name', 'C6 Bank')->first();
 
         $charges = [
-            ['credit_card_uid' => $nubank->uid, 'description' => 'Notebook Dell', 'amount' => 4500.00, 'total_installments' => 12, 'purchase_date' => '2024-03-15'],
-            ['credit_card_uid' => $inter->uid, 'description' => 'Fone Bluetooth', 'amount' => 250.00, 'total_installments' => 3, 'purchase_date' => '2024-02-20'],
-            ['credit_card_uid' => $c6Bank->uid, 'description' => 'Curso Online', 'amount' => 1200.00, 'total_installments' => 6, 'purchase_date' => '2024-01-10'],
+            ['credit_card_uid' => $nubank->uid, 'description' => 'Notebook Dell', 'amount' => 4500.00, 'total_installments' => 12, 'purchase_date' => '2024-03-15', 'due_day' => $nubank->due_day],
+            ['credit_card_uid' => $inter->uid, 'description' => 'Fone Bluetooth', 'amount' => 250.00, 'total_installments' => 3, 'purchase_date' => '2024-02-20', 'due_day' => $inter->due_day],
+            ['credit_card_uid' => $c6Bank->uid, 'description' => 'Curso Online', 'amount' => 1200.00, 'total_installments' => 6, 'purchase_date' => '2024-01-10', 'due_day' => $c6Bank->due_day],
         ];
 
-        foreach ($charges as $charge) {
-            CreditCardCharge::create($charge);
+        foreach ($charges as $chargeData) {
+            $dueDay = $chargeData['due_day'];
+            unset($chargeData['due_day']);
+
+            $charge = CreditCardCharge::create($chargeData);
+
+            $totalCents = (int) round($chargeData['amount'] * 100);
+            $baseCents = intdiv($totalCents, $chargeData['total_installments']);
+            $remainder = $totalCents % $chargeData['total_installments'];
+            $purchaseDate = Carbon::parse($chargeData['purchase_date']);
+
+            for ($i = 1; $i <= $chargeData['total_installments']; $i++) {
+                $installmentCents = $baseCents + ($i === $chargeData['total_installments'] ? $remainder : 0);
+                $dueDate = $purchaseDate->copy()->addMonths($i)->day($dueDay);
+
+                CreditCardInstallment::create([
+                    'credit_card_charge_uid' => $charge->uid,
+                    'installment_number' => $i,
+                    'due_date' => $dueDate,
+                    'amount' => $installmentCents / 100,
+                ]);
+            }
         }
     }
 
@@ -303,5 +329,111 @@ class E2eTestSeeder extends Seeder
             'user_uid' => $user->uid,
             'category_uid' => $category->uid,
         ]);
+    }
+
+    private function resetPeriods(User $user): void
+    {
+        $periodUids = Period::where('user_uid', $user->uid)->pluck('uid');
+
+        Transaction::whereIn('period_uid', $periodUids)->update(['period_uid' => null]);
+        Period::where('user_uid', $user->uid)->delete();
+    }
+
+    private function seedNamedPeriods(User $user): void
+    {
+        $periods = [
+            ['month' => 1, 'year' => 2025],
+            ['month' => 2, 'year' => 2025],
+            ['month' => 3, 'year' => 2025],
+        ];
+
+        foreach ($periods as $period) {
+            Period::create(array_merge($period, ['user_uid' => $user->uid]));
+        }
+    }
+
+    private function seedPeriodTransactions(User $user): void
+    {
+        $janeiro = Period::where('user_uid', $user->uid)->where('month', 1)->where('year', 2025)->first();
+        $bb = Account::where('user_uid', $user->uid)->where('name', 'Conta Corrente BB')->first();
+        $salarioCategory = Category::where('user_uid', $user->uid)->where('name', 'Salário')->first();
+        $alimentacaoCategory = Category::where('user_uid', $user->uid)->where('name', 'Alimentação')->first();
+        $moradiaCategory = Category::where('user_uid', $user->uid)->where('name', 'Moradia')->first();
+
+        // 1. MANUAL INFLOW — Salário
+        Transaction::create([
+            'user_uid' => $user->uid,
+            'account_uid' => $bb->uid,
+            'category_uid' => $salarioCategory->uid,
+            'period_uid' => $janeiro->uid,
+            'amount' => 5000.00,
+            'direction' => Transaction::DIRECTION_INFLOW,
+            'status' => Transaction::STATUS_PENDING,
+            'source' => Transaction::SOURCE_MANUAL,
+            'description' => 'Salário',
+            'due_date' => Carbon::create(2025, 1, 5),
+            'occurred_at' => Carbon::create(2025, 1, 1),
+        ]);
+
+        // 2. MANUAL OUTFLOW — Supermercado
+        Transaction::create([
+            'user_uid' => $user->uid,
+            'account_uid' => $bb->uid,
+            'category_uid' => $alimentacaoCategory->uid,
+            'period_uid' => $janeiro->uid,
+            'amount' => 300.00,
+            'direction' => Transaction::DIRECTION_OUTFLOW,
+            'status' => Transaction::STATUS_PENDING,
+            'source' => Transaction::SOURCE_MANUAL,
+            'description' => 'Supermercado',
+            'due_date' => Carbon::create(2025, 1, 10),
+            'occurred_at' => Carbon::create(2025, 1, 1),
+        ]);
+
+        // 3. FIXED OUTFLOW — linked to Aluguel fixed expense
+        $aluguel = FixedExpense::where('user_uid', $user->uid)->where('name', 'Aluguel')->first();
+
+        Transaction::create([
+            'user_uid' => $user->uid,
+            'account_uid' => $bb->uid,
+            'category_uid' => $moradiaCategory->uid,
+            'period_uid' => $janeiro->uid,
+            'amount' => 1500.00,
+            'direction' => Transaction::DIRECTION_OUTFLOW,
+            'status' => Transaction::STATUS_PENDING,
+            'source' => Transaction::SOURCE_FIXED,
+            'reference_id' => $aluguel->uid,
+            'description' => 'Aluguel',
+            'due_date' => Carbon::create(2025, 1, 10),
+            'occurred_at' => Carbon::create(2025, 1, 1),
+        ]);
+
+        // 4. CREDIT_CARD OUTFLOW — linked to Notebook Dell installment #10 (due 2025-01-15)
+        $notebookCharge = CreditCardCharge::whereHas('creditCard', function ($query) use ($user): void {
+            $query->where('user_uid', $user->uid);
+        })->where('description', 'Notebook Dell')->first();
+
+        if ($notebookCharge) {
+            $installment = CreditCardInstallment::where('credit_card_charge_uid', $notebookCharge->uid)
+                ->where('installment_number', 10)
+                ->first();
+
+            if ($installment) {
+                Transaction::create([
+                    'user_uid' => $user->uid,
+                    'account_uid' => $bb->uid,
+                    'category_uid' => $moradiaCategory->uid,
+                    'period_uid' => $janeiro->uid,
+                    'amount' => $installment->amount,
+                    'direction' => Transaction::DIRECTION_OUTFLOW,
+                    'status' => Transaction::STATUS_PENDING,
+                    'source' => Transaction::SOURCE_CREDIT_CARD,
+                    'reference_id' => $installment->uid,
+                    'description' => 'Notebook Dell (10/12)',
+                    'due_date' => $installment->due_date,
+                    'occurred_at' => Carbon::create(2025, 1, 1),
+                ]);
+            }
+        }
     }
 }

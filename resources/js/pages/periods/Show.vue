@@ -7,7 +7,7 @@ import { detachTransactions, index, initialize, show } from '@/actions/App/Domai
 import { update as updateTransaction } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
 import type { Account } from '@/domain/Account/types/account';
 import type { Category } from '@/domain/Category/types/category';
-import type { Period, PeriodSummary } from '@/domain/Period/types/period';
+import type { Period, PeriodCardBreakdown, PeriodFixedExpenses, PeriodInstallments, PeriodSummary } from '@/domain/Period/types/period';
 import DataTable from '@/domain/Shared/components/DataTable.vue';
 import DirectionBadge from '@/domain/Shared/components/DirectionBadge.vue';
 import StatusBadge from '@/domain/Shared/components/StatusBadge.vue';
@@ -28,6 +28,9 @@ const props = defineProps<{
 	filters: Record<string, string>;
 	accounts: Account[];
 	categories: Category[];
+	fixedExpenses: PeriodFixedExpenses;
+	installments: PeriodInstallments;
+	cardBreakdown: PeriodCardBreakdown;
 }>();
 
 const monthNames = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -120,11 +123,11 @@ const outflowTransactions = computed(() =>
 );
 
 const inflowSubtotal = computed(() =>
-	inflowTransactions.value.reduce((sum, t) => sum + t.amount, 0)
+	inflowTransactions.value.reduce((sum, t) => sum + Number(t.amount), 0)
 );
 
 const outflowSubtotal = computed(() =>
-	outflowTransactions.value.reduce((sum, t) => sum + t.amount, 0)
+	outflowTransactions.value.reduce((sum, t) => sum + Number(t.amount), 0)
 );
 
 // 7.3 — Create transaction modal
@@ -231,6 +234,24 @@ function handleDetachAll() {
 					<p class="text-2xl font-bold text-red-600 dark:text-red-400">
 						{{ formatCurrency(summary.total_outflow) }}
 					</p>
+					<div class="mt-2 space-y-1 text-sm text-muted-foreground">
+						<div class="flex justify-between">
+							<span>Despesas Fixas</span>
+							<span>{{ formatCurrency(summary.total_fixed_expenses ?? 0) }}</span>
+						</div>
+						<div class="flex justify-between">
+							<span>Parcelas de Cartão</span>
+							<span>{{ formatCurrency(summary.total_credit_card_installments ?? 0) }}</span>
+						</div>
+						<div class="flex justify-between">
+							<span>Manuais</span>
+							<span>{{ formatCurrency(summary.total_manual ?? 0) }}</span>
+						</div>
+						<div class="flex justify-between">
+							<span>Transferências</span>
+							<span>{{ formatCurrency(summary.total_transfer ?? 0) }}</span>
+						</div>
+					</div>
 				</CardContent>
 			</Card>
 			<Card>
@@ -245,6 +266,110 @@ function handleDetachAll() {
 					</p>
 				</CardContent>
 			</Card>
+		</div>
+
+		<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+			<!-- Despesas Fixas section -->
+			<Card>
+				<CardHeader class="flex flex-row items-center justify-between pb-2">
+					<CardTitle class="text-lg font-semibold">
+						Despesas Fixas
+					</CardTitle>
+					<span class="text-lg font-bold text-muted-foreground">{{ formatCurrency(fixedExpenses.subtotal) }}</span>
+				</CardHeader>
+				<CardContent>
+					<template v-if="fixedExpenses.items.length === 0">
+						<p class="py-4 text-center text-sm text-muted-foreground">
+							Nenhuma despesa fixa neste período.
+						</p>
+					</template>
+					<template v-else>
+						<Table>
+							<TableHeader>
+								<TableRow>
+									<TableHead>Nome</TableHead>
+									<TableHead>Valor</TableHead>
+									<TableHead>Categoria</TableHead>
+									<TableHead>Vencimento</TableHead>
+								</TableRow>
+							</TableHeader>
+							<TableBody>
+								<TableRow v-for="item in fixedExpenses.items" :key="item.transaction_uid">
+									<TableCell>{{ item.description ?? '—' }}</TableCell>
+									<TableCell>{{ formatCurrency(item.amount) }}</TableCell>
+									<TableCell>{{ item.category_name ?? '—' }}</TableCell>
+									<TableCell>{{ item.due_day ?? '—' }}</TableCell>
+								</TableRow>
+							</TableBody>
+						</Table>
+					</template>
+				</CardContent>
+			</Card>
+
+			<div class="grid gap-4">
+				<!-- Parcelas de Cartão section -->
+				<Card>
+					<CardHeader class="flex flex-row items-center justify-between pb-2">
+						<CardTitle class="text-lg font-semibold">
+							Parcelas de Cartão
+						</CardTitle>
+						<span class="text-lg font-bold text-muted-foreground">{{ formatCurrency(installments.subtotal) }}</span>
+					</CardHeader>
+					<CardContent>
+						<template v-if="installments.items.length === 0">
+							<p class="py-4 text-center text-sm text-muted-foreground">
+								Nenhuma parcela de cartão neste período.
+							</p>
+						</template>
+						<template v-else>
+							<Table>
+								<TableHeader>
+									<TableRow>
+										<TableHead>Descrição</TableHead>
+										<TableHead>Valor</TableHead>
+										<TableHead>Vencimento</TableHead>
+										<TableHead>Cartão</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									<TableRow v-for="item in installments.items" :key="item.transaction_uid">
+										<TableCell>
+											{{ item.charge_description ?? '—' }}
+											<Badge v-if="item.installment_number != null && item.total_installments != null" :variant="item.installment_number === item.total_installments ? 'default' : 'secondary'" :class="[item.installment_number === item.total_installments ? 'bg-green-600 text-white hover:bg-green-600' : '', 'ml-2']">
+												{{ item.installment_number }}/{{ item.total_installments }}
+											</Badge>
+										</TableCell>
+										<TableCell>{{ formatCurrency(item.amount) }}</TableCell>
+										<TableCell>{{ item.due_date ? formatDate(item.due_date) : '—' }}</TableCell>
+										<TableCell>{{ item.credit_card_name ?? '—' }}</TableCell>
+									</TableRow>
+								</TableBody>
+							</Table>
+						</template>
+					</CardContent>
+				</Card>
+
+				<!-- Resumo por Cartão section -->
+				<Card v-if="cardBreakdown.cards.length > 0">
+					<CardHeader class="pb-2">
+						<CardTitle class="text-lg font-semibold">
+							Resumo por Cartão
+						</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div class="space-y-2">
+							<div v-for="card in cardBreakdown.cards" :key="card.credit_card_uid" class="flex items-center justify-between">
+								<span class="text-sm">{{ card.credit_card_name }}</span>
+								<span class="text-sm font-medium">{{ formatCurrency(card.total) }}</span>
+							</div>
+						</div>
+					</CardContent>
+					<CardFooter class="flex justify-between border-t pt-4">
+						<span class="text-sm font-semibold">Total</span>
+						<span class="text-sm font-bold">{{ formatCurrency(cardBreakdown.grand_total) }}</span>
+					</CardFooter>
+				</Card>
+			</div>
 		</div>
 
 		<!-- 14.3 — Transaction filters -->

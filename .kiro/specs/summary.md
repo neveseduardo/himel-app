@@ -213,3 +213,42 @@ Testes E2E com Playwright para o módulo FixedExpense (Despesas Fixas), terceiro
 ### Bugs Encontrados e Corrigidos
 - `FinancialFixedExpenseFactory` sem `protected $model` (mesmo bug do CreditCard)
 - `FixedExpense Index.vue` sem `@update:open` no ModalDialog (modal não reabria após ESC/overlay)
+
+
+---
+
+## Spec: Period Expenses & Installments
+
+Enriquecimento da página Show do Period com despesas fixas, parcelas de cartão de crédito (com numeração X/Y), breakdown por cartão e composição detalhada das saídas.
+
+### Requisitos
+- Listar despesas fixas do período com subtotal
+- Listar parcelas de cartão com numeração X/Y (ex: "3/10")
+- Breakdown de gastos agrupado por cartão de crédito
+- Subtotais por fonte no resumo financeiro (fixed, credit_card, manual, transfer)
+- Tratamento de referências inválidas (graceful degradation)
+
+### Decisões de Design
+- Sem migrations — toda informação já existe nas tabelas existentes
+- Consulta e agregação no PeriodService (não no Controller)
+- Dados passados como props Inertia separadas (fixed_expenses, installments, card_breakdown)
+- Resiliência a dados inconsistentes via nullsafe operators
+
+### Tasks Concluídas (9 tarefas, 19 subtasks)
+1. Backend: 3 novos métodos no PeriodService (getFixedExpensesForPeriod, getInstallmentsForPeriod, getCardBreakdownForPeriod) + extensão do getByUidWithSummary com subtotais por source
+2. Backend: PeriodPageController::show atualizado com novas props Inertia
+3. Frontend: 6 novas interfaces TypeScript em domain/Period/types/period.ts
+4. Frontend: Seção "Despesas Fixas" na Show.vue (tabela com nome/valor/categoria/vencimento)
+5. Frontend: Seção "Parcelas de Cartão" na Show.vue (tabela com descrição + badge X/Y, valor, vencimento, cartão)
+6. Frontend: Seção "Resumo por Cartão" na Show.vue (lista por cartão com totais)
+7. Frontend: Resumo financeiro expandido com composição de saídas
+8. Frontend: Tratamento de campos nulos com "—"
+9. Testes: 14 testes PHPUnit (65 assertions) cobrindo todos os novos métodos
+
+### Artefatos Alterados
+- `app/Domain/Period/Contracts/PeriodServiceInterface.php` — 3 novos métodos
+- `app/Domain/Period/Services/PeriodService.php` — implementação dos 3 métodos + extensão do summary
+- `app/Domain/Period/Controllers/PeriodPageController.php` — novas props Inertia
+- `resources/js/domain/Period/types/period.ts` — 6 novas interfaces + PeriodSummary expandido
+- `resources/js/pages/periods/Show.vue` — 3 novas seções + resumo expandido + null handling
+- `tests/Feature/PeriodExpensesInstallmentsTest.php` — 14 testes PHPUnit

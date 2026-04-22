@@ -27,4 +27,10 @@ interface PeriodServiceInterface
     public function detachAllTransactions(string $periodUid, string $userUid): int;
 
     public function delete(string $uid, string $userUid): bool;
+
+    public function getFixedExpensesForPeriod(string $periodUid, string $userUid): array;
+
+    public function getInstallmentsForPeriod(string $periodUid, string $userUid): array;
+
+    public function getCardBreakdownForPeriod(string $periodUid, string $userUid): array;
 }

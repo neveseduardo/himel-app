@@ -4,6 +4,7 @@ namespace App\Domain\Period\Services;
 
 use App\Domain\Account\Models\Account;
 use App\Domain\Category\Models\Category;
+use App\Domain\CreditCardCharge\Models\CreditCardCharge;
 use App\Domain\CreditCardInstallment\Models\CreditCardInstallment;
 use App\Domain\FixedExpense\Models\FixedExpense;
 use App\Domain\Period\Contracts\PeriodServiceInterface;
@@ -269,6 +270,8 @@ class PeriodService implements PeriodServiceInterface
      */
     private function processCreditCardInstallments(Period $period, string $userUid, Account $account, array &$summary): void
     {
+        $this->ensureInstallmentsExist($userUid);
+
         $startOfMonth = Carbon::create($period->year, $period->month, 1)->startOfDay();
         $endOfMonth = $startOfMonth->copy()->endOfMonth()->endOfDay();
 
@@ -338,6 +341,36 @@ class PeriodService implements PeriodServiceInterface
         return Carbon::create($year, $month, $clampedDay)->startOfDay();
     }
 
+    private function ensureInstallmentsExist(string $userUid): void
+    {
+        $chargesWithoutInstallments = CreditCardCharge::whereHas('creditCard', function ($query) use ($userUid) {
+            $query->where('user_uid', $userUid);
+        })
+            ->whereDoesntHave('installments')
+            ->with('creditCard')
+            ->get();
+
+        foreach ($chargesWithoutInstallments as $charge) {
+            $totalCents = (int) round($charge->amount * 100);
+            $baseCents = intdiv($totalCents, $charge->total_installments);
+            $remainder = $totalCents % $charge->total_installments;
+            $purchaseDate = Carbon::parse($charge->purchase_date);
+            $dueDay = $charge->creditCard->due_day;
+
+            for ($i = 1; $i <= $charge->total_installments; $i++) {
+                $installmentCents = $baseCents + ($i === $charge->total_installments ? $remainder : 0);
+                $dueDate = $purchaseDate->copy()->addMonths($i)->day($dueDay);
+
+                CreditCardInstallment::create([
+                    'credit_card_charge_uid' => $charge->uid,
+                    'installment_number' => $i,
+                    'due_date' => $dueDate,
+                    'amount' => $installmentCents / 100,
+                ]);
+            }
+        }
+    }
+
     private function getDefaultOutflowCategoryUid(string $userUid): string
     {
         $category = Category::forUser($userUid)
@@ -362,6 +395,10 @@ class PeriodService implements PeriodServiceInterface
         $totals = Transaction::where('period_uid', $period->uid)
             ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) as total_inflow', [Transaction::DIRECTION_INFLOW])
             ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? THEN amount ELSE 0 END), 0) as total_outflow', [Transaction::DIRECTION_OUTFLOW])
+            ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_fixed_expenses', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_FIXED])
+            ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_credit_card_installments', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_CREDIT_CARD])
+            ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_manual', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_MANUAL])
+            ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_transfer', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_TRANSFER])
             ->first();
 
         $totalInflow = (float) $totals->total_inflow;
@@ -372,6 +409,10 @@ class PeriodService implements PeriodServiceInterface
             'total_inflow' => $totalInflow,
             'total_outflow' => $totalOutflow,
             'balance' => $totalInflow - $totalOutflow,
+            'total_fixed_expenses' => (float) $totals->total_fixed_expenses,
+            'total_credit_card_installments' => (float) $totals->total_credit_card_installments,
+            'total_manual' => (float) $totals->total_manual,
+            'total_transfer' => (float) $totals->total_transfer,
         ];
     }
 
@@ -390,6 +431,125 @@ class PeriodService implements PeriodServiceInterface
 
             return $count;
         });
+    }
+
+    public function getFixedExpensesForPeriod(string $periodUid, string $userUid): array
+    {
+        $transactions = Transaction::where('period_uid', $periodUid)
+            ->forUser($userUid)
+            ->where('source', Transaction::SOURCE_FIXED)
+            ->get();
+
+        if ($transactions->isEmpty()) {
+            return ['items' => [], 'subtotal' => 0];
+        }
+
+        $referenceIds = $transactions->pluck('reference_id')->filter()->unique()->values()->toArray();
+
+        $fixedExpenses = FixedExpense::with('category')
+            ->whereIn('uid', $referenceIds)
+            ->get()
+            ->keyBy('uid');
+
+        $items = $transactions->map(function (Transaction $transaction) use ($fixedExpenses): array {
+            $fixedExpense = $fixedExpenses->get($transaction->reference_id);
+
+            return [
+                'transaction_uid' => $transaction->uid,
+                'description' => $fixedExpense?->name,
+                'amount' => (float) $transaction->amount,
+                'due_day' => $fixedExpense?->due_day,
+                'category_name' => $fixedExpense?->category?->name,
+            ];
+        })->values()->toArray();
+
+        $subtotal = $transactions->sum(fn (Transaction $t): float => (float) $t->amount);
+
+        return ['items' => $items, 'subtotal' => $subtotal];
+    }
+
+    public function getInstallmentsForPeriod(string $periodUid, string $userUid): array
+    {
+        $transactions = Transaction::where('period_uid', $periodUid)
+            ->forUser($userUid)
+            ->where('source', Transaction::SOURCE_CREDIT_CARD)
+            ->get();
+
+        if ($transactions->isEmpty()) {
+            return ['items' => [], 'subtotal' => 0];
+        }
+
+        $referenceIds = $transactions->pluck('reference_id')->filter()->unique()->values()->toArray();
+
+        $installments = CreditCardInstallment::with('charge.creditCard')
+            ->whereIn('uid', $referenceIds)
+            ->get()
+            ->keyBy('uid');
+
+        $items = $transactions->map(function (Transaction $transaction) use ($installments): array {
+            $installment = $installments->get($transaction->reference_id);
+
+            return [
+                'transaction_uid' => $transaction->uid,
+                'charge_description' => $installment?->charge?->description,
+                'amount' => (float) $transaction->amount,
+                'due_date' => $installment?->due_date?->toDateString(),
+                'installment_number' => $installment?->installment_number,
+                'total_installments' => $installment?->charge?->total_installments,
+                'credit_card_name' => $installment?->charge?->creditCard?->name,
+            ];
+        })->values()->toArray();
+
+        $subtotal = $transactions->sum(fn (Transaction $t): float => (float) $t->amount);
+
+        return ['items' => $items, 'subtotal' => $subtotal];
+    }
+
+    public function getCardBreakdownForPeriod(string $periodUid, string $userUid): array
+    {
+        $transactions = Transaction::where('period_uid', $periodUid)
+            ->forUser($userUid)
+            ->where('source', Transaction::SOURCE_CREDIT_CARD)
+            ->get();
+
+        if ($transactions->isEmpty()) {
+            return ['cards' => [], 'grand_total' => 0];
+        }
+
+        $referenceIds = $transactions->pluck('reference_id')->filter()->unique()->values()->toArray();
+
+        $installments = CreditCardInstallment::with('charge.creditCard')
+            ->whereIn('uid', $referenceIds)
+            ->get()
+            ->keyBy('uid');
+
+        $cardTotals = [];
+
+        foreach ($transactions as $transaction) {
+            $installment = $installments->get($transaction->reference_id);
+            $creditCard = $installment?->charge?->creditCard;
+
+            if (! $creditCard) {
+                continue;
+            }
+
+            $cardUid = $creditCard->uid;
+
+            if (! isset($cardTotals[$cardUid])) {
+                $cardTotals[$cardUid] = [
+                    'credit_card_name' => $creditCard->name,
+                    'credit_card_uid' => $cardUid,
+                    'total' => 0.0,
+                ];
+            }
+
+            $cardTotals[$cardUid]['total'] += (float) $transaction->amount;
+        }
+
+        $cards = array_values($cardTotals);
+        $grandTotal = array_sum(array_column($cards, 'total'));
+
+        return ['cards' => $cards, 'grand_total' => $grandTotal];
     }
 
     public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array

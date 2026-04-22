@@ -108,7 +108,7 @@ class PeriodTransactionManagementTest extends TestCase
             ->from("/periods/{$period->uid}")
             ->delete("/periods/{$period->uid}/transactions");
 
-        $response->assertRedirect(route('periods.show', $period->uid));
+        $response->assertRedirect("/periods/{$period->uid}");
         $response->assertSessionHas('success', '5 transação(ões) desvinculada(s) do período.');
     }
 
@@ -124,7 +124,7 @@ class PeriodTransactionManagementTest extends TestCase
             ->from("/periods/{$period->uid}")
             ->delete("/periods/{$period->uid}/transactions");
 
-        $response->assertRedirect(route('periods.show', $period->uid));
+        $response->assertRedirect("/periods/{$period->uid}");
         $response->assertSessionHas('success', '0 transação(ões) desvinculada(s) do período.');
     }
 
@@ -228,7 +228,7 @@ class PeriodTransactionManagementTest extends TestCase
                 'occurred_at' => '2025-04-01',
             ]);
 
-        $response->assertRedirect(route('periods.show', $period->uid));
+        $response->assertRedirect("/periods/{$period->uid}");
         $response->assertSessionHas('success', 'Transação criada com sucesso.');
     }
 
