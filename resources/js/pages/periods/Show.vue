@@ -229,7 +229,7 @@ function handleDetachAll() {
 		</PageHeader>
 
 		<!-- 14.1 — Financial summary cards -->
-		<div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
 			<Card>
 				<CardHeader class="pb-2">
 					<CardTitle class="text-sm font-medium text-muted-foreground">
@@ -242,6 +242,7 @@ function handleDetachAll() {
 					</p>
 				</CardContent>
 			</Card>
+
 			<Card>
 				<CardHeader class="pb-2">
 					<CardTitle class="text-sm font-medium text-muted-foreground">
@@ -272,6 +273,27 @@ function handleDetachAll() {
 					</div>
 				</CardContent>
 			</Card>
+
+			<Card>
+				<CardHeader class="pb-2">
+					<CardTitle class="text-lg font-semibold">
+						Resumo por Cartão
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<div class="space-y-2">
+						<div v-for="card in cardBreakdown.cards" :key="card.credit_card_uid" class="flex items-center justify-between">
+							<span class="text-sm">{{ card.credit_card_name }}</span>
+							<span class="text-sm font-medium">{{ formatCurrency(card.total) }}</span>
+						</div>
+					</div>
+				</CardContent>
+				<CardFooter class="flex justify-between border-t pt-4">
+					<span class="text-sm font-semibold">Total</span>
+					<span class="text-sm font-bold">{{ formatCurrency(cardBreakdown.grand_total) }}</span>
+				</CardFooter>
+			</Card>
+
 			<Card>
 				<CardHeader class="pb-2">
 					<CardTitle class="text-sm font-medium text-muted-foreground">
@@ -284,6 +306,8 @@ function handleDetachAll() {
 					</p>
 				</CardContent>
 			</Card>
+
+
 		</div>
 
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -326,72 +350,48 @@ function handleDetachAll() {
 				</CardContent>
 			</Card>
 
-			<div class="grid gap-4">
-				<!-- Parcelas de Cartão section -->
-				<Card>
-					<CardHeader class="flex flex-row items-center justify-between pb-2">
-						<CardTitle class="text-lg font-semibold">
-							Parcelas de Cartão
-						</CardTitle>
-						<span class="text-lg font-bold text-muted-foreground">{{ formatCurrency(installments.subtotal) }}</span>
-					</CardHeader>
-					<CardContent>
-						<template v-if="installments.items.length === 0">
-							<p class="py-4 text-center text-sm text-muted-foreground">
-								Nenhuma parcela de cartão neste período.
-							</p>
-						</template>
-						<template v-else>
-							<div class="max-h-80 overflow-y-auto">
-								<Table>
-									<TableHeader>
-										<TableRow>
-											<TableHead>Descrição</TableHead>
-											<TableHead>Valor</TableHead>
-											<TableHead>Vencimento</TableHead>
-											<TableHead>Cartão</TableHead>
-										</TableRow>
-									</TableHeader>
-									<TableBody>
-										<TableRow v-for="item in installments.items" :key="item.transaction_uid">
-											<TableCell>
-												{{ item.charge_description ?? '—' }}
-												<Badge v-if="item.installment_number != null && item.total_installments != null" :variant="item.installment_number === item.total_installments ? 'default' : 'secondary'" :class="[item.installment_number === item.total_installments ? 'bg-green-600 text-white hover:bg-green-600' : '', 'ml-2']">
-													{{ item.installment_number }}/{{ item.total_installments }}
-												</Badge>
-											</TableCell>
-											<TableCell>{{ formatCurrency(item.amount) }}</TableCell>
-											<TableCell>{{ item.due_date ? formatDate(item.due_date) : '—' }}</TableCell>
-											<TableCell>{{ item.credit_card_name ?? '—' }}</TableCell>
-										</TableRow>
-									</TableBody>
-								</Table>
-							</div>
-						</template>
-					</CardContent>
-				</Card>
-
-				<!-- Resumo por Cartão section -->
-				<Card v-if="cardBreakdown.cards.length > 0">
-					<CardHeader class="pb-2">
-						<CardTitle class="text-lg font-semibold">
-							Resumo por Cartão
-						</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<div class="space-y-2">
-							<div v-for="card in cardBreakdown.cards" :key="card.credit_card_uid" class="flex items-center justify-between">
-								<span class="text-sm">{{ card.credit_card_name }}</span>
-								<span class="text-sm font-medium">{{ formatCurrency(card.total) }}</span>
-							</div>
+			<Card>
+				<CardHeader class="flex flex-row items-center justify-between pb-2">
+					<CardTitle class="text-lg font-semibold">
+						Parcelas de Cartão
+					</CardTitle>
+					<span class="text-lg font-bold text-muted-foreground">{{ formatCurrency(installments.subtotal) }}</span>
+				</CardHeader>
+				<CardContent>
+					<template v-if="installments.items.length === 0">
+						<p class="py-4 text-center text-sm text-muted-foreground">
+							Nenhuma parcela de cartão neste período.
+						</p>
+					</template>
+					<template v-else>
+						<div class="max-h-80 overflow-y-auto">
+							<Table>
+								<TableHeader>
+									<TableRow>
+										<TableHead>Descrição</TableHead>
+										<TableHead>Valor</TableHead>
+										<TableHead>Vencimento</TableHead>
+										<TableHead>Cartão</TableHead>
+									</TableRow>
+								</TableHeader>
+								<TableBody>
+									<TableRow v-for="item in installments.items" :key="item.transaction_uid">
+										<TableCell>
+											{{ item.charge_description ?? '—' }}
+											<Badge v-if="item.installment_number != null && item.total_installments != null" :variant="item.installment_number === item.total_installments ? 'default' : 'secondary'" :class="[item.installment_number === item.total_installments ? 'bg-green-600 text-white hover:bg-green-600' : '', 'ml-2']">
+												{{ item.installment_number }}/{{ item.total_installments }}
+											</Badge>
+										</TableCell>
+										<TableCell>{{ formatCurrency(item.amount) }}</TableCell>
+										<TableCell>{{ item.due_date ? formatDate(item.due_date) : '—' }}</TableCell>
+										<TableCell>{{ item.credit_card_name ?? '—' }}</TableCell>
+									</TableRow>
+								</TableBody>
+							</Table>
 						</div>
-					</CardContent>
-					<CardFooter class="flex justify-between border-t pt-4">
-						<span class="text-sm font-semibold">Total</span>
-						<span class="text-sm font-bold">{{ formatCurrency(cardBreakdown.grand_total) }}</span>
-					</CardFooter>
-				</Card>
-			</div>
+					</template>
+				</CardContent>
+			</Card>
 		</div>
 
 		<!-- 14.3 — Transaction filters -->

@@ -252,6 +252,12 @@ export class TransactionPage {
 	async submitForm(): Promise<void> {
 		const dialog = this.page.getByRole('dialog');
 		const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
+		await submitBtn.click();
+	}
+
+	async submitFormAndWaitForRedirect(): Promise<void> {
+		const dialog = this.page.getByRole('dialog');
+		const submitBtn = dialog.getByRole('button', { name: /Criar|Salvar/ });
 		const responsePromise = this.page.waitForResponse(
 			(resp) => resp.url().includes('transactions') && resp.status() < 400
 		);

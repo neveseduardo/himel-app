@@ -234,13 +234,13 @@ test.describe('Transaction Creation', () => {
 			occurred_at: '2024-06-15',
 		});
 
-		await transactionPage.submitForm();
+		await transactionPage.submitFormAndWaitForRedirect();
 		await transactionPage.waitForToast('Transação criado(a) com sucesso!');
 	});
 
 	test('newly created transaction appears in DataTable', async () => {
 		await transactionPage.search('Transação Teste E2E');
-		const newRow = await transactionPage.getRowByDescription('Transação Teste E2E');
+		const newRow = (await transactionPage.getRowByDescription('Transação Teste E2E')).first();
 		await expect(newRow).toBeVisible();
 	});
 
@@ -316,7 +316,7 @@ test.describe('Transaction Editing', () => {
 		const dialog = transactionPage.page.getByRole('dialog');
 		await dialog.locator('[name="description"]').fill('Supermercado Editado');
 
-		await transactionPage.submitForm();
+		await transactionPage.submitFormAndWaitForRedirect();
 		await transactionPage.waitForToast('Transação atualizado(a) com sucesso!');
 	});
 
@@ -397,17 +397,17 @@ test.describe('Transaction Deletion', () => {
 	});
 
 	test('deleted transaction removed from DataTable', async () => {
-		await transactionPage.search('Conta de Luz');
+		await transactionPage.search('Salário Mensal');
 
-		const rowBefore = await transactionPage.getRowByDescription('Conta de Luz');
+		const rowBefore = await transactionPage.getRowByDescription('Salário Mensal');
 		await expect(rowBefore).toBeVisible();
 
-		await transactionPage.clickDeleteButton('Conta de Luz');
+		await transactionPage.clickDeleteButton('Salário Mensal');
 		await transactionPage.confirmDelete();
 		await transactionPage.waitForToast('Transação excluído(a) com sucesso!');
 
 		await transactionPage.page.locator('table').waitFor({ state: 'visible' });
-		await transactionPage.search('Conta de Luz');
+		await transactionPage.search('Salário Mensal');
 
 		const emptyState = await transactionPage.getEmptyState();
 		await expect(emptyState).toBeVisible();
