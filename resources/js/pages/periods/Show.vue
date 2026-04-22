@@ -240,6 +240,16 @@ function handleDetachAll() {
 					<p class="text-2xl font-bold text-green-600 dark:text-green-400">
 						{{ formatCurrency(summary.total_inflow) }}
 					</p>
+					<div class="mt-2 space-y-1 text-sm text-muted-foreground">
+						<div class="flex justify-between">
+							<span>Manuais</span>
+							<span>{{ formatCurrency(summary.inflow_manual ?? 0) }}</span>
+						</div>
+						<div class="flex justify-between">
+							<span>Transferências</span>
+							<span>{{ formatCurrency(summary.inflow_transfer ?? 0) }}</span>
+						</div>
+					</div>
 				</CardContent>
 			</Card>
 
@@ -276,22 +286,28 @@ function handleDetachAll() {
 
 			<Card>
 				<CardHeader class="pb-2">
-					<CardTitle class="text-lg font-semibold">
+					<CardTitle class="text-sm font-medium text-muted-foreground">
 						Resumo por Cartão
 					</CardTitle>
 				</CardHeader>
 				<CardContent>
-					<div class="space-y-2">
-						<div v-for="card in cardBreakdown.cards" :key="card.credit_card_uid" class="flex items-center justify-between">
-							<span class="text-sm">{{ card.credit_card_name }}</span>
-							<span class="text-sm font-medium">{{ formatCurrency(card.total) }}</span>
+					<p class="text-2xl font-bold text-red-600 dark:text-red-400">
+						{{ formatCurrency(cardBreakdown.grand_total) }}
+					</p>
+					<template v-if="cardBreakdown.cards.length > 0">
+						<div class="mt-2 space-y-1 text-sm text-muted-foreground">
+							<div v-for="card in cardBreakdown.cards" :key="card.credit_card_uid" class="flex justify-between">
+								<span>{{ card.credit_card_name }}</span>
+								<span>{{ formatCurrency(card.total) }}</span>
+							</div>
 						</div>
-					</div>
+					</template>
+					<template v-else>
+						<p class="mt-2 text-sm text-muted-foreground">
+							Sem parcelas de cartão neste período.
+						</p>
+					</template>
 				</CardContent>
-				<CardFooter class="flex justify-between border-t pt-4">
-					<span class="text-sm font-semibold">Total</span>
-					<span class="text-sm font-bold">{{ formatCurrency(cardBreakdown.grand_total) }}</span>
-				</CardFooter>
 			</Card>
 
 			<Card>

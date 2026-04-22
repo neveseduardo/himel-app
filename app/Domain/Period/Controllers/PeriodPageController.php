@@ -85,6 +85,8 @@ class PeriodPageController
                 'total_credit_card_installments' => $periodSummary['total_credit_card_installments'],
                 'total_manual' => $periodSummary['total_manual'],
                 'total_transfer' => $periodSummary['total_transfer'],
+                'inflow_manual' => $periodSummary['inflow_manual'],
+                'inflow_transfer' => $periodSummary['inflow_transfer'],
             ],
             'transactions' => $transactions['data'],
             'meta' => $transactions['meta'],

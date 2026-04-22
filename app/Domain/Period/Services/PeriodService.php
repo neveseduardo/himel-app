@@ -399,6 +399,8 @@ class PeriodService implements PeriodServiceInterface
             ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_credit_card_installments', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_CREDIT_CARD])
             ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_manual', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_MANUAL])
             ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as total_transfer', [Transaction::DIRECTION_OUTFLOW, Transaction::SOURCE_TRANSFER])
+            ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as inflow_manual', [Transaction::DIRECTION_INFLOW, Transaction::SOURCE_MANUAL])
+            ->selectRaw('COALESCE(SUM(CASE WHEN direction = ? AND source = ? THEN amount ELSE 0 END), 0) as inflow_transfer', [Transaction::DIRECTION_INFLOW, Transaction::SOURCE_TRANSFER])
             ->first();
 
         $totalInflow = (float) $totals->total_inflow;
@@ -413,6 +415,8 @@ class PeriodService implements PeriodServiceInterface
             'total_credit_card_installments' => (float) $totals->total_credit_card_installments,
             'total_manual' => (float) $totals->total_manual,
             'total_transfer' => (float) $totals->total_transfer,
+            'inflow_manual' => (float) $totals->inflow_manual,
+            'inflow_transfer' => (float) $totals->inflow_transfer,
         ];
     }
 

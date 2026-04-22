@@ -13,6 +13,8 @@ export interface PeriodSummary {
 	total_credit_card_installments?: number;
 	total_manual?: number;
 	total_transfer?: number;
+	inflow_manual?: number;
+	inflow_transfer?: number;
 }
 
 export interface InitializationResult {
