@@ -15,47 +15,47 @@ Refatoração do componente `PageHeader.vue` para uma API baseada em slots e pro
   - Remove the hard-coded `<Button>` element entirely
   - _Requirements: 1.1, 1.2, 2.1–2.5, 3.1–3.3, 4.1–4.4, 5.1–5.2, 8.1–8.3_
 
-- [~] 2. Migrate accounts/Index.vue
+- [x] 2. Migrate accounts/Index.vue
   - Remove `eslint-disable-next-line` comment above `breadcrumbs`
   - Replace `<PageHeader title="Contas" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />` with new API: pass `:breadcrumbs="breadcrumbs"`, move "Criar" button into `#actions` slot
   - _Requirements: 6.1, 6.2, 6.3, 6.11_
 
-- [~] 3. Migrate categories/Index.vue
+- [x] 3. Migrate categories/Index.vue
   - Remove `eslint-disable-next-line` comment above `breadcrumbs`
   - Replace old PageHeader usage with new API: pass `:breadcrumbs="breadcrumbs"`, move "Criar" button into `#actions` slot
   - _Requirements: 6.1, 6.2, 6.4, 6.11_
 
-- [~] 4. Migrate credit-cards/Index.vue
+- [x] 4. Migrate credit-cards/Index.vue
   - Remove `eslint-disable-next-line` comment above `breadcrumbs`
   - Replace old PageHeader usage with new API: pass `:breadcrumbs="breadcrumbs"`, move "Criar" button into `#actions` slot
   - _Requirements: 6.1, 6.2, 6.5, 6.11_
 
-- [~] 5. Migrate credit-card-charges/Index.vue
+- [x] 5. Migrate credit-card-charges/Index.vue
   - Remove `eslint-disable-next-line` comment above `breadcrumbs`
   - Replace old PageHeader usage with new API: pass `:breadcrumbs="breadcrumbs"`, move "Criar" button into `#actions` slot
   - _Requirements: 6.1, 6.2, 6.6, 6.11_
 
-- [~] 6. Migrate fixed-expenses/Index.vue
+- [x] 6. Migrate fixed-expenses/Index.vue
   - Remove `eslint-disable-next-line` comment above `breadcrumbs`
   - Replace old PageHeader usage with new API: pass `:breadcrumbs="breadcrumbs"`, move "Criar" button into `#actions` slot
   - _Requirements: 6.1, 6.2, 6.7, 6.11_
 
-- [~] 7. Migrate periods/Index.vue
+- [x] 7. Migrate periods/Index.vue
   - Remove `eslint-disable-next-line` comment above `breadcrumbs`
   - Replace old PageHeader usage with new API: pass `:breadcrumbs="breadcrumbs"`, move "Criar Período" button into `#actions` slot
   - _Requirements: 6.1, 6.2, 6.8, 6.11_
 
-- [~] 8. Migrate transactions/Index.vue
+- [x] 8. Migrate transactions/Index.vue
   - Remove `eslint-disable-next-line` comment above `breadcrumbs`
   - Replace old PageHeader usage with new API: pass `:breadcrumbs="breadcrumbs"`, move "Criar" button into `#actions` slot
   - _Requirements: 6.1, 6.2, 6.9, 6.11_
 
-- [~] 9. Migrate transfers/Index.vue
+- [x] 9. Migrate transfers/Index.vue
   - Remove `eslint-disable-next-line` comment above `breadcrumbs`
   - Replace old PageHeader usage with new API: pass `:breadcrumbs="breadcrumbs"`, move "Criar" button into `#actions` slot
   - _Requirements: 6.1, 6.2, 6.10, 6.11_
 
-- [~] 10. Checkpoint - Ensure all Index pages are migrated
+- [x] 10. Checkpoint - Ensure all Index pages are migrated
   - Ensure all tests pass, ask the user if questions arise.
 
 - [~] 11. Migrate periods/Show.vue (special case)

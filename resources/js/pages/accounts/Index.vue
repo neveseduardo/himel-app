@@ -22,7 +22,6 @@ const props = defineProps<{
 	filters: Record<string, string>;
 }>();
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/' },
 	{ title: 'Contas', href: index.url() },
@@ -79,7 +78,14 @@ function handleDelete(uid: string) {
 			<meta name="description" content="Gerencie suas contas bancárias e acompanhe saldos.">
 		</Head>
 
-		<PageHeader title="Contas" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
+		<PageHeader title="Contas" :breadcrumbs="breadcrumbs">
+			<template #actions>
+				<Button size="sm" @click="store.openCreateModal()">
+					<Plus class="size-4" />
+					Criar
+				</Button>
+			</template>
+		</PageHeader>
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 

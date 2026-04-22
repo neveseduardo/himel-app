@@ -24,7 +24,6 @@ const props = defineProps<{
 	categories?: Category[];
 }>();
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/' },
 	{ title: 'Despesas Fixas', href: index.url() },
@@ -88,7 +87,14 @@ function handleDialogOpenChange(open: boolean) {
 			<meta name="description" content="Gerencie suas despesas fixas recorrentes.">
 		</Head>
 
-		<PageHeader title="Despesas Fixas" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
+		<PageHeader title="Despesas Fixas" :breadcrumbs="breadcrumbs">
+			<template #actions>
+				<Button size="sm" @click="store.openCreateModal()">
+					<Plus class="size-4" />
+					Criar
+				</Button>
+			</template>
+		</PageHeader>
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 

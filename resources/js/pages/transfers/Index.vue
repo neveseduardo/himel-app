@@ -24,7 +24,6 @@ const props = defineProps<{
 	accounts: Account[];
 }>();
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/' },
 	{ title: 'Transferências', href: index.url() },
@@ -81,7 +80,14 @@ function handleDelete(uid: string) {
 			<meta name="description" content="Gerencie transferências entre suas contas.">
 		</Head>
 
-		<PageHeader title="Transferências" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
+		<PageHeader title="Transferências" :breadcrumbs="breadcrumbs">
+			<template #actions>
+				<Button size="sm" @click="store.openCreateModal()">
+					<Plus class="size-4" />
+					Criar
+				</Button>
+			</template>
+		</PageHeader>
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
 

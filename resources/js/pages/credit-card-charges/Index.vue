@@ -24,7 +24,6 @@ const props = defineProps<{
 	creditCards: CreditCard[];
 }>();
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/' },
 	{ title: 'Compras Cartão', href: index.url() },
@@ -89,7 +88,14 @@ function handleDelete(uid: string) {
 			<meta name="description" content="Acompanhe as compras realizadas nos seus cartões de crédito.">
 		</Head>
 
-		<PageHeader title="Compras no Cartão" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
+		<PageHeader title="Compras no Cartão" :breadcrumbs="breadcrumbs">
+			<template #actions>
+				<Button size="sm" @click="store.openCreateModal()">
+					<Plus class="size-4" />
+					Criar
+				</Button>
+			</template>
+		</PageHeader>
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())">
 			<Select v-model="filters.card_uid" @update:model-value="applyFilters(index.url())">

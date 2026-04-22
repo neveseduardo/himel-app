@@ -18,7 +18,6 @@ const props = defineProps<{
 	filters: Record<string, string>;
 }>();
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const breadcrumbs: BreadcrumbItem[] = [
 	{ title: 'Financeiro', href: '/' },
 	{ title: 'Períodos', href: index.url() },
@@ -96,7 +95,14 @@ function handleDelete(uid: string) {
 			<meta name="description" content="Visualize e gerencie seus períodos financeiros mensais.">
 		</Head>
 
-		<PageHeader title="Períodos" button-label="Criar Período" :button-icon="Plus" @action="openCreateModal()" />
+		<PageHeader title="Períodos" :breadcrumbs="breadcrumbs">
+			<template #actions>
+				<Button size="sm" @click="openCreateModal()">
+					<Plus class="size-4" />
+					Criar Período
+				</Button>
+			</template>
+		</PageHeader>
 
 		<DataTable :columns="columns" :data="periods as unknown as Record<string, unknown>[]">
 			<template #cell-month="{ row }">
