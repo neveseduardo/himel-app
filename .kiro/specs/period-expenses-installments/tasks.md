@@ -10,11 +10,11 @@
 
 ## Tarefa 2: Backend — Atualizar PeriodPageController::show
 
-- [-] 2.1 Chamar os novos métodos do PeriodService no método `show` do `PeriodPageController` e passar os dados como props Inertia adicionais (fixed_expenses, installments, card_breakdown, summary expandido)
+- [x] 2.1 Chamar os novos métodos do PeriodService no método `show` do `PeriodPageController` e passar os dados como props Inertia adicionais (fixed_expenses, installments, card_breakdown, summary expandido)
 
 ## Tarefa 3: Frontend — Tipos TypeScript
 
-- [~] 3.1 Adicionar interfaces `PeriodFixedExpenseItem`, `PeriodFixedExpenses`, `PeriodInstallmentItem`, `PeriodInstallments`, `CardBreakdownItem`, `PeriodCardBreakdown` em `resources/js/domain/Period/types/period.ts` e estender `PeriodSummary` com campos opcionais de subtotais por fonte
+- [-] 3.1 Adicionar interfaces `PeriodFixedExpenseItem`, `PeriodFixedExpenses`, `PeriodInstallmentItem`, `PeriodInstallments`, `CardBreakdownItem`, `PeriodCardBreakdown` em `resources/js/domain/Period/types/period.ts` e estender `PeriodSummary` com campos opcionais de subtotais por fonte
 
 ## Tarefa 4: Frontend — Seção de Despesas Fixas na Show.vue
 
