@@ -63,28 +63,28 @@ Refatoração completa para remover o prefixo redundante `financial_` de tabelas
     - Atualizar imports e chamadas de factory (ex: `FinancialAccountFactory::new()` → `AccountFactory::new()`)
     - _Requisitos: 4.4, 9.1, 9.2_
 
-- [~] 5. Checkpoint — Executar `migrate:fresh --seed` e verificar integridade do banco
+- [x] 5. Checkpoint — Executar `migrate:fresh --seed` e verificar integridade do banco
   - Executar `php artisan migrate:fresh --seed` — deve completar sem erros
   - Executar `vendor/bin/pint --dirty --format agent` — deve reportar 0 erros
   - Perguntar ao usuário se há dúvidas antes de prosseguir
 
-- [ ] 6. Atualizar Services e Form Requests
-  - [~] 6.1 Atualizar `CreditCardChargeService` e `PeriodService` para usar `transaction_uid`
+- [x] 6. Atualizar Services e Form Requests
+  - [x] 6.1 Atualizar `CreditCardChargeService` e `PeriodService` para usar `transaction_uid`
     - `CreditCardChargeService`: `'financial_transaction_uid' => ...` → `'transaction_uid' => ...`
     - `PeriodService`: `$installment->financial_transaction_uid` → `$installment->transaction_uid`
     - _Requisitos: 7.1, 7.2, 7.3_
 
-  - [~] 6.2 Atualizar Form Requests com regras `exists:` e `unique:` referenciando tabelas prefixadas
+  - [x] 6.2 Atualizar Form Requests com regras `exists:` e `unique:` referenciando tabelas prefixadas
     - `StoreTransactionRequest`: `exists:financial_periods,uid` → `exists:periods,uid`
     - Verificar todos os outros Form Requests para referências `financial_`
     - _Requisitos: 6.1, 6.2_
 
-- [ ] 7. Atualizar Rotas — remover prefixo `finance.` e `/finance`
-  - [~] 7.1 Editar `routes/web.php`: remover grupo `Route::prefix('finance')->name('finance.')` e mover requires para o grupo `auth + verified`
+- [x] 7. Atualizar Rotas — remover prefixo `finance.` e `/finance`
+  - [x] 7.1 Editar `routes/web.php`: remover grupo `Route::prefix('finance')->name('finance.')` e mover requires para o grupo `auth + verified`
     - Remover ou realocar a rota `Inertia::render('finance/Index')`
     - _Requisitos: 11.1_
 
-  - [~] 7.2 Atualizar os 5 arquivos de rotas de domínio para remover prefixo `finance.` dos nomes
+  - [x] 7.2 Atualizar os 5 arquivos de rotas de domínio para remover prefixo `finance.` dos nomes
     - `CreditCard/Routes/web.php`: `->names('credit-cards')`
     - `Category/Routes/web.php`: `->names('categories')`
     - `Period/Routes/web.php`: `->names('periods')` + rotas nomeadas `periods.*`
@@ -92,13 +92,13 @@ Refatoração completa para remover o prefixo redundante `financial_` de tabelas
     - `CreditCardCharge/Routes/web.php`: `->names('credit-card-charges')`
     - _Requisitos: 11.2, 11.3, 15.1_
 
-- [ ] 8. Atualizar Controllers — `Inertia::render()` e `redirect()->route()`
-  - [~] 8.1 Atualizar todos os PageControllers para remover prefixo `finance/` do `Inertia::render()`
+- [x] 8. Atualizar Controllers — `Inertia::render()` e `redirect()->route()`
+  - [x] 8.1 Atualizar todos os PageControllers para remover prefixo `finance/` do `Inertia::render()`
     - `AccountPageController`, `CategoryPageController`, `CreditCardPageController`, `CreditCardChargePageController`, `FixedExpensePageController`, `PeriodPageController`, `TransactionPageController`, `TransferPageController`
     - Ex: `Inertia::render('finance/accounts/Index')` → `Inertia::render('accounts/Index')`
     - _Requisitos: 13.1, 13.3_
 
-  - [~] 8.2 Atualizar todos os `redirect()->route('finance.*')` nos Controllers para remover prefixo `finance.`
+  - [x] 8.2 Atualizar todos os `redirect()->route('finance.*')` nos Controllers para remover prefixo `finance.`
     - Ex: `redirect()->route('finance.accounts.index')` → `redirect()->route('accounts.index')`
     - Corrigir bug existente no `PeriodPageController`: `finance.finance.periods.*` → `periods.*`
     - _Requisitos: 11.4, 13.2_

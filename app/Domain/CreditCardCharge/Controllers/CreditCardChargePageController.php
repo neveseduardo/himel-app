@@ -24,7 +24,7 @@ class CreditCardChargePageController
         $filters = $request->only(['page', 'per_page', 'card_uid', 'search']);
         $result = $this->creditCardChargeService->getAllWithFilters($userUid, $filters);
 
-        return Inertia::render('finance/credit-card-charges/Index', [
+        return Inertia::render('credit-card-charges/Index', [
             'charges' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
@@ -37,7 +37,7 @@ class CreditCardChargePageController
         try {
             $this->creditCardChargeService->create($request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.credit-card-charges.index')->with('success', 'Compra registrada com sucesso.');
+            return redirect()->route('credit-card-charges.index')->with('success', 'Compra registrada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to create credit card charge', ['error' => $e->getMessage()]);
 

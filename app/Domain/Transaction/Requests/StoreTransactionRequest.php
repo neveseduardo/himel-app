@@ -26,7 +26,7 @@ class StoreTransactionRequest extends FormRequest
             'paid_at' => ['nullable', 'date'],
             'reference_id' => ['nullable', 'uuid'],
             'description' => ['nullable', 'string', 'max:255'],
-            'period_uid' => ['nullable', 'uuid', 'exists:financial_periods,uid'],
+            'period_uid' => ['nullable', 'uuid', 'exists:periods,uid'],
         ];
     }
 

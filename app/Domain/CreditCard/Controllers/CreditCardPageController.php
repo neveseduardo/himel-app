@@ -23,7 +23,7 @@ class CreditCardPageController
         $filters = $request->only(['page', 'per_page', 'card_type', 'search']);
         $result = $this->creditCardService->getAllWithFilters($userUid, $filters);
 
-        return Inertia::render('finance/credit-cards/Index', [
+        return Inertia::render('credit-cards/Index', [
             'creditCards' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
@@ -35,7 +35,7 @@ class CreditCardPageController
         try {
             $this->creditCardService->create($request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.credit-cards.index')->with('success', 'Cartão criado com sucesso.');
+            return redirect()->route('credit-cards.index')->with('success', 'Cartão criado com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to create credit card', ['error' => $e->getMessage()]);
 
@@ -48,7 +48,7 @@ class CreditCardPageController
         try {
             $this->creditCardService->update($uid, $request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.credit-cards.index')->with('success', 'Cartão atualizado com sucesso.');
+            return redirect()->route('credit-cards.index')->with('success', 'Cartão atualizado com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to update credit card', ['error' => $e->getMessage()]);
 
@@ -61,7 +61,7 @@ class CreditCardPageController
         try {
             $this->creditCardService->delete($uid, $request->user()->uid);
 
-            return redirect()->route('finance.credit-cards.index')->with('success', 'Cartão excluído com sucesso.');
+            return redirect()->route('credit-cards.index')->with('success', 'Cartão excluído com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to delete credit card', ['error' => $e->getMessage()]);
 

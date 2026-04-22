@@ -25,7 +25,7 @@ class TransferPageController
         $filters = $request->only(['page', 'per_page', 'account_uid', 'date_from', 'date_to']);
         $result = $this->transferService->getAllWithFilters($userUid, $filters);
 
-        return Inertia::render('finance/transfers/Index', [
+        return Inertia::render('transfers/Index', [
             'transfers' => TransferResource::collection($result['data'])->resolve(),
             'meta' => $result['meta'],
             'filters' => $filters,
@@ -38,7 +38,7 @@ class TransferPageController
         try {
             $this->transferService->create($request->validated(), $request->user()->uid);
 
-            return redirect()->route('finance.transfers.index')->with('success', 'Transferência criada com sucesso.');
+            return redirect()->route('transfers.index')->with('success', 'Transferência criada com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to create transfer', ['error' => $e->getMessage()]);
 
@@ -51,7 +51,7 @@ class TransferPageController
         try {
             $this->transferService->delete($uid, $request->user()->uid);
 
-            return redirect()->route('finance.transfers.index')->with('success', 'Transferência excluída com sucesso.');
+            return redirect()->route('transfers.index')->with('success', 'Transferência excluída com sucesso.');
         } catch (\Throwable $e) {
             Log::error('Failed to delete transfer', ['error' => $e->getMessage()]);
 
