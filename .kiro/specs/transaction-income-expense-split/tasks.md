@@ -50,7 +50,7 @@ Implementação incremental da diferenciação entre transações INFLOW e OUTFL
     - Manter campos com `sometimes` para update parcial
     - _Requisitos: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 3. Modificar TransactionPageController para tratar InsufficientBalanceException
+- [x] 3. Modificar TransactionPageController para tratar InsufficientBalanceException
   - Capturar `InsufficientBalanceException` nos métodos `store` e `update`
   - Retornar `back()->withErrors(['amount' => $e->getMessage()])` para que o erro apareça no formulário
   - _Requisitos: 7.2, 7.3_
