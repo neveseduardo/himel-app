@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Domain\Account\Models\Account;
 use App\Domain\User\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -10,6 +11,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FinancialAccountFactory extends Factory
 {
+    protected $model = Account::class;
+
     public function definition(): array
     {
         return [

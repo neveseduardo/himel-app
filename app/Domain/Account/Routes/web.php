@@ -5,5 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('accounts', AccountPageController::class)
     ->parameters(['accounts' => 'uid'])
-    ->names('finance.accounts')
+    ->names('accounts')
     ->except(['show', 'create', 'edit']);

@@ -29,7 +29,7 @@ class TransferPageController
             'transfers' => TransferResource::collection($result['data'])->resolve(),
             'meta' => $result['meta'],
             'filters' => $filters,
-            'accounts' => Inertia::optional(fn () => $this->accountService->getAll($userUid)),
+            'accounts' => $this->accountService->getAll($userUid),
         ]);
     }
 

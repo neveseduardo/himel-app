@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FinancialTransferFactory extends Factory
 {
+    protected $model = Transfer::class;
+
     public function definition(): array
     {
         return [

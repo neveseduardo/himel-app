@@ -155,7 +155,6 @@ test.describe('FixedExpense Pagination', () => {
 	});
 });
 
-
 // ---------------------------------------------------------------------------
 // 4. FixedExpense Dialog Reopen (Task 5.4)
 // ---------------------------------------------------------------------------
@@ -289,7 +288,6 @@ test.describe('FixedExpense Creation', () => {
 		expect(isOpenAfter).toBe(false);
 	});
 });
-
 
 // ---------------------------------------------------------------------------
 // 6. FixedExpense Editing (Task 5.6)

@@ -5,5 +5,5 @@ use Illuminate\Support\Facades\Route;
 
 Route::resource('transactions', TransactionPageController::class)
     ->parameters(['transactions' => 'uid'])
-    ->names('finance.transactions')
+    ->names('transactions')
     ->except(['show', 'create', 'edit']);

@@ -13,6 +13,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FinancialTransactionFactory extends Factory
 {
+    protected $model = Transaction::class;
+
     public function definition(): array
     {
         return [

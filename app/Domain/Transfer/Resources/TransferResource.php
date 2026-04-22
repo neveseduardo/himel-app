@@ -18,8 +18,8 @@ class TransferResource extends JsonResource
             'amount' => $this->amount,
             'occurred_at' => $this->created_at,
             'created_at' => $this->created_at,
-            'from_account' => new AccountResource($this->whenLoaded('fromAccount')),
-            'to_account' => new AccountResource($this->whenLoaded('toAccount')),
+            'from_account' => $this->whenLoaded('fromAccount', fn () => (new AccountResource($this->fromAccount))->resolve()),
+            'to_account' => $this->whenLoaded('toAccount', fn () => (new AccountResource($this->toAccount))->resolve()),
         ];
     }
 }
