@@ -185,8 +185,8 @@ function handleDetachAll() {
 				<AlertDialog>
 					<AlertDialogTrigger as-child>
 						<Button variant="destructive" size="sm">
-							<Trash2 class="mr-2 size-4" />
-							Remover Todas as Transações
+							<Trash2 class="size-4" />
+							Remover Transações
 						</Button>
 					</AlertDialogTrigger>
 					<AlertDialogContent>
@@ -206,10 +206,10 @@ function handleDetachAll() {
 				</AlertDialog>
 				<DropdownMenu>
 					<DropdownMenuTrigger as-child>
-						<Button size="sm">
+						<Button size="sm" variant="outline">
 							<Plus class="size-4" />
 							Nova Transação
-							<ChevronDown class="ml-1 size-3" />
+							<ChevronDown class="size-3" />
 						</Button>
 					</DropdownMenuTrigger>
 					<DropdownMenuContent>
@@ -222,8 +222,8 @@ function handleDetachAll() {
 					</DropdownMenuContent>
 				</DropdownMenu>
 				<Button size="sm" :disabled="initializing" @click="handleInitialize">
-					<Play class="mr-2 size-4" />
-					{{ initializing ? 'Inicializando...' : 'Inicializar Período' }}
+					<Play class="size-4" />
+					{{ initializing ? 'Inicializando...' : ' Processar Período' }}
 				</Button>
 			</template>
 		</PageHeader>

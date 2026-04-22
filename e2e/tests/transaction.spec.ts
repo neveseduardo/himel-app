@@ -185,7 +185,7 @@ test.describe('Transaction Dialog Reopen', () => {
 		expect(await transactionPage.isModalOpen()).toBe(true);
 
 		const modalTitle = await transactionPage.getModalTitle();
-		expect(modalTitle).toBe('Nova Transação');
+		expect(modalTitle).toBe('Nova Saída');
 	});
 
 	test('dialog reopens after closing via overlay click', async () => {
@@ -199,7 +199,7 @@ test.describe('Transaction Dialog Reopen', () => {
 		expect(await transactionPage.isModalOpen()).toBe(true);
 
 		const modalTitle = await transactionPage.getModalTitle();
-		expect(modalTitle).toBe('Nova Transação');
+		expect(modalTitle).toBe('Nova Saída');
 	});
 });
 
@@ -215,11 +215,11 @@ test.describe('Transaction Creation', () => {
 		await transactionPage.goto();
 	});
 
-	test('clicking "Criar" opens modal with title "Nova Transação"', async () => {
+	test('clicking "Nova Transação" → "Saída" opens modal with title "Nova Saída"', async () => {
 		await transactionPage.clickCreateButton();
 
 		const modalTitle = await transactionPage.getModalTitle();
-		expect(modalTitle).toBe('Nova Transação');
+		expect(modalTitle).toBe('Nova Saída');
 	});
 
 	test('filling all fields and submitting shows success toast', async () => {
@@ -229,12 +229,9 @@ test.describe('Transaction Creation', () => {
 			account_uid: 'Conta Corrente BB',
 			category_uid: 'Alimentação',
 			amount: 99.90,
-			direction: 'OUTFLOW',
 			status: 'PENDING',
 			description: 'Transação Teste E2E',
 			occurred_at: '2024-06-15',
-			due_date: '',
-			paid_at: '',
 		});
 
 		await transactionPage.submitForm();
@@ -254,12 +251,9 @@ test.describe('Transaction Creation', () => {
 			account_uid: '',
 			category_uid: '',
 			amount: 0,
-			direction: 'OUTFLOW',
 			status: 'PENDING',
 			description: '',
 			occurred_at: '2024-06-15',
-			due_date: '',
-			paid_at: '',
 		});
 
 		await transactionPage.submitForm();
@@ -294,12 +288,12 @@ test.describe('Transaction Editing', () => {
 		await transactionPage.goto();
 	});
 
-	test('clicking edit icon opens modal with title "Editar Transação"', async () => {
+	test('clicking edit icon opens modal with title "Editar Saída"', async () => {
 		await transactionPage.search('Supermercado');
 		await transactionPage.clickEditButton('Supermercado');
 
 		const modalTitle = await transactionPage.getModalTitle();
-		expect(modalTitle).toBe('Editar Transação');
+		expect(modalTitle).toBe('Editar Saída');
 	});
 
 	test('form fields pre-populated with existing data', async () => {
@@ -310,9 +304,6 @@ test.describe('Transaction Editing', () => {
 
 		const description = await transactionPage.getFormFieldValue('description');
 		expect(description).toBe('Supermercado');
-
-		const direction = await transactionPage.getFormFieldValue('direction');
-		expect(direction).toBe('Saída');
 
 		const status = await transactionPage.getFormFieldValue('status');
 		expect(status).toBe('Pago');
@@ -348,30 +339,29 @@ test.describe('Transaction Viewing', () => {
 		await transactionPage.goto();
 	});
 
-	test('clicking view icon opens modal with title "Detalhes da Transação"', async () => {
+	test('clicking view icon opens modal with direction-specific title', async () => {
 		await transactionPage.search('Salário Mensal');
 		await transactionPage.clickViewButton('Salário Mensal');
 
 		const modalTitle = await transactionPage.getModalTitle();
-		expect(modalTitle).toBe('Detalhes da Transação');
+		expect(modalTitle).toBe('Detalhes da Entrada');
 	});
 
-	test('all form fields are disabled (read-only)', async () => {
-		await transactionPage.search('Salário Mensal');
-		await transactionPage.clickViewButton('Salário Mensal');
+	test('all form fields are disabled (read-only) for OUTFLOW transaction', async () => {
+		await transactionPage.search('Supermercado');
+		await transactionPage.clickViewButton('Supermercado');
 
 		expect(await transactionPage.isFieldDisabled('account_uid')).toBe(true);
 		expect(await transactionPage.isFieldDisabled('category_uid')).toBe(true);
 		expect(await transactionPage.isFieldDisabled('amount')).toBe(true);
-		expect(await transactionPage.isFieldDisabled('direction')).toBe(true);
 		expect(await transactionPage.isFieldDisabled('status')).toBe(true);
 		expect(await transactionPage.isFieldDisabled('description')).toBe(true);
 		expect(await transactionPage.isFieldDisabled('occurred_at')).toBe(true);
 	});
 
-	test('no submit button visible', async () => {
-		await transactionPage.search('Salário Mensal');
-		await transactionPage.clickViewButton('Salário Mensal');
+	test('no submit button visible in view mode', async () => {
+		await transactionPage.search('Supermercado');
+		await transactionPage.clickViewButton('Supermercado');
 
 		const isVisible = await transactionPage.isSubmitButtonVisible();
 		expect(isVisible).toBe(false);
