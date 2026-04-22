@@ -5,6 +5,7 @@ namespace App\Domain\CreditCardCharge\Controllers;
 use App\Domain\CreditCard\Contracts\CreditCardServiceInterface;
 use App\Domain\CreditCardCharge\Contracts\CreditCardChargeServiceInterface;
 use App\Domain\CreditCardCharge\Requests\StoreCreditCardChargeRequest;
+use App\Domain\CreditCardCharge\Requests\UpdateCreditCardChargeRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -28,7 +29,7 @@ class CreditCardChargePageController
             'charges' => $result['data'],
             'meta' => $result['meta'],
             'filters' => $filters,
-            'creditCards' => fn () => $this->creditCardService->getAll($userUid),
+            'creditCards' => $this->creditCardService->getAll($userUid),
         ]);
     }
 
@@ -42,6 +43,32 @@ class CreditCardChargePageController
             Log::error('Failed to create credit card charge', ['error' => $e->getMessage()]);
 
             return back()->with('error', 'Erro ao registrar compra.');
+        }
+    }
+
+    public function update(UpdateCreditCardChargeRequest $request, string $uid): RedirectResponse
+    {
+        try {
+            $this->creditCardChargeService->update($uid, $request->validated(), $request->user()->uid);
+
+            return redirect()->route('credit-card-charges.index')->with('success', 'Compra atualizada com sucesso.');
+        } catch (\Throwable $e) {
+            Log::error('Failed to update credit card charge', ['error' => $e->getMessage()]);
+
+            return back()->with('error', 'Erro ao atualizar compra.');
+        }
+    }
+
+    public function destroy(Request $request, string $uid): RedirectResponse
+    {
+        try {
+            $this->creditCardChargeService->delete($uid, $request->user()->uid);
+
+            return redirect()->route('credit-card-charges.index')->with('success', 'Compra excluída com sucesso.');
+        } catch (\Throwable $e) {
+            Log::error('Failed to delete credit card charge', ['error' => $e->getMessage()]);
+
+            return back()->with('error', 'Erro ao excluir compra.');
         }
     }
 }

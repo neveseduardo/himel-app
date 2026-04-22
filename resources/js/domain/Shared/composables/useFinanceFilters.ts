@@ -6,13 +6,15 @@ export function useFinanceFilters(initialFilters: Record<string, string> = {}) {
 
 	function applyFilters(routeName: string) {
 		const cleanFilters = Object.fromEntries(
-			Object.entries(filters.value).filter(([, v]) => v !== null && v !== '')
+			Object.entries(filters.value).filter(
+				([k, v]) => k !== 'page' && k !== 'per_page' && v !== null && v !== '' && v !== 'all'
+			)
 		);
 		router.get(routeName, cleanFilters, { preserveState: true, preserveScroll: true });
 	}
 
 	function resetFilters(routeName: string) {
-		filters.value = { ...initialFilters };
+		filters.value = {};
 		router.get(routeName, {}, { preserveState: true });
 	}
 

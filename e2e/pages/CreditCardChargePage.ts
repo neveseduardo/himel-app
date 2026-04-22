@@ -118,6 +118,24 @@ export class CreditCardChargePage {
 	}
 
 	// ---------------------------------------------------------------------------
+	// Card filter
+	// ---------------------------------------------------------------------------
+
+	async filterByCard(cardName: string): Promise<void> {
+		// The card filter Select is the second combobox on the page (first is inside FilterBar search)
+		const triggers = this.page.getByRole('combobox');
+		// FilterBar has no combobox, so the first combobox is the card filter
+		const trigger = triggers.first();
+		await trigger.click();
+		const responsePromise = this.page.waitForResponse(
+			(resp) => resp.url().includes('credit-card-charges') && resp.status() === 200
+		);
+		await this.page.getByRole('option', { name: cardName }).click();
+		await responsePromise;
+		await this.page.locator('table').waitFor({ state: 'visible' });
+	}
+
+	// ---------------------------------------------------------------------------
 	// CRUD Modal interactions
 	// ---------------------------------------------------------------------------
 

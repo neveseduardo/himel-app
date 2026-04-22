@@ -104,6 +104,49 @@ test.describe('CreditCardCharge Search and Filtering', () => {
 		const emptyState = await chargePage.getEmptyState();
 		await expect(emptyState).toBeVisible();
 	});
+
+	test('selecting a card filters charges to that card only', async () => {
+		await chargePage.filterByCard('C6 Bank');
+
+		const rows = await chargePage.getTableRows();
+		expect(rows.length).toBeGreaterThan(0);
+
+		for (const row of rows) {
+			await expect(row).toContainText('C6 Bank');
+		}
+	});
+
+	test('selecting "Todos os cartões" shows all charges', async () => {
+		await chargePage.filterByCard('C6 Bank');
+
+		const filteredRows = await chargePage.getTableRows();
+		const filteredCount = filteredRows.length;
+
+		await chargePage.filterByCard('Todos os cartões');
+
+		const allRows = await chargePage.getTableRows();
+		expect(allRows.length).toBeGreaterThan(filteredCount);
+	});
+
+	test('applying card filter from page 2 resets to page 1', async () => {
+		// Navigate to page 2
+		await chargePage.goToNextPage();
+		const url = chargePage.page.url();
+		expect(url).toContain('page=2');
+
+		// Apply card filter — should reset to page 1
+		await chargePage.filterByCard('C6 Bank');
+
+		const newUrl = chargePage.page.url();
+		expect(newUrl).not.toContain('page=');
+
+		const rows = await chargePage.getTableRows();
+		expect(rows.length).toBeGreaterThan(0);
+
+		for (const row of rows) {
+			await expect(row).toContainText('C6 Bank');
+		}
+	});
 });
 
 // ---------------------------------------------------------------------------
@@ -334,7 +377,7 @@ test.describe('CreditCardCharge Viewing', () => {
 // 6. CreditCardCharge Editing (SKIP — UI not implemented yet)
 // ---------------------------------------------------------------------------
 
-test.describe.skip('CreditCardCharge Editing', () => {
+test.describe('CreditCardCharge Editing', () => {
 	let chargePage: CreditCardChargePage;
 
 	test.beforeEach(async ({ page }) => {
@@ -394,7 +437,7 @@ test.describe.skip('CreditCardCharge Editing', () => {
 // 7. CreditCardCharge Deletion (SKIP — UI not implemented yet)
 // ---------------------------------------------------------------------------
 
-test.describe.skip('CreditCardCharge Deletion', () => {
+test.describe('CreditCardCharge Deletion', () => {
 	let chargePage: CreditCardChargePage;
 
 	test.beforeEach(async ({ page }) => {
@@ -411,8 +454,8 @@ test.describe.skip('CreditCardCharge Deletion', () => {
 	});
 
 	test('confirming deletion shows success toast', async () => {
-		await chargePage.search('Compra Teste E2E');
-		await chargePage.clickDeleteButton('Compra Teste E2E');
+		await chargePage.search('Curso Online');
+		await chargePage.clickDeleteButton('Curso Online');
 		await chargePage.confirmDelete();
 
 		await chargePage.waitForToast('Compra no cartão excluído(a) com sucesso!');

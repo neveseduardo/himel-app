@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { store } from '@/actions/App/Domain/CreditCardCharge/Controllers/CreditCardChargePageController';
+import { store, update } from '@/actions/App/Domain/CreditCardCharge/Controllers/CreditCardChargePageController';
 import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
 import type { CreditCardCharge } from '@/domain/CreditCardCharge/types/credit-card-charge';
 import { creditCardChargeSchema } from '@/domain/CreditCardCharge/validations/credit-card-charge-schema';
@@ -15,8 +15,11 @@ const emit = defineEmits<{
 	cancel: [];
 }>();
 
-const action = computed(() => store.url());
-const method = computed(() => 'post' as const);
+const isEditing = computed(() => !!props.item);
+const action = computed(() =>
+	isEditing.value ? update.url(props.item!.uid) : store.url()
+);
+const method = computed(() => (isEditing.value ? 'put' : 'post'));
 
 const initialValues = computed(() => ({
 	credit_card_uid: props.item?.credit_card?.uid ?? '',
@@ -107,7 +110,7 @@ const initialValues = computed(() => ({
 						Cancelar
 					</Button>
 					<Button type="submit" :disabled="processing">
-						Criar
+						{{ isEditing ? 'Salvar' : 'Criar' }}
 					</Button>
 				</div>
 			</div>

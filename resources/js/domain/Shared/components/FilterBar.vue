@@ -10,8 +10,8 @@ defineEmits<{
 </script>
 
 <template>
-	<div class="flex flex-wrap items-center gap-3">
-		<div class="relative flex-1 min-w-[200px]">
+	<div class="flex items-center gap-3">
+		<div class="relative flex-1">
 			<Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
 			<Input
 				v-model="model"
@@ -21,7 +21,7 @@ defineEmits<{
 			/>
 		</div>
 		<slot />
-		<div class="flex items-center gap-2">
+		<div class="flex shrink-0 items-center gap-2">
 			<Button variant="outline" size="sm" @click="$emit('search')">
 				Buscar
 			</Button>

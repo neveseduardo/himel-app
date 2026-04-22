@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Head } from '@inertiajs/vue3';
-import { Eye, Plus } from 'lucide-vue-next';
+import { Head, router } from '@inertiajs/vue3';
+import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 
-import { index } from '@/actions/App/Domain/CreditCardCharge/Controllers/CreditCardChargePageController';
+import { destroy, index } from '@/actions/App/Domain/CreditCardCharge/Controllers/CreditCardChargePageController';
 import type { CreditCard } from '@/domain/CreditCard/types/credit-card';
 import CreditCardChargeForm from '@/domain/CreditCardCharge/components/CreditCardChargeForm.vue';
 import { useCreditCardChargeStore } from '@/domain/CreditCardCharge/stores/useCreditCardChargeStore';
@@ -40,7 +40,7 @@ const columns = [
 ];
 
 const store = useCreditCardChargeStore();
-const { onSuccess } = useCrudToast('Compra no cartão');
+const { onSuccess, onError } = useCrudToast('Compra no cartão');
 const { filters, applyFilters, resetFilters } = useFinanceFilters(props.filters);
 const { goToPage } = usePagination();
 
@@ -53,6 +53,7 @@ watch(() => store.isModalOpen, (open) => {
 
 const modalTitle = computed(() => {
 	if (store.modalMode === 'create') return 'Nova Compra';
+	if (store.modalMode === 'edit') return 'Editar Compra';
 	return 'Detalhes da Compra';
 });
 
@@ -63,8 +64,22 @@ function handleDialogOpenChange(open: boolean) {
 }
 
 function handleFormSuccess() {
-	onSuccess('create');
+	onSuccess(store.modalMode === 'edit' ? 'update' : 'create');
 	store.closeModal();
+}
+
+function handleDelete(uid: string) {
+	store.deletingUid = uid;
+	router.delete(destroy.url(uid), {
+		onSuccess: () => {
+			store.deletingUid = null;
+			onSuccess('delete');
+		},
+		onError: (errors) => {
+			store.deletingUid = null;
+			onError('delete', errors as Record<string, string>);
+		},
+	});
 }
 </script>
 
@@ -76,7 +91,21 @@ function handleFormSuccess() {
 
 		<PageHeader title="Compras no Cartão" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
-		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />
+		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())">
+			<Select v-model="filters.card_uid" @update:model-value="applyFilters(index.url())">
+				<SelectTrigger class="w-[180px] shrink-0">
+					<SelectValue placeholder="Todos os cartões" />
+				</SelectTrigger>
+				<SelectContent>
+					<SelectItem value="all">
+						Todos os cartões
+					</SelectItem>
+					<SelectItem v-for="card in creditCards" :key="card.uid" :value="card.uid">
+						{{ card.name }}
+					</SelectItem>
+				</SelectContent>
+			</Select>
+		</FilterBar>
 
 		<DataTable :columns="columns" :data="charges as unknown as Record<string, unknown>[]">
 			<template #cell-purchase_date="{ row }">
@@ -98,6 +127,16 @@ function handleFormSuccess() {
 					<Button variant="ghost" size="icon" @click="store.openViewModal(row as unknown as CreditCardCharge)">
 						<Eye class="size-4" />
 					</Button>
+					<Button variant="ghost" size="icon" @click="store.openEditModal(row as unknown as CreditCardCharge)">
+						<Pencil class="size-4" />
+					</Button>
+					<DeleteConfirmPopover :loading="store.deletingUid === (row as unknown as CreditCardCharge).uid" @confirm="handleDelete((row as unknown as CreditCardCharge).uid)">
+						<template #trigger>
+							<Button variant="ghost" size="icon">
+								<Trash2 class="size-4" />
+							</Button>
+						</template>
+					</DeleteConfirmPopover>
 				</div>
 			</template>
 		</DataTable>
