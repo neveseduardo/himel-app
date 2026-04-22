@@ -348,8 +348,8 @@ test.describe('Transaction Viewing', () => {
 	});
 
 	test('all form fields are disabled (read-only) for OUTFLOW transaction', async () => {
-		await transactionPage.search('Supermercado');
-		await transactionPage.clickViewButton('Supermercado');
+		await transactionPage.search('Supermercado Editado');
+		await transactionPage.clickViewButton('Supermercado Editado');
 
 		expect(await transactionPage.isFieldDisabled('account_uid')).toBe(true);
 		expect(await transactionPage.isFieldDisabled('category_uid')).toBe(true);
@@ -360,8 +360,8 @@ test.describe('Transaction Viewing', () => {
 	});
 
 	test('no submit button visible in view mode', async () => {
-		await transactionPage.search('Supermercado');
-		await transactionPage.clickViewButton('Supermercado');
+		await transactionPage.search('Supermercado Editado');
+		await transactionPage.clickViewButton('Supermercado Editado');
 
 		const isVisible = await transactionPage.isSubmitButtonVisible();
 		expect(isVisible).toBe(false);
