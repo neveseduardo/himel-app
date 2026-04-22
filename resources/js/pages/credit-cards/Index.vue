@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 
 import { destroy, index } from '@/actions/App/Domain/CreditCard/Controllers/CreditCardPageController';
@@ -76,6 +76,10 @@ function handleDelete(uid: string) {
 
 <template>
 	<div class="flex flex-col gap-6 p-6">
+		<Head title="Cartões de Crédito">
+			<meta name="description" content="Gerencie seus cartões de crédito, limites e vencimentos.">
+		</Head>
+
 		<PageHeader title="Cartões de Crédito" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />

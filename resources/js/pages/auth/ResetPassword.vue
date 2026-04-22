@@ -1,5 +1,7 @@
 <template>
-	<Head title="Redefinir senha" />
+	<Head title="Redefinir senha">
+		<meta name="description" content="Defina uma nova senha para sua conta.">
+	</Head>
 
 	<Form
 		v-slot="{ errors, processing }"

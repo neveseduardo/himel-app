@@ -1,6 +1,8 @@
 <template>
 	<div class="app-login">
-		<Head title="Entrar" />
+		<Head title="Entrar">
+			<meta name="description" content="Acesse sua conta para gerenciar suas finanças pessoais.">
+		</Head>
 
 		<div
 			v-if="status"

@@ -1,5 +1,7 @@
 <template>
-	<Head title="Esqueci minha senha" />
+	<Head title="Esqueci minha senha">
+		<meta name="description" content="Recupere o acesso à sua conta informando seu e-mail.">
+	</Head>
 
 	<div
 		v-if="status"

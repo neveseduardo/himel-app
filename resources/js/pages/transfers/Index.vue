@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { Eye, Plus, Trash2 } from 'lucide-vue-next';
 
 import { destroy, index } from '@/actions/App/Domain/Transfer/Controllers/TransferPageController';
@@ -77,6 +77,10 @@ function handleDelete(uid: string) {
 
 <template>
 	<div class="flex flex-col gap-6 p-6">
+		<Head title="Transferências">
+			<meta name="description" content="Gerencie transferências entre suas contas.">
+		</Head>
+
 		<PageHeader title="Transferências" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />

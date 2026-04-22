@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { Eye, Plus, Trash2 } from 'lucide-vue-next';
 
 import { destroy, index, show, store } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
@@ -92,6 +92,10 @@ function handleDelete(uid: string) {
 
 <template>
 	<div class="flex flex-col gap-6 p-6">
+		<Head title="Períodos">
+			<meta name="description" content="Visualize e gerencie seus períodos financeiros mensais.">
+		</Head>
+
 		<PageHeader title="Períodos" button-label="Criar Período" :button-icon="Plus" @action="openCreateModal()" />
 
 		<DataTable :columns="columns" :data="periods as unknown as Record<string, unknown>[]">

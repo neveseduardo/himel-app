@@ -1,5 +1,7 @@
 <template>
-	<Head title="Verificação de e-mail" />
+	<Head title="Verificação de e-mail">
+		<meta name="description" content="Verifique seu endereço de e-mail para ativar sua conta.">
+	</Head>
 
 	<div
 		v-if="status === 'verification-link-sent'"

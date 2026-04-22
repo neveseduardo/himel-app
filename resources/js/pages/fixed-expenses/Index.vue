@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-vue-next';
 
 import { destroy, index } from '@/actions/App/Domain/FixedExpense/Controllers/FixedExpensePageController';
@@ -84,6 +84,10 @@ function handleDialogOpenChange(open: boolean) {
 
 <template>
 	<div class="flex flex-col gap-6 p-6">
+		<Head title="Despesas Fixas">
+			<meta name="description" content="Gerencie suas despesas fixas recorrentes.">
+		</Head>
+
 		<PageHeader title="Despesas Fixas" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />

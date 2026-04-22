@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { router, usePage } from '@inertiajs/vue3';
+import { Head, router, usePage } from '@inertiajs/vue3';
 import { ArrowLeft, CheckCircle, Play, Plus, Trash2, X } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 
@@ -159,6 +159,10 @@ function handleDetachAll() {
 
 <template>
 	<div class="flex flex-col gap-6 p-6">
+		<Head :title="`${monthNames[period.month]} ${period.year}`">
+			<meta name="description" :content="`Resumo financeiro do período ${monthNames[period.month]} ${period.year}.`">
+		</Head>
+
 		<!-- 14.1 — Header with month/year and actions -->
 		<div class="flex items-center justify-between">
 			<div class="flex items-center gap-3">

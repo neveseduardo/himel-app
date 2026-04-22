@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Head } from '@inertiajs/vue3';
 import { Eye, Plus } from 'lucide-vue-next';
 
 import { index } from '@/actions/App/Domain/CreditCardCharge/Controllers/CreditCardChargePageController';
@@ -69,6 +70,10 @@ function handleFormSuccess() {
 
 <template>
 	<div class="flex flex-col gap-6 p-6">
+		<Head title="Compras no Cartão">
+			<meta name="description" content="Acompanhe as compras realizadas nos seus cartões de crédito.">
+		</Head>
+
 		<PageHeader title="Compras no Cartão" button-label="Criar" :button-icon="Plus" @action="store.openCreateModal()" />
 
 		<FilterBar v-model="filters.search" @search="applyFilters(index.url())" @reset="resetFilters(index.url())" />

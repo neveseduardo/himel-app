@@ -1,5 +1,7 @@
 <template>
-	<Head title="Confirmar senha" />
+	<Head title="Confirmar senha">
+		<meta name="description" content="Confirme sua senha para continuar.">
+	</Head>
 
 	<Form
 		v-slot="{ errors, processing }"

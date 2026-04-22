@@ -1,5 +1,7 @@
 <template>
-	<Head title="Cadastro" />
+	<Head title="Cadastro">
+		<meta name="description" content="Crie sua conta e comece a organizar suas finanças.">
+	</Head>
 
 	<Form
 		v-slot="{ errors, processing }"

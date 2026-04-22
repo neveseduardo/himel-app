@@ -15,7 +15,9 @@ const user = computed(() => page.props.auth.user);
 
 <template>
 	<div>
-		<Head title="Profile settings" />
+		<Head title="Profile settings">
+			<meta name="description" content="Atualize suas informações de perfil e e-mail.">
+		</Head>
 
 		<div class="flex flex-col space-y-6">
 			<Heading

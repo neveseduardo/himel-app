@@ -26,7 +26,9 @@ onUnmounted(() => clearTwoFactorAuthData());
 
 <template>
 	<div>
-		<Head title="Security settings" />
+		<Head title="Security settings">
+			<meta name="description" content="Gerencie sua senha e autenticação de dois fatores.">
+		</Head>
 
 		<div class="space-y-6">
 			<Heading

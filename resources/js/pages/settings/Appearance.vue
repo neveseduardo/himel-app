@@ -4,7 +4,9 @@ import { Head } from '@inertiajs/vue3';
 
 <template>
 	<div>
-		<Head title="Appearance settings" />
+		<Head title="Appearance settings">
+			<meta name="description" content="Personalize a aparência da aplicação.">
+		</Head>
 
 		<div class="space-y-6">
 			<Heading

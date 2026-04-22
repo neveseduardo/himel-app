@@ -1,5 +1,7 @@
 <template>
-	<Head title="Autenticação de dois fatores" />
+	<Head title="Autenticação de dois fatores">
+		<meta name="description" content="Insira o código de autenticação para acessar sua conta.">
+	</Head>
 
 	<div class="space-y-6">
 		<template v-if="!showRecoveryInput">
