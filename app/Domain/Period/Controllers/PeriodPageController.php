@@ -60,7 +60,7 @@ class PeriodPageController
     public function show(Request $request, string $uid): Response
     {
         $userUid = $request->user()->uid;
-        $filters = $request->only(['page', 'per_page', 'status', 'direction', 'source']);
+        $filters = $request->only(['status', 'direction', 'source']);
 
         $periodSummary = $this->periodService->getByUidWithSummary($uid, $userUid);
 
