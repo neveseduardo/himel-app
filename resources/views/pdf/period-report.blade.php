@@ -24,19 +24,13 @@
         }
         .report-title { font-size: 14pt; font-weight: bold; }
         .report-date { font-size: 7.5pt; color: #6b7280; margin-top: 1px; }
-        .summary { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-        .summary td { padding: 5px 0; vertical-align: top; border-bottom: 1px solid #f3f4f6; }
-        .summary .lbl { font-size: 8pt; font-weight: bold; width: 180px; }
-        .summary .val { font-size: 8pt; }
-        .summary .main td { padding-top: 8px; }
-        .summary .main .lbl { font-size: 9pt; }
-        .summary .main .val { font-size: 10pt; font-weight: bold; }
-        .summary .detail .lbl { font-weight: normal; padding-left: 16px; color: #6b7280; font-size: 7.5pt; }
-        .summary .detail .val { color: #6b7280; font-size: 7.5pt; }
-        .summary .detail td { padding: 2px 0; border-bottom: none; }
-        .summary .balance td { border-top: 1px solid #d1d5db; border-bottom: none; padding-top: 8px; }
-        .summary .balance .lbl { font-size: 10pt; }
-        .summary .balance .val { font-size: 11pt; font-weight: bold; }
+        .summary { margin-bottom: 16px; }
+        .s-line { padding: 5px 0; border-bottom: 1px solid #f3f4f6; }
+        .s-main { padding-top: 8px; font-size: 9pt; font-weight: bold; }
+        .s-main span { font-size: 10pt; }
+        .s-detail { padding: 2px 0 2px 16px; font-size: 7.5pt; color: #6b7280; border-bottom: none; }
+        .s-balance { padding-top: 8px; font-size: 10pt; font-weight: bold; border-top: 1px solid #d1d5db; border-bottom: none; }
+        .s-balance span { font-size: 11pt; }
         .section { margin-top: 18px; }
         .section-label { font-size: 9pt; font-weight: bold; padding-bottom: 5px; margin-bottom: 5px; border-bottom: 1px solid #d1d5db; }
         .tbl { width: 100%; border-collapse: collapse; font-size: 8pt; }
@@ -75,59 +69,26 @@
     </div>
 
     <!-- Resumo Financeiro -->
-    <table class="summary">
-        <tr class="main">
-            <td class="lbl">Entradas</td>
-            <td class="val">{{ $formatCurrency($summary['total_inflow']) }}</td>
-        </tr>
-        <tr class="detail">
-            <td class="lbl">Manuais</td>
-            <td class="val">{{ $formatCurrency($summary['inflow_manual'] ?? 0) }}</td>
-        </tr>
-        <tr class="detail">
-            <td class="lbl">Transferências</td>
-            <td class="val">{{ $formatCurrency($summary['inflow_transfer'] ?? 0) }}</td>
-        </tr>
+    <div class="summary">
+        <div class="s-line s-main">Entradas: <span>{{ $formatCurrency($summary['total_inflow']) }}</span></div>
+        <div class="s-line s-detail">Manuais: {{ $formatCurrency($summary['inflow_manual'] ?? 0) }}</div>
+        <div class="s-line s-detail">Transferências: {{ $formatCurrency($summary['inflow_transfer'] ?? 0) }}</div>
 
-        <tr class="main">
-            <td class="lbl">Saídas</td>
-            <td class="val">{{ $formatCurrency($summary['total_outflow']) }}</td>
-        </tr>
-        <tr class="detail">
-            <td class="lbl">Despesas Fixas</td>
-            <td class="val">{{ $formatCurrency($summary['total_fixed_expenses'] ?? 0) }}</td>
-        </tr>
-        <tr class="detail">
-            <td class="lbl">Parcelas de Cartão</td>
-            <td class="val">{{ $formatCurrency($summary['total_credit_card_installments'] ?? 0) }}</td>
-        </tr>
-        <tr class="detail">
-            <td class="lbl">Manuais</td>
-            <td class="val">{{ $formatCurrency($summary['total_manual'] ?? 0) }}</td>
-        </tr>
-        <tr class="detail">
-            <td class="lbl">Transferências</td>
-            <td class="val">{{ $formatCurrency($summary['total_transfer'] ?? 0) }}</td>
-        </tr>
+        <div class="s-line s-main">Saídas: <span>{{ $formatCurrency($summary['total_outflow']) }}</span></div>
+        <div class="s-line s-detail">Despesas Fixas: {{ $formatCurrency($summary['total_fixed_expenses'] ?? 0) }}</div>
+        <div class="s-line s-detail">Parcelas de Cartão: {{ $formatCurrency($summary['total_credit_card_installments'] ?? 0) }}</div>
+        <div class="s-line s-detail">Manuais: {{ $formatCurrency($summary['total_manual'] ?? 0) }}</div>
+        <div class="s-line s-detail">Transferências: {{ $formatCurrency($summary['total_transfer'] ?? 0) }}</div>
 
         @if(count($cardBreakdown['cards']) > 0)
-            <tr class="main">
-                <td class="lbl">Cartões de Crédito</td>
-                <td class="val">{{ $formatCurrency($cardBreakdown['grand_total']) }}</td>
-            </tr>
+            <div class="s-line s-main">Cartões de Crédito: <span>{{ $formatCurrency($cardBreakdown['grand_total']) }}</span></div>
             @foreach($cardBreakdown['cards'] as $card)
-                <tr class="detail">
-                    <td class="lbl">{{ $card['credit_card_name'] }}</td>
-                    <td class="val">{{ $formatCurrency($card['total']) }}</td>
-                </tr>
+                <div class="s-line s-detail">{{ $card['credit_card_name'] }}: {{ $formatCurrency($card['total']) }}</div>
             @endforeach
         @endif
 
-        <tr class="balance">
-            <td class="lbl">Saldo</td>
-            <td class="val">{{ $formatCurrency($summary['balance']) }}</td>
-        </tr>
-    </table>
+        <div class="s-line s-balance">Saldo: <span>{{ $formatCurrency($summary['balance']) }}</span></div>
+    </div>
 
     <!-- Despesas Fixas -->
     <div class="section no-break">
