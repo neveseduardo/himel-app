@@ -5,10 +5,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{{ $title }}</title>
     <style>
-        @page {
-            size: A4 portrait;
-            margin: 25mm 20mm 30mm 20mm;
-        }
+        @page { size: A4 portrait; }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -18,6 +15,7 @@
             color: #374151;
             line-height: 1.5;
             background: #ffffff;
+            margin: 2cm;
         }
 
         /* Header */
