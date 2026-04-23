@@ -24,16 +24,16 @@
         }
         .report-title { font-size: 14pt; font-weight: bold; }
         .report-date { font-size: 7.5pt; color: #6b7280; margin-top: 1px; }
-        .summary { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
-        .summary td { padding: 5px 0; vertical-align: top; border-bottom: 1px solid #f3f4f6; }
-        .summary .lbl { font-size: 8pt; font-weight: bold; }
-        .summary .val { font-size: 8pt; text-align: right; }
+        .summary { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: 8pt; }
+        .summary td { padding: 4px 6px; vertical-align: top; border-bottom: 1px solid #f3f4f6; }
+        .summary .lbl { font-weight: bold; }
+        .summary .val { text-align: right; }
         .summary .main td { padding-top: 8px; }
         .summary .main .lbl { font-size: 9pt; }
         .summary .main .val { font-size: 10pt; font-weight: bold; }
-        .summary .detail .lbl { font-weight: normal; padding-left: 16px; color: #6b7280; font-size: 7.5pt; }
+        .summary .detail .lbl { font-weight: normal; padding-left: 22px; color: #6b7280; font-size: 7.5pt; }
         .summary .detail .val { color: #6b7280; font-size: 7.5pt; }
-        .summary .detail td { padding: 2px 0; border-bottom: none; }
+        .summary .detail td { padding-top: 2px; padding-bottom: 2px; border-bottom: none; }
         .summary .balance td { border-top: 1px solid #d1d5db; border-bottom: none; padding-top: 8px; }
         .summary .balance .lbl { font-size: 10pt; }
         .summary .balance .val { font-size: 11pt; font-weight: bold; }
