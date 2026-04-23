@@ -5,287 +5,195 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{{ $title }}</title>
     <style>
-        /* Reset & Base */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         @page {
             size: A4 portrait;
-            margin: 20mm 15mm 25mm 15mm;
+            margin: 25mm 20mm 30mm 20mm;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'DejaVu Sans', sans-serif;
-            font-size: 10pt;
-            color: #1f2937;
+            font-size: 9pt;
+            color: #374151;
             line-height: 1.5;
             background: #ffffff;
         }
 
         /* Header */
         .header {
-            border-bottom: 3px solid #1f2937;
-            padding-bottom: 12px;
-            margin-bottom: 20px;
+            padding-bottom: 14px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        .header-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .header-table td {
-            vertical-align: middle;
-            border: none;
-            padding: 0;
-        }
+        .header-table { width: 100%; border-collapse: collapse; }
+        .header-table td { vertical-align: middle; border: none; padding: 0; }
 
         .logo-placeholder {
-            width: 60px;
-            height: 60px;
-            background-color: #e5e7eb;
-            border-radius: 8px;
+            width: 44px;
+            height: 44px;
+            background-color: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
             text-align: center;
-            line-height: 60px;
-            font-size: 9pt;
+            line-height: 44px;
+            font-size: 7pt;
             font-weight: bold;
             color: #9ca3af;
             letter-spacing: 1px;
         }
 
         .header-title {
-            font-size: 18pt;
+            font-size: 15pt;
             font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 2px;
+            color: #111827;
         }
 
         .header-subtitle {
-            font-size: 9pt;
-            color: #6b7280;
+            font-size: 8pt;
+            color: #9ca3af;
+            margin-top: 2px;
         }
 
-        /* Section Headers */
-        .section-header {
-            background-color: #1f2937;
-            color: #ffffff;
-            padding: 8px 14px;
-            font-size: 11pt;
+        /* Section titles */
+        .section-title {
+            font-size: 10pt;
             font-weight: bold;
-            margin-top: 22px;
-            margin-bottom: 0;
-            border-radius: 4px 4px 0 0;
-            letter-spacing: 0.3px;
+            color: #111827;
+            padding: 6px 0;
+            margin-top: 24px;
+            margin-bottom: 8px;
+            border-bottom: 2px solid #111827;
         }
 
-        .section-header-green {
-            background-color: #16a34a;
-        }
+        .section-title-green { border-bottom-color: #16a34a; color: #15803d; }
+        .section-title-red { border-bottom-color: #dc2626; color: #b91c1c; }
+        .section-title-blue { border-bottom-color: #2563eb; color: #1d4ed8; }
 
-        .section-header-red {
-            background-color: #dc2626;
-        }
-
-        .section-header-blue {
-            background-color: #2563eb;
-        }
-
-        /* Summary Cards */
-        .summary-table {
+        /* Summary grid */
+        .summary-grid {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 8px 0;
             margin-bottom: 4px;
-            border: 1px solid #e5e7eb;
-            border-top: none;
         }
 
-        .summary-card {
+        .summary-cell {
             width: 25%;
             vertical-align: top;
             padding: 12px 14px;
-            border-right: 1px solid #e5e7eb;
             background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
         }
 
-        .summary-card:last-child {
-            border-right: none;
-        }
-
-        .summary-card-label {
-            font-size: 8pt;
+        .summary-label {
+            font-size: 7pt;
             color: #6b7280;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.6px;
             font-weight: bold;
             margin-bottom: 4px;
         }
 
-        .summary-card-value {
-            font-size: 14pt;
+        .summary-value {
+            font-size: 13pt;
             font-weight: bold;
+            margin-bottom: 6px;
         }
 
-        .summary-card-detail {
-            font-size: 8pt;
-            color: #6b7280;
-            margin-top: 6px;
-            line-height: 1.6;
-        }
-
-        .summary-detail-row {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .summary-detail-row td {
+        .summary-detail { width: 100%; border-collapse: collapse; }
+        .summary-detail td {
             border: none;
             padding: 1px 0;
-            font-size: 8pt;
+            font-size: 7.5pt;
             color: #6b7280;
         }
 
         .text-green { color: #16a34a; }
         .text-red { color: #dc2626; }
+        .text-right { text-align: right; }
 
-        /* Data Tables */
+        /* Data tables */
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 9pt;
-            border: 1px solid #e5e7eb;
-            border-top: none;
+            font-size: 8.5pt;
         }
 
         .data-table thead th {
-            background-color: #f3f4f6;
-            padding: 8px 10px;
+            padding: 7px 10px;
             text-align: left;
             font-weight: bold;
-            font-size: 8pt;
+            font-size: 7.5pt;
             text-transform: uppercase;
-            letter-spacing: 0.3px;
-            color: #4b5563;
-            border-bottom: 2px solid #d1d5db;
+            letter-spacing: 0.4px;
+            color: #6b7280;
+            border-bottom: 1px solid #d1d5db;
+            background: transparent;
         }
 
-        .data-table thead th.text-right {
-            text-align: right;
-        }
+        .data-table thead th.text-right { text-align: right; }
 
         .data-table tbody td {
-            padding: 7px 10px;
+            padding: 6px 10px;
             border-bottom: 1px solid #f3f4f6;
             vertical-align: middle;
+            color: #374151;
         }
 
-        .data-table tbody tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-
-        .data-table tbody tr:nth-child(odd) {
-            background-color: #ffffff;
-        }
-
-        .data-table .text-right {
-            text-align: right;
+        .data-table tbody tr:nth-child(even) td {
+            background-color: #fafafa;
         }
 
         .data-table .subtotal-row td {
-            background-color: #f3f4f6;
             font-weight: bold;
-            font-size: 9pt;
-            padding: 9px 10px;
-            border-top: 2px solid #d1d5db;
+            padding-top: 8px;
+            border-top: 1px solid #d1d5db;
+            border-bottom: none;
+            background: transparent !important;
         }
 
-        /* Card Breakdown */
-        .card-breakdown-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 9pt;
-            border: 1px solid #e5e7eb;
-            border-top: none;
-            margin-bottom: 0;
-        }
-
-        .card-breakdown-table td {
-            padding: 7px 14px;
-            border-bottom: 1px solid #f3f4f6;
-        }
-
-        .card-breakdown-table tr:nth-child(even) {
-            background-color: #f9fafb;
-        }
-
-        .card-breakdown-table .grand-total td {
-            background-color: #f3f4f6;
-            font-weight: bold;
-            border-top: 2px solid #d1d5db;
-            padding: 9px 14px;
-        }
-
-        /* Status badges */
+        /* Badges */
         .badge {
             display: inline-block;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 7pt;
+            padding: 1px 6px;
+            border-radius: 8px;
+            font-size: 6.5pt;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
 
-        .badge-paid { background-color: #dcfce7; color: #16a34a; }
-        .badge-pending { background-color: #fef3c7; color: #d97706; }
-        .badge-overdue { background-color: #fee2e2; color: #dc2626; }
-
-        .badge-installment {
-            background-color: #e0e7ff;
-            color: #4338ca;
-            font-size: 7pt;
-        }
+        .badge-paid { background-color: #dcfce7; color: #15803d; }
+        .badge-pending { background-color: #fef9c3; color: #a16207; }
+        .badge-overdue { background-color: #fee2e2; color: #b91c1c; }
+        .badge-installment { background-color: #ede9fe; color: #6d28d9; }
 
         /* Empty state */
         .empty-state {
             text-align: center;
-            padding: 16px 14px;
+            padding: 20px 0;
             color: #9ca3af;
-            font-style: italic;
-            font-size: 9pt;
-            background-color: #f9fafb;
-            border: 1px solid #e5e7eb;
-            border-top: none;
+            font-size: 8.5pt;
         }
 
-        /* Footer */
-        .footer {
-            position: fixed;
-            bottom: -15mm;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 8pt;
-            color: #9ca3af;
-            border-top: 1px solid #e5e7eb;
-            padding-top: 6px;
-        }
-
-        /* Utility */
-        .page-break { page-break-before: always; }
         .no-break { page-break-inside: avoid; }
     </style>
 </head>
 <body>
 
-    <!-- Footer with page numbers (DOMPDF inline PHP) -->
+    <!-- Page numbers -->
     <script type="text/php">
         if (isset($pdf)) {
             $text = "Página {PAGE_NUM} de {PAGE_COUNT}";
-            $size = 8;
+            $size = 7;
             $font = $fontMetrics->getFont("DejaVu Sans");
             $width = $fontMetrics->getTextWidth($text, $font, $size) / 2;
             $x = ($pdf->get_width() / 2) - ($width / 2);
-            $y = $pdf->get_height() - 32;
-            $pdf->page_text($x, $y, $text, $font, $size, array(0.61, 0.64, 0.69));
+            $y = $pdf->get_height() - 36;
+            $pdf->page_text($x, $y, $text, $font, $size, array(0.62, 0.65, 0.70));
         }
     </script>
 
@@ -293,10 +201,10 @@
     <div class="header">
         <table class="header-table">
             <tr>
-                <td width="70">
+                <td width="56">
                     <div class="logo-placeholder">LOGO</div>
                 </td>
-                <td>
+                <td style="padding-left: 10px;">
                     <div class="header-title">{{ $title }}</div>
                     <div class="header-subtitle">Gerado em {{ $generatedAt }}</div>
                 </td>
@@ -305,70 +213,42 @@
     </div>
 
     <!-- Financial Summary -->
-    <div class="section-header">Resumo Financeiro</div>
-    <table class="summary-table">
+    <table class="summary-grid">
         <tr>
-            <td class="summary-card">
-                <div class="summary-card-label">Entradas</div>
-                <div class="summary-card-value text-green">{{ $formatCurrency($summary['total_inflow']) }}</div>
-                <div class="summary-card-detail">
-                    <table class="summary-detail-row">
-                        <tr>
-                            <td>Manuais</td>
-                            <td class="text-right">{{ $formatCurrency($summary['inflow_manual'] ?? 0) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Transferências</td>
-                            <td class="text-right">{{ $formatCurrency($summary['inflow_transfer'] ?? 0) }}</td>
-                        </tr>
+            <td class="summary-cell">
+                <div class="summary-label">Entradas</div>
+                <div class="summary-value text-green">{{ $formatCurrency($summary['total_inflow']) }}</div>
+                <table class="summary-detail">
+                    <tr><td>Manuais</td><td class="text-right">{{ $formatCurrency($summary['inflow_manual'] ?? 0) }}</td></tr>
+                    <tr><td>Transferências</td><td class="text-right">{{ $formatCurrency($summary['inflow_transfer'] ?? 0) }}</td></tr>
+                </table>
+            </td>
+            <td class="summary-cell">
+                <div class="summary-label">Saídas</div>
+                <div class="summary-value text-red">{{ $formatCurrency($summary['total_outflow']) }}</div>
+                <table class="summary-detail">
+                    <tr><td>Desp. Fixas</td><td class="text-right">{{ $formatCurrency($summary['total_fixed_expenses'] ?? 0) }}</td></tr>
+                    <tr><td>Parcelas</td><td class="text-right">{{ $formatCurrency($summary['total_credit_card_installments'] ?? 0) }}</td></tr>
+                    <tr><td>Manuais</td><td class="text-right">{{ $formatCurrency($summary['total_manual'] ?? 0) }}</td></tr>
+                    <tr><td>Transferências</td><td class="text-right">{{ $formatCurrency($summary['total_transfer'] ?? 0) }}</td></tr>
+                </table>
+            </td>
+            <td class="summary-cell">
+                <div class="summary-label">Cartões</div>
+                <div class="summary-value text-red">{{ $formatCurrency($cardBreakdown['grand_total']) }}</div>
+                @if(count($cardBreakdown['cards']) > 0)
+                    <table class="summary-detail">
+                        @foreach($cardBreakdown['cards'] as $card)
+                            <tr><td>{{ $card['credit_card_name'] }}</td><td class="text-right">{{ $formatCurrency($card['total']) }}</td></tr>
+                        @endforeach
                     </table>
-                </div>
+                @else
+                    <div style="font-size: 7.5pt; color: #9ca3af;">Sem parcelas</div>
+                @endif
             </td>
-            <td class="summary-card">
-                <div class="summary-card-label">Saídas</div>
-                <div class="summary-card-value text-red">{{ $formatCurrency($summary['total_outflow']) }}</div>
-                <div class="summary-card-detail">
-                    <table class="summary-detail-row">
-                        <tr>
-                            <td>Despesas Fixas</td>
-                            <td class="text-right">{{ $formatCurrency($summary['total_fixed_expenses'] ?? 0) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Parcelas Cartão</td>
-                            <td class="text-right">{{ $formatCurrency($summary['total_credit_card_installments'] ?? 0) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Manuais</td>
-                            <td class="text-right">{{ $formatCurrency($summary['total_manual'] ?? 0) }}</td>
-                        </tr>
-                        <tr>
-                            <td>Transferências</td>
-                            <td class="text-right">{{ $formatCurrency($summary['total_transfer'] ?? 0) }}</td>
-                        </tr>
-                    </table>
-                </div>
-            </td>
-            <td class="summary-card">
-                <div class="summary-card-label">Cartões de Crédito</div>
-                <div class="summary-card-value text-red">{{ $formatCurrency($cardBreakdown['grand_total']) }}</div>
-                <div class="summary-card-detail">
-                    @if(count($cardBreakdown['cards']) > 0)
-                        <table class="summary-detail-row">
-                            @foreach($cardBreakdown['cards'] as $card)
-                                <tr>
-                                    <td>{{ $card['credit_card_name'] }}</td>
-                                    <td class="text-right">{{ $formatCurrency($card['total']) }}</td>
-                                </tr>
-                            @endforeach
-                        </table>
-                    @else
-                        <span>Sem parcelas neste período</span>
-                    @endif
-                </div>
-            </td>
-            <td class="summary-card">
-                <div class="summary-card-label">Saldo</div>
-                <div class="summary-card-value {{ $summary['balance'] >= 0 ? 'text-green' : 'text-red' }}">
+            <td class="summary-cell">
+                <div class="summary-label">Saldo</div>
+                <div class="summary-value {{ $summary['balance'] >= 0 ? 'text-green' : 'text-red' }}">
                     {{ $formatCurrency($summary['balance']) }}
                 </div>
             </td>
@@ -376,7 +256,7 @@
     </table>
 
     <!-- Fixed Expenses -->
-    <div class="section-header no-break">Despesas Fixas</div>
+    <div class="section-title no-break">Despesas Fixas</div>
     @if(count($fixedExpenses['items']) > 0)
         <table class="data-table">
             <thead>
@@ -408,7 +288,7 @@
     @endif
 
     <!-- Card Installments -->
-    <div class="section-header section-header-blue no-break">Parcelas de Cartão</div>
+    <div class="section-title section-title-blue no-break">Parcelas de Cartão</div>
     @if(count($installments['items']) > 0)
         <table class="data-table">
             <thead>
@@ -445,7 +325,7 @@
     @endif
 
     <!-- Inflow Transactions -->
-    <div class="section-header section-header-green no-break">Entradas</div>
+    <div class="section-title section-title-green no-break">Entradas</div>
     @if(count($inflowTransactions) > 0)
         <table class="data-table">
             <thead>
@@ -465,9 +345,7 @@
                         <td>{{ $transaction->occurred_at ? $formatDate($transaction->occurred_at->toDateString()) : '—' }}</td>
                     </tr>
                 @endforeach
-                @php
-                    $inflowSubtotal = collect($inflowTransactions)->sum(fn ($t) => (float) $t->amount);
-                @endphp
+                @php $inflowSubtotal = collect($inflowTransactions)->sum(fn ($t) => (float) $t->amount); @endphp
                 <tr class="subtotal-row">
                     <td>Subtotal</td>
                     <td></td>
@@ -481,7 +359,7 @@
     @endif
 
     <!-- Outflow Transactions -->
-    <div class="section-header section-header-red no-break">Saídas</div>
+    <div class="section-title section-title-red no-break">Saídas</div>
     @if(count($outflowTransactions) > 0)
         <table class="data-table">
             <thead>
@@ -515,9 +393,7 @@
                         </td>
                     </tr>
                 @endforeach
-                @php
-                    $outflowSubtotal = collect($outflowTransactions)->sum(fn ($t) => (float) $t->amount);
-                @endphp
+                @php $outflowSubtotal = collect($outflowTransactions)->sum(fn ($t) => (float) $t->amount); @endphp
                 <tr class="subtotal-row">
                     <td>Subtotal</td>
                     <td colspan="2"></td>
