@@ -22,3 +22,6 @@ Route::delete('periods/{uid}/transactions/{transactionUid}', [PeriodPageControll
 
 Route::delete('periods/{uid}/transactions', [PeriodPageController::class, 'detachTransactions'])
     ->name('periods.transactions.detach');
+
+Route::get('periods/{uid}/report', [PeriodPageController::class, 'report'])
+    ->name('periods.report');

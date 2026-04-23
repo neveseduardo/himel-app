@@ -7,15 +7,17 @@ use App\Domain\Category\Contracts\CategoryServiceInterface;
 use App\Domain\Period\Contracts\PeriodServiceInterface;
 use App\Domain\Period\Exceptions\PeriodAlreadyExistsException;
 use App\Domain\Period\Exceptions\PeriodHasPaidTransactionsException;
+use App\Domain\Period\Pdf\PeriodReportPdf;
 use App\Domain\Period\Requests\StorePeriodRequest;
 use App\Domain\Transaction\Contracts\TransactionServiceInterface;
 use App\Domain\Transaction\Requests\StoreTransactionRequest;
 use App\Domain\Transaction\Requests\UpdateTransactionRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
-use Inertia\Response;
+use Inertia\Response as InertiaResponse;
 
 class PeriodPageController
 {
@@ -26,7 +28,7 @@ class PeriodPageController
         private readonly TransactionServiceInterface $transactionService,
     ) {}
 
-    public function index(Request $request): Response
+    public function index(Request $request): InertiaResponse
     {
         $userUid = $request->user()->uid;
         $filters = $request->only(['page', 'per_page', 'month', 'year']);
@@ -58,7 +60,7 @@ class PeriodPageController
         }
     }
 
-    public function show(Request $request, string $uid): Response
+    public function show(Request $request, string $uid): InertiaResponse
     {
         $userUid = $request->user()->uid;
 
@@ -95,6 +97,44 @@ class PeriodPageController
             'installments' => $installments,
             'cardBreakdown' => $cardBreakdown,
         ]);
+    }
+
+    public function report(Request $request, string $uid): Response
+    {
+        $userUid = $request->user()->uid;
+
+        try {
+            $periodSummary = $this->periodService->getByUidWithSummary($uid, $userUid);
+            abort_unless($periodSummary, 404);
+
+            $transactions = $this->periodService->getTransactionsForPeriod($uid, $userUid);
+            $fixedExpenses = $this->periodService->getFixedExpensesForPeriod($uid, $userUid);
+            $installments = $this->periodService->getInstallmentsForPeriod($uid, $userUid);
+            $cardBreakdown = $this->periodService->getCardBreakdownForPeriod($uid, $userUid);
+
+            $inflowTransactions = array_values(array_filter($transactions, fn ($t) => $t->direction === 'INFLOW'));
+            $outflowTransactions = array_values(array_filter($transactions, fn ($t) => $t->direction === 'OUTFLOW'));
+
+            $report = new PeriodReportPdf([
+                'period' => $periodSummary['period'],
+                'summary' => $periodSummary,
+                'fixedExpenses' => $fixedExpenses,
+                'installments' => $installments,
+                'cardBreakdown' => $cardBreakdown,
+                'inflowTransactions' => $inflowTransactions,
+                'outflowTransactions' => $outflowTransactions,
+            ]);
+
+            return $report->generate();
+        } catch (\Throwable $e) {
+            Log::error('Failed to generate period report', [
+                'period_uid' => $uid,
+                'user_uid' => $request->user()->uid,
+                'error' => $e->getMessage(),
+            ]);
+
+            abort(500, 'Erro ao gerar relatório.');
+        }
     }
 
     public function destroy(Request $request, string $uid): RedirectResponse

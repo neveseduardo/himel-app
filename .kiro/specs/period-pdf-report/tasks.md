@@ -39,17 +39,17 @@ Implementação incremental do sistema de geração de relatório PDF para perí
     - Formato A4 com margens adequadas para impressão
     - _Requisitos: 3.2, 3.3, 3.4, 3.5, 3.6, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 4.10, 5.1, 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 3. Integrar endpoint no controller e rota
-  - [~] 3.1 Adicionar método `report(Request, string $uid)` ao `PeriodPageController`
+- [-] 3. Integrar endpoint no controller e rota
+  - [x] 3.1 Adicionar método `report(Request, string $uid)` ao `PeriodPageController`
     - Coletar dados via `PeriodService` (métodos existentes: `getByUidWithSummary`, `getTransactionsForPeriod`, `getFixedExpensesForPeriod`, `getInstallmentsForPeriod`, `getCardBreakdownForPeriod`)
     - Separar transações em inflow/outflow via `array_filter`
     - Instanciar `PeriodReportPdf` e retornar `$report->generate()`
     - Tratar erros com try/catch, log e `abort(500)`
     - _Requisitos: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
-  - [~] 3.2 Adicionar rota GET `periods/{uid}/report` em `app/Domain/Period/Routes/web.php`
+  - [x] 3.2 Adicionar rota GET `periods/{uid}/report` em `app/Domain/Period/Routes/web.php`
     - Nome da rota: `periods.report`
     - _Requisitos: 2.1_
-  - [~] 3.3 Executar `php artisan wayfinder:generate` para gerar typed actions do novo endpoint
+  - [x] 3.3 Executar `php artisan wayfinder:generate` para gerar typed actions do novo endpoint
     - _Requisitos: 1.2_
 
 - [ ] 4. Checkpoint — Verificar geração do PDF
