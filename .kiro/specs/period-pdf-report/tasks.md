@@ -52,12 +52,12 @@ Implementação incremental do sistema de geração de relatório PDF para perí
   - [x] 3.3 Executar `php artisan wayfinder:generate` para gerar typed actions do novo endpoint
     - _Requisitos: 1.2_
 
-- [-] 4. Checkpoint — Verificar geração do PDF
+- [x] 4. Checkpoint — Verificar geração do PDF
   - Garantir que todos os testes passam, perguntar ao usuário se houver dúvidas.
   - Testar manualmente acessando a rota `GET /periods/{uid}/report` para confirmar que o PDF é gerado corretamente.
 
-- [ ] 5. Integrar opção no frontend
-  - [~] 5.1 Adicionar opção "Gerar Relatório" no dropdown de `resources/js/pages/periods/Show.vue`
+- [x] 5. Integrar opção no frontend
+  - [x] 5.1 Adicionar opção "Gerar Relatório" no dropdown de `resources/js/pages/periods/Show.vue`
     - Importar ícone `FileDown` do lucide-vue-next
     - Importar action `report` do Wayfinder (`@/actions/App/Domain/Period/Controllers/PeriodPageController`)
     - Adicionar ref `generatingReport` para estado de loading

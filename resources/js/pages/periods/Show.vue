@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Head, router, usePage } from '@inertiajs/vue3';
-import { ArrowLeft, EllipsisVertical, Pencil, Play, Plus, Trash2 } from 'lucide-vue-next';
+import { ArrowLeft, EllipsisVertical, FileDown, Pencil, Play, Plus, Trash2 } from 'lucide-vue-next';
 import { toast } from 'vue-sonner';
 
-import { detachTransactions, destroyTransaction, index, initialize, show } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
+import { detachTransactions, destroyTransaction, index, initialize, report, show } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
 import type { Account } from '@/domain/Account/types/account';
 import type { Category } from '@/domain/Category/types/category';
 import type { Period, PeriodCardBreakdown, PeriodFixedExpenses, PeriodInstallments, PeriodSummary } from '@/domain/Period/types/period';
@@ -60,6 +60,7 @@ const outflowColumns = [
 const store = useTransactionStore();
 const { onSuccess, onError } = useCrudToast('Transação');
 const initializing = ref(false);
+const generatingReport = ref(false);
 
 const page = usePage();
 const flashSuccess = computed(() => page.props.flash?.success as string | undefined);
@@ -80,6 +81,19 @@ function handleInitialize() {
 			initializing.value = false;
 		},
 	});
+}
+
+function handleGenerateReport() {
+	generatingReport.value = true;
+	try {
+		window.open(report.url(props.period.uid), '_blank');
+	} catch {
+		toast.error('Erro ao gerar relatório.');
+	} finally {
+		setTimeout(() => {
+			generatingReport.value = false;
+		}, 2000);
+	}
 }
 
 const inflowTransactions = computed(() =>
@@ -208,6 +222,10 @@ function handleDetachAll() {
 						<DropdownMenuItem :disabled="initializing" @click="handleInitialize">
 							<Play class="size-4" />
 							{{ initializing ? 'Inicializando...' : 'Processar Período' }}
+						</DropdownMenuItem>
+						<DropdownMenuItem :disabled="generatingReport" @click="handleGenerateReport">
+							<FileDown class="size-4" />
+							{{ generatingReport ? 'Gerando...' : 'Gerar Relatório' }}
 						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<AlertDialog>
