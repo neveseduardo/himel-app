@@ -477,3 +477,39 @@ Infraestrutura de testes E2E com Playwright para o módulo CreditCard, primeiro 
 - `app.blade.php` referenciava páginas Vue individualmente no `@vite()`
 - Colunas `closing_day` e `last_four_digits` não existiam no banco
 - `FinancialCreditCardFactory` sem `protected $model` definido
+
+---
+
+### Spec: CreditCard Dialog Desync Fix
+
+Correção do bug onde o dialog de criação/edição do CreditCard parava de abrir após fechamento via ESC ou overlay click. `ModalDialog.vue` emite `update:open` via watch, `Index.vue` escuta e sincroniza `store.closeModal()`. 2 testes E2E adicionados (28 total).
+
+---
+
+### Spec: E2E Testing CreditCardCharge
+
+Testes E2E para o módulo CreditCardCharge. Page Object `CreditCardChargePage`, seeder com 3 compras nomeadas + 13 factory. 26 testes (19 ativos + 7 skipped para edição/exclusão não implementadas na UI).
+
+---
+
+### Spec: E2E Testing FixedExpense
+
+Testes E2E para o módulo FixedExpense. Fix da factory `FinancialFixedExpenseFactory` ($model), dialog sync fix no Index.vue, Page Object com suporte a combobox e checkbox. 28 testes E2E cobrindo CRUD completo.
+
+---
+
+### Spec: Period Expenses & Installments
+
+Enriquecimento da página Show do Period com despesas fixas, parcelas de cartão (numeração X/Y), breakdown por cartão e composição detalhada das saídas. 3 novos métodos no PeriodService, 6 novas interfaces TypeScript, 14 testes PHPUnit. Sem migrations — dados já existiam nas tabelas.
+
+---
+
+### Spec: Pages Header Standardization
+
+Padronização do `PageHeader.vue`: API rígida (props `buttonLabel`/`buttonIcon` + emit `action`) substituída por API flexível com `title`, `breadcrumbs?`, slots `#back` e `#actions`. 8 Index pages + `periods/Show.vue` migradas.
+
+---
+
+### Spec: Transaction Income/Expense Split
+
+Diferenciação de transações INFLOW/OUTFLOW em toda a stack. Backend: validação condicional via `required_if:direction,OUTFLOW`, `prepareForValidation()` com defaults para INFLOW, `InsufficientBalanceException`. Frontend: `InflowTransactionForm.vue` simplificado, dropdown "Nova Transação" com opções "Entrada"/"Saída", modais separados no store. Saldo: INFLOW credita imediatamente, OUTFLOW só debita quando PAID (com check de saldo). Sem migrations.

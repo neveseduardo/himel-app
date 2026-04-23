@@ -115,7 +115,6 @@ Infraestrutura de testes E2E com Playwright para o módulo CreditCard, primeiro 
 - Arquivo `public/hot` do Vite fazia Laravel achar que dev server estava rodando em build mode — removido no script de start
 - Seeder original não limpava dados anteriores — cada execução acumulava cartões, mudando paginação. Corrigido com reset antes de seed
 
-<<<<<<< HEAD
 ---
 
 ## Spec: CreditCard Dialog Desync Fix
@@ -285,3 +284,71 @@ Padronização do componente `PageHeader.vue` para servir como cabeçalho unific
 - `resources/js/domain/Shared/components/PageHeader.vue` — nova API com `title`, `breadcrumbs?`, `#back`, `#actions`
 - 8 Index pages migradas para nova API (accounts, categories, credit-cards, credit-card-charges, fixed-expenses, periods, transactions, transfers)
 - `resources/js/pages/periods/Show.vue` — migrado para nova API com `#back` e `#actions` slots
+
+---
+
+## Spec: Transaction Income/Expense Split
+
+Diferenciação do tratamento de transações INFLOW (entradas) e OUTFLOW (saídas) em toda a stack: validação backend condicional, formulários frontend separados por direção, lógica de saldo diferenciada e validação de saldo suficiente.
+
+### Requisitos
+- Validação condicional de campos no backend por direção (INFLOW: campos mínimos + defaults automáticos; OUTFLOW: todos os campos obrigatórios)
+- Validação condicional no frontend (schemas Zod separados por direção)
+- Componentes de interface separados: `InflowTransactionForm.vue` (simplificado) e `TransactionForm.vue` (completo para OUTFLOW)
+- Botão dropdown "Nova Transação" com opções "Entrada" e "Saída" nas páginas de listagem e período
+- INFLOW: saldo da conta creditado imediatamente na criação, independente do status
+- OUTFLOW: saldo só debitado quando status = PAID, com validação de saldo suficiente
+- Consistência de saldo em create/update/delete para ambas as direções
+- `InsufficientBalanceException` com mensagem sugerindo transferência entre contas
+
+### Decisões de Design
+- Formulários separados por direção em vez de lógica condicional complexa em um único componente
+- `prepareForValidation()` nos Form Requests aplica defaults de INFLOW (`status=PAID`, `source=MANUAL`) antes da validação
+- Validação condicional via `required_if:direction,OUTFLOW` nas regras do Form Request
+- INFLOW sempre credita saldo; OUTFLOW só debita quando PAID (com check de saldo suficiente)
+- Dropdown button com reka-ui `DropdownMenu` para seleção de direção
+- Store `useTransactionStore` estendido com modais separados (`inflowModalOpen`, `outflowModalOpen`) e roteamento de edição por direção
+- Sem migrations — campos `category_uid`, `status`, `source`, `due_date`, `paid_at` já são nullable no banco
+
+### Tasks Concluídas (9/12 obrigatórias)
+1. Criar `InsufficientBalanceException` e modificar `TransactionService` (create/update/delete com lógica de saldo por direção)
+2. Modificar Form Requests (`StoreTransactionRequest`, `UpdateTransactionRequest`) com validação condicional e `prepareForValidation()`
+3. Modificar `TransactionPageController` para capturar `InsufficientBalanceException`
+4. Checkpoint backend — testes existentes passando
+5. Criar schema `inflow-transaction-schema.ts`, atualizar `transaction-schema.ts`, criar `InflowTransactionForm.vue`, atualizar `TransactionForm.vue`
+6. Atualizar `useTransactionStore` com modais separados, `transactions/Index.vue` e `periods/Show.vue` com dropdown e dois dialogs
+7. Checkpoint frontend — testes existentes passando
+8. Testes unitários PHPUnit para validação condicional (StoreTransactionRequest, UpdateTransactionRequest)
+9. Testes unitários PHPUnit para lógica de saldo (create, update, delete)
+12. Checkpoint final
+
+### Tasks Opcionais (não executadas)
+- Testes de propriedade backend (10 propriedades de corretude com 100+ iterações cada)
+- Testes de propriedade frontend (2 propriedades para schemas Zod com fast-check)
+
+### Tabela de Referência — Fluxo de Saldo
+
+| Operação | INFLOW | OUTFLOW PENDING | OUTFLOW PAID |
+|---|---|---|---|
+| Criar | +amount | sem efeito | -amount (com check de saldo) |
+| Excluir | -amount | sem efeito | +amount |
+| Atualizar valor | ±diferença | sem efeito | ±diferença (com check de saldo) |
+| PENDING→PAID | N/A | -amount (com check de saldo) | N/A |
+| PAID→PENDING | N/A | N/A | +amount |
+
+### Artefatos Criados/Alterados
+- `app/Domain/Transaction/Exceptions/InsufficientBalanceException.php` — exception com mensagem formatada e sugestão de transferência
+- `app/Domain/Transaction/Services/TransactionService.php` — lógica de saldo diferenciada por direção em create/update/delete
+- `app/Domain/Transaction/Requests/StoreTransactionRequest.php` — `prepareForValidation()` + regras condicionais
+- `app/Domain/Transaction/Requests/UpdateTransactionRequest.php` — `prepareForValidation()` + regras condicionais
+- `app/Domain/Transaction/Controllers/TransactionPageController.php` — captura de `InsufficientBalanceException`
+- `resources/js/domain/Transaction/validations/inflow-transaction-schema.ts` — schema Zod para INFLOW
+- `resources/js/domain/Transaction/validations/transaction-schema.ts` — atualizado com default OUTFLOW
+- `resources/js/domain/Transaction/components/InflowTransactionForm.vue` — formulário simplificado para entradas
+- `resources/js/domain/Transaction/components/TransactionForm.vue` — atualizado para foco em OUTFLOW
+- `resources/js/domain/Transaction/stores/transactions.ts` — modais separados por direção
+- `resources/js/pages/finance/transactions/Index.vue` — dropdown + dois dialogs
+- `resources/js/pages/periods/Show.vue` — dropdown + dois dialogs com `periodUid`/`periodDate`
+- `tests/Feature/StoreTransactionRequestTest.php` — testes de validação condicional
+- `tests/Feature/UpdateTransactionRequestTest.php` — testes de validação condicional
+- `tests/Feature/TransactionServiceBalanceTest.php` — testes de lógica de saldo (create, update, delete)

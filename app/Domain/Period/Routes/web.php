@@ -14,5 +14,11 @@ Route::post('periods/{uid}/initialize', [PeriodPageController::class, 'initializ
 Route::post('periods/{uid}/transactions', [PeriodPageController::class, 'storeTransaction'])
     ->name('periods.transactions.store');
 
+Route::put('periods/{uid}/transactions/{transactionUid}', [PeriodPageController::class, 'updateTransaction'])
+    ->name('periods.transactions.update');
+
+Route::delete('periods/{uid}/transactions/{transactionUid}', [PeriodPageController::class, 'destroyTransaction'])
+    ->name('periods.transactions.destroy');
+
 Route::delete('periods/{uid}/transactions', [PeriodPageController::class, 'detachTransactions'])
     ->name('periods.transactions.detach');

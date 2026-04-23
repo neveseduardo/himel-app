@@ -201,10 +201,7 @@ class PeriodServiceQueryTest extends TestCase
 
         $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid);
 
-        $this->assertCount(2, $result['data']);
-        $this->assertEquals(2, $result['meta']['total']);
-        $this->assertEquals(1, $result['meta']['current_page']);
-        $this->assertEquals(2, $result['meta']['per_page']);
+        $this->assertCount(2, $result);
     }
 
     public function test_get_transactions_for_period_returns_empty_for_no_transactions(): void
@@ -213,11 +210,10 @@ class PeriodServiceQueryTest extends TestCase
 
         $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid);
 
-        $this->assertCount(0, $result['data']);
-        $this->assertEquals(0, $result['meta']['total']);
+        $this->assertCount(0, $result);
     }
 
-    public function test_get_transactions_for_period_filters_by_status(): void
+    public function test_get_transactions_for_period_returns_all_statuses(): void
     {
         $period = $this->createPeriod();
 
@@ -225,15 +221,12 @@ class PeriodServiceQueryTest extends TestCase
         $this->createTransaction($period, ['status' => Transaction::STATUS_PAID, 'paid_at' => now()]);
         $this->createTransaction($period, ['status' => Transaction::STATUS_OVERDUE]);
 
-        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid, [
-            'status' => Transaction::STATUS_PENDING,
-        ]);
+        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid);
 
-        $this->assertCount(1, $result['data']);
-        $this->assertEquals(Transaction::STATUS_PENDING, $result['data'][0]->status);
+        $this->assertCount(3, $result);
     }
 
-    public function test_get_transactions_for_period_filters_by_direction(): void
+    public function test_get_transactions_for_period_returns_all_directions(): void
     {
         $period = $this->createPeriod();
 
@@ -245,15 +238,12 @@ class PeriodServiceQueryTest extends TestCase
             'direction' => Transaction::DIRECTION_OUTFLOW,
         ]);
 
-        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid, [
-            'direction' => Transaction::DIRECTION_INFLOW,
-        ]);
+        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid);
 
-        $this->assertCount(1, $result['data']);
-        $this->assertEquals(Transaction::DIRECTION_INFLOW, $result['data'][0]->direction);
+        $this->assertCount(2, $result);
     }
 
-    public function test_get_transactions_for_period_filters_by_source(): void
+    public function test_get_transactions_for_period_returns_all_sources(): void
     {
         $period = $this->createPeriod();
 
@@ -261,15 +251,12 @@ class PeriodServiceQueryTest extends TestCase
         $this->createTransaction($period, ['source' => Transaction::SOURCE_FIXED]);
         $this->createTransaction($period, ['source' => Transaction::SOURCE_CREDIT_CARD]);
 
-        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid, [
-            'source' => Transaction::SOURCE_FIXED,
-        ]);
+        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid);
 
-        $this->assertCount(1, $result['data']);
-        $this->assertEquals(Transaction::SOURCE_FIXED, $result['data'][0]->source);
+        $this->assertCount(3, $result);
     }
 
-    public function test_get_transactions_for_period_combines_multiple_filters(): void
+    public function test_get_transactions_for_period_returns_all_transactions(): void
     {
         $period = $this->createPeriod();
 
@@ -291,13 +278,9 @@ class PeriodServiceQueryTest extends TestCase
             'source' => Transaction::SOURCE_MANUAL,
         ]);
 
-        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid, [
-            'status' => Transaction::STATUS_PENDING,
-            'direction' => Transaction::DIRECTION_OUTFLOW,
-            'source' => Transaction::SOURCE_FIXED,
-        ]);
+        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid);
 
-        $this->assertCount(1, $result['data']);
+        $this->assertCount(3, $result);
     }
 
     public function test_get_transactions_for_period_returns_all_without_pagination(): void
@@ -310,10 +293,7 @@ class PeriodServiceQueryTest extends TestCase
 
         $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid);
 
-        $this->assertCount(5, $result['data']);
-        $this->assertEquals(5, $result['meta']['total']);
-        $this->assertEquals(1, $result['meta']['last_page']);
-        $this->assertEquals(1, $result['meta']['current_page']);
+        $this->assertCount(5, $result);
     }
 
     public function test_get_transactions_for_period_excludes_other_user_transactions(): void
@@ -344,22 +324,18 @@ class PeriodServiceQueryTest extends TestCase
 
         $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid);
 
-        $this->assertCount(1, $result['data']);
-        $this->assertEquals(100.00, $result['data'][0]->amount);
+        $this->assertCount(1, $result);
+        $this->assertEquals(100.00, $result[0]->amount);
     }
 
-    public function test_get_transactions_for_period_ignores_pagination_params(): void
+    public function test_get_transactions_for_period_returns_all(): void
     {
         $period = $this->createPeriod();
 
         $this->createTransaction($period, ['amount' => 100.00]);
 
-        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid, [
-            'per_page' => 500,
-        ]);
+        $result = $this->service->getTransactionsForPeriod($period->uid, $this->user->uid);
 
-        $this->assertCount(1, $result['data']);
-        $this->assertEquals(1, $result['meta']['total']);
-        $this->assertEquals(1, $result['meta']['last_page']);
+        $this->assertCount(1, $result);
     }
 }

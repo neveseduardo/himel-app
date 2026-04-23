@@ -10,6 +10,7 @@ use App\Domain\Period\Exceptions\PeriodHasPaidTransactionsException;
 use App\Domain\Period\Requests\StorePeriodRequest;
 use App\Domain\Transaction\Contracts\TransactionServiceInterface;
 use App\Domain\Transaction\Requests\StoreTransactionRequest;
+use App\Domain\Transaction\Requests\UpdateTransactionRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -60,13 +61,12 @@ class PeriodPageController
     public function show(Request $request, string $uid): Response
     {
         $userUid = $request->user()->uid;
-        $filters = $request->only(['status', 'direction', 'source']);
 
         $periodSummary = $this->periodService->getByUidWithSummary($uid, $userUid);
 
         abort_unless($periodSummary, 404);
 
-        $transactions = $this->periodService->getTransactionsForPeriod($uid, $userUid, $filters);
+        $transactions = $this->periodService->getTransactionsForPeriod($uid, $userUid);
 
         $accounts = $this->accountService->getAll($userUid);
         $categories = $this->categoryService->getAll($userUid);
@@ -88,9 +88,7 @@ class PeriodPageController
                 'inflow_manual' => $periodSummary['inflow_manual'],
                 'inflow_transfer' => $periodSummary['inflow_transfer'],
             ],
-            'transactions' => $transactions['data'],
-            'meta' => $transactions['meta'],
-            'filters' => $filters,
+            'transactions' => $transactions,
             'accounts' => $accounts,
             'categories' => $categories,
             'fixedExpenses' => $fixedExpenses,
@@ -131,6 +129,40 @@ class PeriodPageController
             ]);
 
             return back()->with('error', 'Erro ao criar transação.');
+        }
+    }
+
+    public function updateTransaction(UpdateTransactionRequest $request, string $uid, string $transactionUid): RedirectResponse
+    {
+        try {
+            $this->transactionService->update($transactionUid, $request->validated(), $request->user()->uid);
+
+            return redirect("/periods/{$uid}")->with('success', 'Transação atualizada com sucesso.');
+        } catch (\Throwable $e) {
+            Log::error('Failed to update transaction for period', [
+                'period_uid' => $uid,
+                'transaction_uid' => $transactionUid,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Erro ao atualizar transação.');
+        }
+    }
+
+    public function destroyTransaction(Request $request, string $uid, string $transactionUid): RedirectResponse
+    {
+        try {
+            $this->transactionService->delete($transactionUid, $request->user()->uid);
+
+            return redirect("/periods/{$uid}")->with('success', 'Transação excluída com sucesso.');
+        } catch (\Throwable $e) {
+            Log::error('Failed to delete transaction for period', [
+                'period_uid' => $uid,
+                'transaction_uid' => $transactionUid,
+                'error' => $e->getMessage(),
+            ]);
+
+            return back()->with('error', 'Erro ao excluir transação.');
         }
     }
 

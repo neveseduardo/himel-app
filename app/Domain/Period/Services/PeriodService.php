@@ -556,28 +556,14 @@ class PeriodService implements PeriodServiceInterface
         return ['cards' => $cards, 'grand_total' => $grandTotal];
     }
 
-    public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array
+    public function getTransactionsForPeriod(string $periodUid, string $userUid): array
     {
-        $query = Transaction::where('period_uid', $periodUid)
+        return Transaction::where('period_uid', $periodUid)
             ->forUser($userUid)
-            ->with(['account', 'category']);
-
-        $query->when($filters['status'] ?? null, fn ($q, $status) => $q->where('status', $status));
-        $query->when($filters['direction'] ?? null, fn ($q, $direction) => $q->where('direction', $direction));
-        $query->when($filters['source'] ?? null, fn ($q, $source) => $q->where('source', $source));
-
-        $query->orderBy('due_date', 'asc')->orderBy('created_at', 'desc');
-
-        $items = $query->get();
-
-        return [
-            'data' => $items->all(),
-            'meta' => [
-                'current_page' => 1,
-                'per_page' => $items->count(),
-                'total' => $items->count(),
-                'last_page' => 1,
-            ],
-        ];
+            ->with(['account', 'category'])
+            ->orderBy('due_date', 'asc')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->all();
     }
 }

@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "name": "E2E após Spec Task",
+  "description": "Após concluir uma task de spec, verifica se houve alterações no frontend ou no backend que impactem o front e garante que testes E2E existentes sejam atualizados ou novos testes sejam criados para cobrir as funcionalidades alteradas. A spec só pode ser considerada pronta após essa validação.",
+  "version": "1",
+  "when": {
+    "type": "postTaskExecution"
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "A task de spec foi concluída. Antes de marcar como finalizada, verifique:\n\n1. Identifique TODOS os arquivos alterados nesta task (frontend .vue/.ts e backend .php que impactem rotas, controllers ou dados enviados ao front).\n2. Se houve alterações no frontend ou no backend que afetam o comportamento visível ao usuário:\n   - Verifique se já existem testes E2E em `e2e/tests/` que cobrem as funcionalidades alteradas.\n   - Se existem, atualize-os para refletir as mudanças (novos campos, botões removidos, fluxos alterados, etc.).\n   - Se não existem, crie novos testes E2E seguindo o padrão do projeto: Page Object em `e2e/pages/`, spec em `e2e/tests/`, e atualize o `E2eTestSeeder.php` se necessário.\n3. Siga as convenções E2E do projeto: `getByRole()` para botões/headings/dialogs, `locator('[name=\"field\"]')` para inputs, `getByText()` para conteúdo textual. NUNCA use `waitForLoadState('networkidle')`.\n4. Rode `npx playwright test <arquivo>.spec.ts` para validar os testes criados/alterados.\n5. A spec NÃO está pronta até que os testes E2E estejam passando e cobrindo as funcionalidades impactadas."
+  }
+}

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { storeTransaction } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
+import { storeTransaction, updateTransaction } from '@/actions/App/Domain/Period/Controllers/PeriodPageController';
 import { store, update } from '@/actions/App/Domain/Transaction/Controllers/TransactionPageController';
 import type { Account } from '@/domain/Account/types/account';
 import type { Transaction } from '@/domain/Transaction/types/transaction';
@@ -19,6 +19,9 @@ const emit = defineEmits<{
 
 const isEditing = computed(() => !!props.item);
 const action = computed(() => {
+	if (isEditing.value && props.periodUid) {
+		return updateTransaction.url({ uid: props.periodUid, transactionUid: props.item!.uid });
+	}
 	if (isEditing.value) {
 		return update.url(props.item!.uid);
 	}

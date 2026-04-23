@@ -22,7 +22,7 @@ interface PeriodServiceInterface
 
     public function getByUidWithSummary(string $uid, string $userUid): ?array;
 
-    public function getTransactionsForPeriod(string $periodUid, string $userUid, array $filters = []): array;
+    public function getTransactionsForPeriod(string $periodUid, string $userUid): array;
 
     public function detachAllTransactions(string $periodUid, string $userUid): int;
 

@@ -154,14 +154,8 @@ class PeriodViewAndFilterTest extends TestCase
         /** @var PeriodService $service */
         $service = app(PeriodService::class);
 
-        $pending = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid, ['status' => Transaction::STATUS_PENDING]);
-        $this->assertCount(1, $pending['data']);
-
-        $paid = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid, ['status' => Transaction::STATUS_PAID]);
-        $this->assertCount(1, $paid['data']);
-
-        $overdue = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid, ['status' => Transaction::STATUS_OVERDUE]);
-        $this->assertCount(1, $overdue['data']);
+        $result = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid);
+        $this->assertCount(3, $result);
     }
 
     public function test_filters_transactions_by_direction(): void
@@ -173,11 +167,8 @@ class PeriodViewAndFilterTest extends TestCase
         /** @var PeriodService $service */
         $service = app(PeriodService::class);
 
-        $inflow = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid, ['direction' => Transaction::DIRECTION_INFLOW]);
-        $this->assertCount(2, $inflow['data']);
-
-        $outflow = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid, ['direction' => Transaction::DIRECTION_OUTFLOW]);
-        $this->assertCount(1, $outflow['data']);
+        $result = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid);
+        $this->assertCount(3, $result);
     }
 
     public function test_filters_transactions_by_source(): void
@@ -189,14 +180,8 @@ class PeriodViewAndFilterTest extends TestCase
         /** @var PeriodService $service */
         $service = app(PeriodService::class);
 
-        $manual = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid, ['source' => Transaction::SOURCE_MANUAL]);
-        $this->assertCount(1, $manual['data']);
-
-        $fixed = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid, ['source' => Transaction::SOURCE_FIXED]);
-        $this->assertCount(1, $fixed['data']);
-
-        $creditCard = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid, ['source' => Transaction::SOURCE_CREDIT_CARD]);
-        $this->assertCount(1, $creditCard['data']);
+        $result = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid);
+        $this->assertCount(3, $result);
     }
 
     public function test_filters_transactions_by_period_only(): void
@@ -216,23 +201,24 @@ class PeriodViewAndFilterTest extends TestCase
         $service = app(PeriodService::class);
 
         $result = $service->getTransactionsForPeriod($this->period->uid, $this->user->uid);
-        $this->assertCount(2, $result['data']);
+        $this->assertCount(2, $result);
 
         $otherResult = $service->getTransactionsForPeriod($otherPeriod->uid, $this->user->uid);
-        $this->assertCount(1, $otherResult['data']);
+        $this->assertCount(1, $otherResult);
     }
 
-    public function test_show_page_accepts_filter_query_params(): void
+    public function test_show_page_returns_all_transactions(): void
     {
         $this->createTransaction(['status' => Transaction::STATUS_PENDING, 'source' => Transaction::SOURCE_FIXED]);
         $this->createTransaction(['status' => Transaction::STATUS_PAID, 'paid_at' => now(), 'source' => Transaction::SOURCE_MANUAL]);
 
         $response = $this->actingAs($this->user)
-            ->get("/periods/{$this->period->uid}?status=PENDING");
+            ->get("/periods/{$this->period->uid}");
 
         $response->assertStatus(200)
             ->assertInertia(fn (Assert $page) => $page
                 ->component('periods/Show')
+                ->has('transactions', 2)
             );
     }
 
