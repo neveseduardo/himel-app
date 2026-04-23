@@ -18,6 +18,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response as InertiaResponse;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class PeriodPageController
 {
@@ -126,6 +127,8 @@ class PeriodPageController
             ]);
 
             return $report->generate();
+        } catch (HttpException $e) {
+            throw $e;
         } catch (\Throwable $e) {
             Log::error('Failed to generate period report', [
                 'period_uid' => $uid,

@@ -66,8 +66,8 @@ Implementação incremental do sistema de geração de relatório PDF para perí
     - Timeout de 2s para restaurar estado do botão
     - _Requisitos: 1.1, 1.2, 1.3, 1.4, 1.5_
 
-- [ ] 6. Testes backend
-  - [~] 6.1 Criar `tests/Feature/PeriodReportTest.php`
+- [x] 6. Testes backend
+  - [x] 6.1 Criar `tests/Feature/PeriodReportTest.php`
     - Teste: endpoint retorna HTTP 200 com Content-Type `application/pdf` para período válido
     - Teste: endpoint retorna 404 para período inexistente
     - Teste: endpoint retorna 404 para período de outro usuário
@@ -75,7 +75,7 @@ Implementação incremental do sistema de geração de relatório PDF para perí
     - Teste: PDF gerado com sucesso para período sem transações (cenário vazio)
     - Teste: PDF gerado com sucesso para período com todos os tipos de dados
     - _Requisitos: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
-  - [~] 6.2 Criar `tests/Unit/BaseReportPdfTest.php`
+  - [x] 6.2 Criar `tests/Unit/BaseReportPdfTest.php`
     - Testes unitários para `formatCurrency` e `formatDate` com casos comuns e edge cases
     - _Requisitos: 4.8, 4.9_
   - [ ]* 6.3 Escrever teste de propriedade para formatação de moeda
