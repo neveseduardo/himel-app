@@ -17,7 +17,7 @@ Implementação incremental do sistema de geração de relatório PDF para perí
     - Métodos auxiliares: `formatCurrency(float): string` (formato R$ 1.234,56), `formatDate(?string): string` (formato dd/mm/aaaa), `getMonthName(int): string`
     - _Requisitos: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 4.8, 4.9_
 
-- [-] 2. Criar a classe do relatório do período e a Blade view
+- [x] 2. Criar a classe do relatório do período e a Blade view
   - [x] 2.1 Criar `app/Domain/Period/Pdf/PeriodReportPdf.php`
     - Estende `BaseReportPdf`, recebe `array $periodData` no construtor
     - Implementa `getViewName()` retornando `'pdf.period-report'`
