@@ -28,8 +28,9 @@
         /* Summary tables */
         .sum { border: none; margin: 0; padding: 0; border-spacing: 0; font-size: 8pt; }
         .sum th { text-align: left; padding: 0; font-weight: bold; font-size: 9pt; border: none; }
-        .sum th.text-right { text-align: right; font-size: 9pt; }
+        .sum th.text-right { text-align: right; font-size: 9pt; white-space: nowrap; }
         .sum td { padding: 1px 0; border: none; color: #6b7280; }
+        .sum td.text-right { white-space: nowrap; }
         .sum .wide { width: 100%; }
 
         .sec-label td { padding: 14px 0 5px 0; border-bottom: 1px solid #d1d5db; font-size: 9pt; font-weight: bold; }
