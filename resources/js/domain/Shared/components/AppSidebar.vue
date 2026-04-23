@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
 import {
-	ArrowLeftRight,
 	ArrowRightLeft,
 	CalendarClock,
 	CalendarDays,
@@ -19,7 +18,6 @@ const financeNavItems: NavItem[] = [
 	{ title: 'Períodos', href: '/periods', icon: CalendarDays },
 	{ title: 'Contas', href: '/accounts', icon: Wallet },
 	{ title: 'Categorias', href: '/categories', icon: Tags },
-	{ title: 'Transações', href: '/transactions', icon: ArrowLeftRight },
 	{ title: 'Transferências', href: '/transfers', icon: ArrowRightLeft },
 	{ title: 'Despesas Fixas', href: '/fixed-expenses', icon: CalendarClock },
 	{ title: 'Cartões', href: '/credit-cards', icon: CreditCard },
