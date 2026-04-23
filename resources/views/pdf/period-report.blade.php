@@ -26,8 +26,8 @@
         .report-date { font-size: 7.5pt; color: #6b7280; margin-top: 1px; }
         .summary { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
         .summary td { padding: 5px 0; vertical-align: top; border-bottom: 1px solid #f3f4f6; }
-        .summary .lbl { font-size: 8pt; font-weight: bold; width: 50%; }
-        .summary .val { font-size: 8pt; text-align: right; }
+        .summary .lbl { font-size: 8pt; font-weight: bold; }
+        .summary .val { font-size: 8pt; text-align: right; width: 140px; }
         .summary .main td { padding-top: 8px; }
         .summary .main .lbl { font-size: 9pt; }
         .summary .main .val { font-size: 10pt; font-weight: bold; }
