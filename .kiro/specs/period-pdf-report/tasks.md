@@ -17,8 +17,8 @@ Implementação incremental do sistema de geração de relatório PDF para perí
     - Métodos auxiliares: `formatCurrency(float): string` (formato R$ 1.234,56), `formatDate(?string): string` (formato dd/mm/aaaa), `getMonthName(int): string`
     - _Requisitos: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 4.8, 4.9_
 
-- [ ] 2. Criar a classe do relatório do período e a Blade view
-  - [~] 2.1 Criar `app/Domain/Period/Pdf/PeriodReportPdf.php`
+- [-] 2. Criar a classe do relatório do período e a Blade view
+  - [x] 2.1 Criar `app/Domain/Period/Pdf/PeriodReportPdf.php`
     - Estende `BaseReportPdf`, recebe `array $periodData` no construtor
     - Implementa `getViewName()` retornando `'pdf.period-report'`
     - Implementa `getViewData()` passando period, summary, fixedExpenses, installments, cardBreakdown, inflowTransactions, outflowTransactions
@@ -93,11 +93,11 @@ Implementação incremental do sistema de geração de relatório PDF para perí
   - Executar `php artisan test --compact` e garantir que todos os testes passam, perguntar ao usuário se houver dúvidas.
 
 - [ ] 8. Testes E2E
-  - [ ]* 8.1 Estender `e2e/pages/PeriodPage.ts` com métodos para o relatório PDF
+  - [ ] 8.1 Estender `e2e/pages/PeriodPage.ts` com métodos para o relatório PDF
     - Método para abrir dropdown e clicar em "Gerar Relatório"
     - Método para verificar visibilidade da opção no dropdown
     - _Requisitos: 7.1, 7.2_
-  - [ ]* 8.2 Criar `e2e/tests/period-report.spec.ts`
+  - [ ] 8.2 Criar `e2e/tests/period-report.spec.ts`
     - Teste: opção "Gerar Relatório" visível no dropdown da página de detalhe do período
     - Teste: clicar em "Gerar Relatório" inicia download de arquivo PDF
     - Teste: arquivo baixado possui nome correto no formato `relatorio-periodo-{mes}-{ano}.pdf`
