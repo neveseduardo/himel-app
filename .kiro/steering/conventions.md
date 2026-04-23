@@ -12,6 +12,7 @@ inclusion: always
 - Laravel Sanctum (API tokens) / Laravel Wayfinder (typed routes)
 - PHPUnit 12 / ESLint 9 / Prettier 3
 - Playwright (E2E testing, headless Chromium)
+- barryvdh/laravel-dompdf (PDF generation via Blade views)
 - reka-ui, lucide-vue-next, vue-sonner, @tanstack/vue-table
 
 ## Estrutura de Diretórios

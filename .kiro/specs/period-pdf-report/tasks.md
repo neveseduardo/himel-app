@@ -6,7 +6,7 @@ Implementação incremental do sistema de geração de relatório PDF para perí
 
 ## Tarefas
 
-- [-] 1. Instalar dependência e criar a classe base do template PDF
+- [x] 1. Instalar dependência e criar a classe base do template PDF
   - [x] 1.1 Instalar `barryvdh/laravel-dompdf` via Composer
     - Executar `composer require barryvdh/laravel-dompdf`
     - _Requisitos: 3.1_
