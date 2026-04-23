@@ -65,11 +65,11 @@
     <!-- Header -->
     <table>
         <tr class="hdr">
-            <td class="logo"><div class="logo-box">LOGO</div></td>
             <td>
                 <div class="report-title">{{ $title }}</div>
                 <div class="report-date">Gerado em {{ $generatedAt }}</div>
             </td>
+			<td class="logo"><div class="logo-box">LOGO</div></td>
         </tr>
         <tr class="gap"><td colspan="2"></td></tr>
     </table>
