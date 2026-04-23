@@ -5,12 +5,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>{{ $title }}</title>
     <style>
-        @page { size: A4 portrait; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        @page { size: A4 portrait; margin: 2cm; }
+        * { margin: 0; padding: 0; box-sizing: content-box; }
         body {
             font-family: 'DejaVu Sans', sans-serif;
             font-size: 9pt; color: #111827; line-height: 1.4;
-            background: #fff; margin: 2cm;
+            background: #fff;
         }
         .text-right { text-align: right; }
         .muted { color: #6b7280; }

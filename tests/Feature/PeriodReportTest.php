@@ -242,14 +242,14 @@ class PeriodReportTest extends TestCase
         $this->assertNotEmpty($response->getContent());
     }
 
-    public function test_report_blade_template_has_body_margin_for_spacing(): void
+    public function test_report_blade_template_has_page_margin_for_spacing(): void
     {
         $viewContent = file_get_contents(resource_path('views/pdf/period-report.blade.php'));
 
         $this->assertMatchesRegularExpression(
-            '/body\s*\{[^}]*margin\s*:\s*2cm/s',
+            '/@page\s*\{[^}]*margin\s*:\s*2cm/s',
             $viewContent,
-            'The PDF template must have body { margin: 2cm } for proper page spacing.'
+            'The PDF template must have @page { margin: 2cm } for proper page spacing.'
         );
     }
 }
