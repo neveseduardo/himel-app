@@ -89,7 +89,7 @@ Implementação incremental do sistema de geração de relatório PDF para perí
     - Implementar com Faker gerando 100+ datas aleatórias em loop
     - **Valida: Requisito 4.9**
 
-- [ ] 7. Checkpoint — Garantir que todos os testes backend passam
+- [x] 7. Checkpoint — Garantir que todos os testes backend passam
   - Executar `php artisan test --compact` e garantir que todos os testes passam, perguntar ao usuário se houver dúvidas.
 
 - [ ] 8. Testes E2E
@@ -103,7 +103,7 @@ Implementação incremental do sistema de geração de relatório PDF para perí
     - Teste: arquivo baixado possui nome correto no formato `relatorio-periodo-{mes}-{ano}.pdf`
     - _Requisitos: 7.1, 7.2, 7.3_
 
-- [ ] 9. Checkpoint final — Garantir que todos os testes passam
+- [x] 9. Checkpoint final — Garantir que todos os testes passam
   - Executar `php artisan test --compact` e `npm run lint` e `npm run types:check`.
   - Garantir que todos os testes passam, perguntar ao usuário se houver dúvidas.
 
