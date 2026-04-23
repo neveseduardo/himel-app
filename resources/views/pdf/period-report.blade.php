@@ -25,13 +25,16 @@
         .gap td { border: none; height: 16px; }
         .gap-sm td { border: none; height: 10px; }
 
-        .s-main td { padding: 6px 0; border-bottom: 1px solid #f3f4f6; font-size: 9pt; font-weight: bold; }
-        .s-main .text-right { font-size: 10pt; }
-        .s-detail td { padding: 2px 0 2px 16px; border: none; font-size: 7.5pt; color: #6b7280; font-weight: normal; }
-        .s-balance td { padding: 8px 0; border-top: 1px solid #d1d5db; font-size: 10pt; font-weight: bold; }
-        .s-balance .text-right { font-size: 11pt; }
+        /* Summary tables */
+        .sum { border: none; margin: 0; padding: 0; border-spacing: 0; font-size: 8pt; }
+        .sum th { text-align: left; padding: 0; font-weight: bold; font-size: 9pt; border: none; }
+        .sum th.text-right { text-align: right; font-size: 9pt; }
+        .sum td { padding: 1px 0; border: none; color: #6b7280; }
+        .sum .wide { width: 100%; }
 
         .sec-label td { padding: 14px 0 5px 0; border-bottom: 1px solid #d1d5db; font-size: 9pt; font-weight: bold; }
+
+        .tbl { font-size: 8pt; }
 
         .tbl { font-size: 8pt; }
         .tbl th { text-align: left; padding: 4px 6px; font-size: 7pt; text-transform: uppercase; letter-spacing: 0.3px; color: #6b7280; border-bottom: 1px solid #d1d5db; }
@@ -71,22 +74,37 @@
     </table>
 
     <!-- Resumo -->
-    <table>
-        <tr class="s-main"><td>Entradas</td><td class="text-right">{{ $formatCurrency($summary['total_inflow']) }}</td></tr>
-        <tr class="s-detail"><td>Manuais</td><td class="text-right">{{ $formatCurrency($summary['inflow_manual'] ?? 0) }}</td></tr>
-        <tr class="s-detail"><td>Transferências</td><td class="text-right">{{ $formatCurrency($summary['inflow_transfer'] ?? 0) }}</td></tr>
-        <tr class="s-main"><td>Saídas</td><td class="text-right">{{ $formatCurrency($summary['total_outflow']) }}</td></tr>
-        <tr class="s-detail"><td>Despesas Fixas</td><td class="text-right">{{ $formatCurrency($summary['total_fixed_expenses'] ?? 0) }}</td></tr>
-        <tr class="s-detail"><td>Parcelas de Cartão</td><td class="text-right">{{ $formatCurrency($summary['total_credit_card_installments'] ?? 0) }}</td></tr>
-        <tr class="s-detail"><td>Manuais</td><td class="text-right">{{ $formatCurrency($summary['total_manual'] ?? 0) }}</td></tr>
-        <tr class="s-detail"><td>Transferências</td><td class="text-right">{{ $formatCurrency($summary['total_transfer'] ?? 0) }}</td></tr>
-        @if(count($cardBreakdown['cards']) > 0)
-            <tr class="s-main"><td>Cartões de Crédito</td><td class="text-right">{{ $formatCurrency($cardBreakdown['grand_total']) }}</td></tr>
-            @foreach($cardBreakdown['cards'] as $card)
-                <tr class="s-detail"><td>{{ $card['credit_card_name'] }}</td><td class="text-right">{{ $formatCurrency($card['total']) }}</td></tr>
-            @endforeach
-        @endif
-        <tr class="s-balance"><td>Saldo</td><td class="text-right">{{ $formatCurrency($summary['balance']) }}</td></tr>
+    <table class="sum">
+        <thead><tr><th class="wide">Entradas</th><th class="text-right">{{ $formatCurrency($summary['total_inflow']) }}</th></tr></thead>
+        <tbody>
+            <tr><td>Manuais</td><td class="text-right">{{ $formatCurrency($summary['inflow_manual'] ?? 0) }}</td></tr>
+            <tr><td>Transferências</td><td class="text-right">{{ $formatCurrency($summary['inflow_transfer'] ?? 0) }}</td></tr>
+        </tbody>
+    </table>
+
+    <table class="sum">
+        <thead><tr><th class="wide">Saídas</th><th class="text-right">{{ $formatCurrency($summary['total_outflow']) }}</th></tr></thead>
+        <tbody>
+            <tr><td>Despesas Fixas</td><td class="text-right">{{ $formatCurrency($summary['total_fixed_expenses'] ?? 0) }}</td></tr>
+            <tr><td>Parcelas de Cartão</td><td class="text-right">{{ $formatCurrency($summary['total_credit_card_installments'] ?? 0) }}</td></tr>
+            <tr><td>Manuais</td><td class="text-right">{{ $formatCurrency($summary['total_manual'] ?? 0) }}</td></tr>
+            <tr><td>Transferências</td><td class="text-right">{{ $formatCurrency($summary['total_transfer'] ?? 0) }}</td></tr>
+        </tbody>
+    </table>
+
+    @if(count($cardBreakdown['cards']) > 0)
+        <table class="sum">
+            <thead><tr><th class="wide">Cartões de Crédito</th><th class="text-right">{{ $formatCurrency($cardBreakdown['grand_total']) }}</th></tr></thead>
+            <tbody>
+                @foreach($cardBreakdown['cards'] as $card)
+                    <tr><td>{{ $card['credit_card_name'] }}</td><td class="text-right">{{ $formatCurrency($card['total']) }}</td></tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+
+    <table class="sum">
+        <thead><tr><th class="wide">Saldo</th><th class="text-right">{{ $formatCurrency($summary['balance']) }}</th></tr></thead>
     </table>
 
     <!-- Despesas Fixas -->
