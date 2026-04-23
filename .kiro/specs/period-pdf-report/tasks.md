@@ -24,7 +24,7 @@ Implementação incremental do sistema de geração de relatório PDF para perí
     - Implementa `getViewData()` passando period, summary, fixedExpenses, installments, cardBreakdown, inflowTransactions, outflowTransactions
     - Implementa `getFileName()` retornando `relatorio-periodo-{mes}-{ano}.pdf`
     - _Requisitos: 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.10_
-  - [~] 2.2 Criar `resources/views/pdf/period-report.blade.php`
+  - [x] 2.2 Criar `resources/views/pdf/period-report.blade.php`
     - HTML completo com CSS inline (requisito DOMPDF)
     - Cabeçalho com título do relatório, placeholder para logo e data de geração
     - Seção de sumário financeiro com cards (entradas, saídas, saldo, composição)
