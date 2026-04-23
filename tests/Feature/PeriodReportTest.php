@@ -246,10 +246,16 @@ class PeriodReportTest extends TestCase
     {
         $viewContent = file_get_contents(resource_path('views/pdf/period-report.blade.php'));
 
-        $this->assertMatchesRegularExpression(
-            '/@page\s*\{[^}]*margin\s*:\s*2cm/s',
+        $this->assertStringContainsString(
+            'class="wrap"',
             $viewContent,
-            'The PDF template must have @page { margin: 2cm } for proper page spacing.'
+            'The PDF template must have a wrapper div with padding for page spacing.'
+        );
+
+        $this->assertMatchesRegularExpression(
+            '/\.wrap\s*\{[^}]*padding\s*:\s*2cm/s',
+            $viewContent,
+            'The wrapper div must have padding: 2cm for proper page spacing.'
         );
     }
 }
