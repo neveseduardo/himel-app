@@ -3,7 +3,7 @@ import { VisDonut, VisSingleContainer, VisTooltip } from '@unovis/vue';
 import { computed } from 'vue';
 
 import type { PeriodSummary } from '@/domain/Period/types/period';
-import { ChartContainer, ChartTooltipContent, componentToString, type ChartConfig } from '@/domain/Shared/components/ui/chart';
+import { ChartContainer, type ChartConfig } from '@/domain/Shared/components/ui/chart';
 
 const props = defineProps<{
 	summary: PeriodSummary;
@@ -51,10 +51,7 @@ const colors = computed(() =>
 				:arc-width="60"
 				:color="colors"
 			/>
-			<VisTooltip
-				:attributes="{ [VisTooltip.selectors.tooltip]: { class: '' } }"
-				:content="componentToString(chartConfig, ChartTooltipContent)"
-			/>
+			<VisTooltip />
 		</VisSingleContainer>
 	</ChartContainer>
 </template>

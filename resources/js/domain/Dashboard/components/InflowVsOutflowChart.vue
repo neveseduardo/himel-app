@@ -3,7 +3,7 @@ import { VisAxis, VisGroupedBar, VisTooltip, VisXYContainer } from '@unovis/vue'
 import { computed } from 'vue';
 
 import type { PeriodSummary } from '@/domain/Period/types/period';
-import { ChartContainer, ChartTooltipContent, componentToString, type ChartConfig } from '@/domain/Shared/components/ui/chart';
+import { ChartContainer, type ChartConfig } from '@/domain/Shared/components/ui/chart';
 import { formatCurrency } from '@/domain/Shared/services/format';
 
 const props = defineProps<{
@@ -45,10 +45,7 @@ const colors = computed(() =>
 			/>
 			<VisAxis type="x" :tick-format="() => 'Período'" />
 			<VisAxis type="y" :tick-format="(v: number) => formatCurrency(v)" />
-			<VisTooltip
-				:attributes="{ [VisTooltip.selectors.tooltip]: { class: '' } }"
-				:content="componentToString(chartConfig, ChartTooltipContent)"
-			/>
+			<VisTooltip />
 		</VisXYContainer>
 	</ChartContainer>
 </template>

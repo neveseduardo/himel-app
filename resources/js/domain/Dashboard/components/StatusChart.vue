@@ -3,7 +3,7 @@ import { VisDonut, VisSingleContainer, VisTooltip } from '@unovis/vue';
 import { computed } from 'vue';
 
 import type { StatusCounts } from '@/domain/Dashboard/types/dashboard';
-import { ChartContainer, ChartTooltipContent, componentToString, type ChartConfig } from '@/domain/Shared/components/ui/chart';
+import { ChartContainer, type ChartConfig } from '@/domain/Shared/components/ui/chart';
 
 const props = defineProps<{
 	statusCounts: StatusCounts;
@@ -50,10 +50,7 @@ const colors = computed(() =>
 				:arc-width="60"
 				:color="colors"
 			/>
-			<VisTooltip
-				:attributes="{ [VisTooltip.selectors.tooltip]: { class: '' } }"
-				:content="componentToString(chartConfig, ChartTooltipContent)"
-			/>
+			<VisTooltip />
 		</VisSingleContainer>
 		<div class="pointer-events-none absolute inset-0 flex items-center justify-center">
 			<div class="text-center">

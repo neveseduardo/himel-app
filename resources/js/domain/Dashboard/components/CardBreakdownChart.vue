@@ -3,7 +3,7 @@ import { VisAxis, VisStackedBar, VisTooltip, VisXYContainer } from '@unovis/vue'
 import { computed } from 'vue';
 
 import type { PeriodCardBreakdown } from '@/domain/Period/types/period';
-import { ChartContainer, ChartTooltipContent, componentToString, type ChartConfig } from '@/domain/Shared/components/ui/chart';
+import { ChartContainer, type ChartConfig } from '@/domain/Shared/components/ui/chart';
 import { formatCurrency } from '@/domain/Shared/services/format';
 
 const props = defineProps<{
@@ -47,10 +47,7 @@ const isEmpty = computed(() => props.cardBreakdown.cards.length === 0);
 			/>
 			<VisAxis type="x" :tick-format="(v: number) => formatCurrency(v)" />
 			<VisAxis type="y" :tick-format="(i: number) => data[i]?.name ?? ''" />
-			<VisTooltip
-				:attributes="{ [VisTooltip.selectors.tooltip]: { class: '' } }"
-				:content="componentToString(chartConfig, ChartTooltipContent)"
-			/>
+			<VisTooltip />
 		</VisXYContainer>
 	</ChartContainer>
 </template>
