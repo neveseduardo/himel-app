@@ -164,7 +164,7 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
     - Tag: `Feature: period-dashboard, Property 2: Category breakdown is sorted by value descending`
     - **Validates: Requirements 9.2**
 
-- [ ] 12. Final checkpoint — Ensure all tests pass
+- [x] 12. Final checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
