@@ -13,6 +13,8 @@ use App\Domain\CreditCardCharge\Contracts\CreditCardChargeServiceInterface;
 use App\Domain\CreditCardCharge\Services\CreditCardChargeService;
 use App\Domain\CreditCardInstallment\Contracts\CreditCardInstallmentServiceInterface;
 use App\Domain\CreditCardInstallment\Services\CreditCardInstallmentService;
+use App\Domain\Dashboard\Contracts\DashboardServiceInterface;
+use App\Domain\Dashboard\Services\DashboardService;
 use App\Domain\FixedExpense\Contracts\FixedExpenseServiceInterface;
 use App\Domain\FixedExpense\Services\FixedExpenseService;
 use App\Domain\Period\Contracts\PeriodServiceInterface;
@@ -47,6 +49,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(AccountServiceInterface::class, AccountService::class);
         $this->app->singleton(CategoryServiceInterface::class, CategoryService::class);
         $this->app->singleton(CreditCardServiceInterface::class, CreditCardService::class);
+        $this->app->singleton(DashboardServiceInterface::class, DashboardService::class);
         $this->app->singleton(CreditCardChargeServiceInterface::class, CreditCardChargeService::class);
         $this->app->singleton(CreditCardInstallmentServiceInterface::class, CreditCardInstallmentService::class);
         $this->app->singleton(FixedExpenseServiceInterface::class, FixedExpenseService::class);
