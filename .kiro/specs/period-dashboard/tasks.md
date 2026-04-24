@@ -107,7 +107,7 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 9. Backend: PHPUnit tests
-  - [ ] 9.1 Create DashboardPageControllerTest
+  - [x] 9.1 Create DashboardPageControllerTest
     - Create `tests/Feature/DashboardPageControllerTest.php`
     - Test: returns Inertia response with all expected props (period, summary, cardBreakdown, periods, statusCounts, categoryBreakdown)
     - Test: respects `?period=uid` query param to select a specific period
@@ -115,7 +115,7 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
     - Test: returns correct data for period with mixed transactions (INFLOW/OUTFLOW, multiple statuses and sources)
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8_
 
-  - [ ] 9.2 Create DashboardServiceTest
+  - [x] 9.2 Create DashboardServiceTest
     - Create `tests/Feature/DashboardServiceTest.php`
     - Test: `getStatusCountsForPeriod` returns correct counts per status (PENDING, PAID, OVERDUE)
     - Test: `getStatusCountsForPeriod` returns zeroed counts for period with no transactions
