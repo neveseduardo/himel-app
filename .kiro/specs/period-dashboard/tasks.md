@@ -62,11 +62,11 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
     - Add `data-testid` attributes on chart containers for E2E testing
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 4.1, 4.3, 4.6, 10.1, 10.2, 10.3, 10.4, 10.5_
 
-- [ ] 6. Checkpoint — Verify backend + page render
+- [x] 6. Checkpoint — Verify backend + page render
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 7. Frontend: Chart components
-  - [ ] 7.1 Create OutflowCompositionChart component
+  - [x] 7.1 Create OutflowCompositionChart component
     - Create `resources/js/domain/Dashboard/components/OutflowCompositionChart.vue`
     - DonutChart showing 4 outflow sources: Despesas Fixas, Parcelas de Cartão, Manuais, Transferências
     - Props derived from `PeriodSummary` (total_fixed_expenses, total_credit_card_installments, total_manual, total_transfer)
@@ -74,21 +74,21 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
     - Use `formatCurrency` for value formatting
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5_
 
-  - [ ] 7.2 Create InflowVsOutflowChart component
+  - [x] 7.2 Create InflowVsOutflowChart component
     - Create `resources/js/domain/Dashboard/components/InflowVsOutflowChart.vue`
     - Grouped BarChart comparing total_inflow and total_outflow
     - Green for Entradas, red for Saídas
     - Tooltip with R$ formatted values
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-  - [ ] 7.3 Create CardBreakdownChart component
+  - [x] 7.3 Create CardBreakdownChart component
     - Create `resources/js/domain/Dashboard/components/CardBreakdownChart.vue`
     - Horizontal BarChart showing total per credit card
     - Props: `PeriodCardBreakdown`
     - Empty state: "Sem dados de cartão"
     - _Requirements: 7.1, 7.2, 7.3, 7.4_
 
-  - [ ] 7.4 Create StatusChart component
+  - [x] 7.4 Create StatusChart component
     - Create `resources/js/domain/Dashboard/components/StatusChart.vue`
     - DonutChart showing transaction counts by status (PENDING, PAID, OVERDUE)
     - Colors: yellow for PENDING, green for PAID, red for OVERDUE
@@ -96,14 +96,14 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
     - Empty state: "Sem transações"
     - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
-  - [ ] 7.5 Create CategoryBreakdownChart component
+  - [x] 7.5 Create CategoryBreakdownChart component
     - Create `resources/js/domain/Dashboard/components/CategoryBreakdownChart.vue`
     - Horizontal BarChart showing OUTFLOW totals by category, sorted by value DESC
     - Props: `CategoryBreakdownItem[]`
     - Empty state: "Sem dados"
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 8. Checkpoint — Verify full page with charts
+- [x] 8. Checkpoint — Verify full page with charts
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 9. Backend: PHPUnit tests

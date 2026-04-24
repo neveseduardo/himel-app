@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { Head, router } from '@inertiajs/vue3';
 
+import CardBreakdownChart from '@/domain/Dashboard/components/CardBreakdownChart.vue';
+import CategoryBreakdownChart from '@/domain/Dashboard/components/CategoryBreakdownChart.vue';
+import InflowVsOutflowChart from '@/domain/Dashboard/components/InflowVsOutflowChart.vue';
+import OutflowCompositionChart from '@/domain/Dashboard/components/OutflowCompositionChart.vue';
 import PeriodSelector from '@/domain/Dashboard/components/PeriodSelector.vue';
+import StatusChart from '@/domain/Dashboard/components/StatusChart.vue';
 import type { DashboardProps } from '@/domain/Dashboard/types/dashboard';
 import { formatCurrency } from '@/domain/Shared/services/format';
 
@@ -103,9 +108,7 @@ function handlePeriodChange(uid: string) {
 						<CardTitle>Composição de Saídas</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p class="text-sm text-muted-foreground">
-							Gráfico em breve
-						</p>
+						<OutflowCompositionChart :summary="summary" />
 					</CardContent>
 				</Card>
 
@@ -114,9 +117,7 @@ function handlePeriodChange(uid: string) {
 						<CardTitle>Entradas vs Saídas</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p class="text-sm text-muted-foreground">
-							Gráfico em breve
-						</p>
+						<InflowVsOutflowChart :summary="summary" />
 					</CardContent>
 				</Card>
 
@@ -125,9 +126,7 @@ function handlePeriodChange(uid: string) {
 						<CardTitle>Breakdown por Cartão</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p class="text-sm text-muted-foreground">
-							Gráfico em breve
-						</p>
+						<CardBreakdownChart :card-breakdown="cardBreakdown" />
 					</CardContent>
 				</Card>
 
@@ -136,9 +135,7 @@ function handlePeriodChange(uid: string) {
 						<CardTitle>Transações por Status</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p class="text-sm text-muted-foreground">
-							Gráfico em breve
-						</p>
+						<StatusChart :status-counts="statusCounts" />
 					</CardContent>
 				</Card>
 
@@ -147,9 +144,7 @@ function handlePeriodChange(uid: string) {
 						<CardTitle>Gastos por Categoria</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<p class="text-sm text-muted-foreground">
-							Gráfico em breve
-						</p>
+						<CategoryBreakdownChart :category-breakdown="categoryBreakdown" />
 					</CardContent>
 				</Card>
 			</div>
