@@ -8,7 +8,7 @@ Route::inertia('/', 'Welcome', [
 ])->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::inertia('dashboard', 'Dashboard')->name('dashboard');
+    require base_path('app/Domain/Dashboard/Routes/web.php');
     require base_path('app/Domain/Account/Routes/web.php');
     require base_path('app/Domain/Category/Routes/web.php');
     require base_path('app/Domain/Transaction/Routes/web.php');

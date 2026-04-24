@@ -12,7 +12,7 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
   - Verify the generated components exist in `resources/js/domain/Shared/components/ui/chart-donut/` and `resources/js/domain/Shared/components/ui/chart-bar/`
   - _Requirements: 11.1, 11.2, 11.3_
 
-- [ ] 2. Backend: DashboardService and DashboardPageController
+- [x] 2. Backend: DashboardService and DashboardPageController
   - [x] 2.1 Create DashboardServiceInterface and DashboardService
     - Create `app/Domain/Dashboard/Contracts/DashboardServiceInterface.php` with `getStatusCountsForPeriod(string $periodUid, string $userUid): array` and `getCategoryBreakdownForPeriod(string $periodUid, string $userUid): array`
     - Create `app/Domain/Dashboard/Services/DashboardService.php` implementing the interface
@@ -21,7 +21,7 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
     - Register `DashboardServiceInterface` → `DashboardService` binding in `AppServiceProvider.php`
     - _Requirements: 2.5, 2.6_
 
-  - [ ] 2.2 Create DashboardPageController and route
+  - [x] 2.2 Create DashboardPageController and route
     - Create `app/Domain/Dashboard/Controllers/DashboardPageController.php` as an invokable controller
     - Inject `PeriodServiceInterface` and `DashboardServiceInterface`
     - Resolve period: query param `period` > current period > null
