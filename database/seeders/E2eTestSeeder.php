@@ -65,6 +65,7 @@ class E2eTestSeeder extends Seeder
         $this->resetPeriods($user);
         $this->seedNamedPeriods($user);
         $this->seedPeriodTransactions($user);
+        $this->seedDashboardTransactions($user);
     }
 
     private function ensureDefaultCategories(User $user): void
@@ -435,5 +436,82 @@ class E2eTestSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    /**
+     * Seed additional transactions for Janeiro 2025 with mixed statuses and varied categories.
+     * Março 2025 intentionally left empty for empty-state testing.
+     */
+    private function seedDashboardTransactions(User $user): void
+    {
+        $janeiro = Period::where('user_uid', $user->uid)->where('month', 1)->where('year', 2025)->first();
+        $bb = Account::where('user_uid', $user->uid)->where('name', 'Conta Corrente BB')->first();
+
+        $transporteCategory = Category::where('user_uid', $user->uid)->where('name', 'Transporte')->first();
+        $saudeCategory = Category::where('user_uid', $user->uid)->where('name', 'Saúde')->first();
+        $salarioCategory = Category::where('user_uid', $user->uid)->where('name', 'Salário')->first();
+
+        // PAID INFLOW — Salário Janeiro (paid)
+        Transaction::create([
+            'user_uid' => $user->uid,
+            'account_uid' => $bb->uid,
+            'category_uid' => $salarioCategory->uid,
+            'period_uid' => $janeiro->uid,
+            'amount' => 3000.00,
+            'direction' => Transaction::DIRECTION_INFLOW,
+            'status' => Transaction::STATUS_PAID,
+            'source' => Transaction::SOURCE_MANUAL,
+            'description' => 'Freelance Janeiro',
+            'due_date' => Carbon::create(2025, 1, 15),
+            'paid_at' => Carbon::create(2025, 1, 15),
+            'occurred_at' => Carbon::create(2025, 1, 15),
+        ]);
+
+        // PAID OUTFLOW — Transporte
+        Transaction::create([
+            'user_uid' => $user->uid,
+            'account_uid' => $bb->uid,
+            'category_uid' => $transporteCategory->uid,
+            'period_uid' => $janeiro->uid,
+            'amount' => 250.00,
+            'direction' => Transaction::DIRECTION_OUTFLOW,
+            'status' => Transaction::STATUS_PAID,
+            'source' => Transaction::SOURCE_MANUAL,
+            'description' => 'Uber Janeiro',
+            'due_date' => Carbon::create(2025, 1, 12),
+            'paid_at' => Carbon::create(2025, 1, 12),
+            'occurred_at' => Carbon::create(2025, 1, 10),
+        ]);
+
+        // OVERDUE OUTFLOW — Saúde
+        Transaction::create([
+            'user_uid' => $user->uid,
+            'account_uid' => $bb->uid,
+            'category_uid' => $saudeCategory->uid,
+            'period_uid' => $janeiro->uid,
+            'amount' => 400.00,
+            'direction' => Transaction::DIRECTION_OUTFLOW,
+            'status' => Transaction::STATUS_OVERDUE,
+            'source' => Transaction::SOURCE_MANUAL,
+            'description' => 'Consulta Médica Janeiro',
+            'due_date' => Carbon::create(2025, 1, 8),
+            'occurred_at' => Carbon::create(2025, 1, 5),
+        ]);
+
+        // PAID OUTFLOW — Saúde (second)
+        Transaction::create([
+            'user_uid' => $user->uid,
+            'account_uid' => $bb->uid,
+            'category_uid' => $saudeCategory->uid,
+            'period_uid' => $janeiro->uid,
+            'amount' => 150.00,
+            'direction' => Transaction::DIRECTION_OUTFLOW,
+            'status' => Transaction::STATUS_PAID,
+            'source' => Transaction::SOURCE_MANUAL,
+            'description' => 'Farmácia Janeiro',
+            'due_date' => Carbon::create(2025, 1, 20),
+            'paid_at' => Carbon::create(2025, 1, 20),
+            'occurred_at' => Carbon::create(2025, 1, 18),
+        ]);
     }
 }

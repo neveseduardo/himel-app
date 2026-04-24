@@ -124,18 +124,18 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
     - _Requirements: 2.5, 2.6_
 
 - [ ] 10. E2E: Seeder updates and Playwright tests
-  - [ ] 10.1 Update E2eTestSeeder for dashboard data
+  - [x] 10.1 Update E2eTestSeeder for dashboard data
     - Add PAID and OVERDUE transactions to Janeiro 2025 period (currently only PENDING)
     - Add OUTFLOW transactions with varied categories (Alimentação, Transporte, Saúde) to Janeiro 2025
     - Ensure Março 2025 remains without transactions (for empty state testing)
     - _Requirements: 12.10_
 
-  - [ ] 10.2 Create DashboardPage Page Object
+  - [x] 10.2 Create DashboardPage Page Object
     - Create `e2e/pages/DashboardPage.ts` with methods: `goto()`, `getPageTitle()`, `getSummaryCardValue(label)`, `getSelectedPeriod()`, `selectPeriod(label)`, `isChartVisible(testId)`, `getEmptyStateMessage(testId)`, `getSidebarItems()`
     - Follow existing Page Object pattern from `PeriodPage.ts`
     - _Requirements: 12.9_
 
-  - [ ] 10.3 Create dashboard E2E test specs
+  - [x] 10.3 Create dashboard E2E test specs
     - Create `e2e/tests/dashboard.spec.ts`
     - Organize by `test.describe`: Page Load, Summary Cards, Period Selector, Charts, Empty States, Responsiveness, Sidebar
     - Test page loads with correct title and summary cards visible
