@@ -2,6 +2,7 @@
 import { Link } from '@inertiajs/vue3';
 import {
 	ArrowRightLeft,
+	BarChart3,
 	CalendarClock,
 	CalendarDays,
 	CreditCard,
@@ -15,6 +16,7 @@ import { toUrl } from '@/domain/Shared/lib/utils';
 import type { NavItem } from '@/types';
 
 const financeNavItems: NavItem[] = [
+	{ title: 'Dashboard', href: '/dashboard', icon: BarChart3 },
 	{ title: 'Períodos', href: '/periods', icon: CalendarDays },
 	{ title: 'Contas', href: '/accounts', icon: Wallet },
 	{ title: 'Categorias', href: '/categories', icon: Tags },

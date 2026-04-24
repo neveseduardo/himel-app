@@ -31,18 +31,18 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
     - Replace `Route::inertia('dashboard', 'Dashboard')` in `routes/web.php` with `require base_path('app/Domain/Dashboard/Routes/web.php')`
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8_
 
-- [ ] 3. Frontend: TypeScript types
+- [x] 3. Frontend: TypeScript types
   - Create `resources/js/domain/Dashboard/types/dashboard.ts` with `StatusCounts`, `CategoryBreakdownItem`, and `DashboardProps` interfaces
   - Import `Period`, `PeriodCardBreakdown`, `PeriodSummary` from `@/domain/Period/types/period`
   - _Requirements: 2.5, 2.6_
 
-- [ ] 4. Frontend: Sidebar update
+- [x] 4. Frontend: Sidebar update
   - In `AppSidebar.vue`, add `BarChart3` import from `lucide-vue-next`
   - Add `{ title: 'Dashboard', href: '/dashboard', icon: BarChart3 }` as the first item in `financeNavItems`
   - _Requirements: 1.1, 1.2, 1.3, 1.4_
 
-- [ ] 5. Frontend: Dashboard.vue page with PeriodSelector and summary cards
-  - [ ] 5.1 Create PeriodSelector component
+- [x] 5. Frontend: Dashboard.vue page with PeriodSelector and summary cards
+  - [x] 5.1 Create PeriodSelector component
     - Create `resources/js/domain/Dashboard/components/PeriodSelector.vue`
     - Use shadcn-vue `Select`, `SelectTrigger`, `SelectContent`, `SelectItem`
     - Props: `periods: Period[]`, `selectedUid: string | null`
@@ -50,7 +50,7 @@ Implementação incremental do dashboard de períodos financeiros. Começa com a
     - Format each period as "Mês Ano" using Portuguese month names
     - _Requirements: 4.1, 4.2, 4.4, 4.5_
 
-  - [ ] 5.2 Implement Dashboard.vue page
+  - [x] 5.2 Implement Dashboard.vue page
     - Replace current `resources/js/pages/Dashboard.vue` with full dashboard implementation
     - Use `defineProps<DashboardProps>()` to receive Inertia props
     - Render PeriodSelector, 4 summary cards (Entradas, Saídas, Saldo, Total Cartões) using shadcn-vue Card
