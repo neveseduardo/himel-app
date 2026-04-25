@@ -10,10 +10,10 @@ const props = defineProps<{
 }>();
 
 const chartConfig = {
-	fixed: { label: 'Despesas Fixas', color: 'hsl(var(--chart-1))' },
-	card: { label: 'Parcelas de Cartão', color: 'hsl(var(--chart-2))' },
-	manual: { label: 'Manuais', color: 'hsl(var(--chart-3))' },
-	transfer: { label: 'Transferências', color: 'hsl(var(--chart-4))' },
+	fixed: { label: 'Despesas Fixas', color: 'hsl(12 76% 61%)' },
+	card: { label: 'Parcelas de Cartão', color: 'hsl(173 58% 39%)' },
+	manual: { label: 'Manuais', color: 'hsl(197 37% 24%)' },
+	transfer: { label: 'Transferências', color: 'hsl(43 74% 66%)' },
 } satisfies ChartConfig;
 
 const isEmpty = computed(() => {

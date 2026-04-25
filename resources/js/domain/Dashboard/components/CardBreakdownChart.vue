@@ -11,7 +11,7 @@ const props = defineProps<{
 }>();
 
 const chartConfig = {
-	total: { label: 'Total', color: 'hsl(var(--chart-1))' },
+	total: { label: 'Total', color: 'hsl(12 76% 61%)' },
 } satisfies ChartConfig;
 
 interface BarData {
