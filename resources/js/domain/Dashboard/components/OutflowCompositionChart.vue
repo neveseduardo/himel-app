@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { Donut } from '@unovis/ts';
 import { VisDonut, VisSingleContainer, VisTooltip } from '@unovis/vue';
 import { computed } from 'vue';
 
 import type { PeriodSummary } from '@/domain/Period/types/period';
 import { ChartContainer, type ChartConfig } from '@/domain/Shared/components/ui/chart';
+import { formatCurrency } from '@/domain/Shared/services/format';
 
 const props = defineProps<{
 	summary: PeriodSummary;
@@ -15,6 +17,8 @@ const chartConfig = {
 	manual: { label: 'Manuais', color: 'hsl(197 37% 24%)' },
 	transfer: { label: 'Transferências', color: 'hsl(43 74% 66%)' },
 } satisfies ChartConfig;
+
+const configEntries = Object.entries(chartConfig);
 
 const isEmpty = computed(() => {
 	return (
@@ -35,6 +39,16 @@ const data = computed(() => [
 const colors = computed(() =>
 	Object.values(chartConfig).map(c => c.color)
 );
+
+const triggers = {
+	[Donut.selectors.segment]: (d: Record<string, number>, i: number) => {
+		const entry = configEntries[i];
+		if (!entry) return '';
+		const [, config] = entry;
+		const value = Object.values(d)[0];
+		return `<div class="rounded-lg border bg-background px-3 py-1.5 text-xs shadow-md"><span style="color: ${config.color}">●</span> ${config.label}: ${formatCurrency(value)}</div>`;
+	},
+};
 </script>
 
 <template>
@@ -51,7 +65,7 @@ const colors = computed(() =>
 				:arc-width="60"
 				:color="colors"
 			/>
-			<VisTooltip />
+			<VisTooltip :triggers="triggers" />
 		</VisSingleContainer>
 	</ChartContainer>
 </template>

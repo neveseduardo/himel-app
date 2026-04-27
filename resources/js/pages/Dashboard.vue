@@ -103,6 +103,15 @@ function handlePeriodChange(uid: string) {
 
 			<!-- Charts section -->
 			<div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+				<Card data-testid="chart-inflow-vs-outflow" class="lg:col-span-2">
+					<CardHeader>
+						<CardTitle>Entradas vs Saídas</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<InflowVsOutflowChart :summary="summary" />
+					</CardContent>
+				</Card>
+
 				<Card data-testid="chart-outflow-composition">
 					<CardHeader>
 						<CardTitle>Composição de Saídas</CardTitle>
@@ -112,12 +121,12 @@ function handlePeriodChange(uid: string) {
 					</CardContent>
 				</Card>
 
-				<Card data-testid="chart-inflow-vs-outflow">
+				<Card data-testid="chart-status">
 					<CardHeader>
-						<CardTitle>Entradas vs Saídas</CardTitle>
+						<CardTitle>Transações por Status</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<InflowVsOutflowChart :summary="summary" />
+						<StatusChart :status-counts="statusCounts" />
 					</CardContent>
 				</Card>
 
@@ -127,15 +136,6 @@ function handlePeriodChange(uid: string) {
 					</CardHeader>
 					<CardContent>
 						<CardBreakdownChart :card-breakdown="cardBreakdown" />
-					</CardContent>
-				</Card>
-
-				<Card data-testid="chart-status">
-					<CardHeader>
-						<CardTitle>Transações por Status</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<StatusChart :status-counts="statusCounts" />
 					</CardContent>
 				</Card>
 
